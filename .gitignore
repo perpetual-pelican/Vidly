@@ -1,0 +1,6 @@
+node_modules/
+coverage/
+logfile.log
+uncaughtExceptions.log
+hash.js
+middleware/async.js
