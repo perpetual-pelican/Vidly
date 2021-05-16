@@ -8,6 +8,7 @@ async function main() {
     await require('./startup/db')();
     require('./startup/config')();
     require('./startup/validation')();
+    require('./startup/prod')(app);
     return require('./startup/server')(app);
 }
 
