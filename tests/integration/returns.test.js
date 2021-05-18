@@ -73,8 +73,7 @@ describe('/api/returns', () => {
         expect(res.status).toBe(404);
     });
     it('should return 400 if return already processed', async () => {
-        rental.dateReturned = Date.now();
-        await rental.save();
+        await rental.return();
 
         const res = await exec();
 
@@ -95,7 +94,7 @@ describe('/api/returns', () => {
     });
     it('should calculate rental fee if request is valid', async () => {
         rental.dateOut = moment().add(-7, 'days').toDate();
-        await rental.save();
+        await rental.return();
 
         await exec();
 
