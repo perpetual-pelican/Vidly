@@ -4,7 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --testEnvironment=node --verbose --watchAll --runInBand --coverage"
+    "test": "jest --runInBand --watchAll --coverage"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFiles": [
+      "C:\\Users\\pelik\\Coding\\NodeJS\\Vidly\\.jest\\setEnvVars.js"
+    ],
+    "verbose": true
   },
   "author": "",
   "license": "ISC",
