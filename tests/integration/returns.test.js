@@ -32,6 +32,7 @@ describe('/api/returns', () => {
             }
         });
         await rental.save();
+
         customerId = rental.customer._id;
         movieId = rental.movie._id;
 
@@ -102,7 +103,7 @@ describe('/api/returns', () => {
 
         expect(rentalInDB.rentalFee).toBe(14);
     });
-    it('should increment stock if request is valid', async () => {
+    it('should increment movie stock if request is valid', async () => {
         await Movie.create({
             _id: movieId,
             title: rental.movie.title,
@@ -113,9 +114,9 @@ describe('/api/returns', () => {
         
         await exec();
 
-        const movie = await Movie.findById(movieId);
+        const movieInDB = await Movie.findById(movieId);
 
-        expect(movie.numberInStock).toBe(1);
+        expect(movieInDB.numberInStock).toBe(1);
     });
     it('should return the rental if request is valid', async () => {
         const res = await exec();
