@@ -11,13 +11,6 @@ describe('/api/returns', () => {
     let movieId;
     let token;
 
-    const exec = () => {
-        return request(server)
-            .post('/api/returns')
-            .set('x-auth-token', token)
-            .send({ customerId, movieId });
-    };
-
     beforeEach(async () => {
         server = await require('../../index');
 
@@ -45,6 +38,13 @@ describe('/api/returns', () => {
         await server.close();
     });
     
+    const exec = () => {
+        return request(server)
+            .post('/api/returns')
+            .set('x-auth-token', token)
+            .send({ customerId, movieId });
+    };
+    
     it('should return 401 if client is not logged in', async () => {
         token = '';
 
@@ -52,6 +52,7 @@ describe('/api/returns', () => {
 
         expect(res.status).toBe(401);
     });
+
     it('should return 400 if customerId is not provided', async () => {
         customerId = '';
 
@@ -59,6 +60,7 @@ describe('/api/returns', () => {
 
         expect(res.status).toBe(400);
     });
+
     it('should return 400 if movieId is not provided', async () => {
         movieId = '';
 
@@ -66,6 +68,7 @@ describe('/api/returns', () => {
 
         expect(res.status).toBe(400);
     });
+
     it('should return 404 if no rental found for customer/movie', async () => {
         await Rental.deleteMany();
 
@@ -73,6 +76,7 @@ describe('/api/returns', () => {
 
         expect(res.status).toBe(404);
     });
+
     it('should return 400 if return already processed', async () => {
         await rental.return();
 
@@ -80,11 +84,13 @@ describe('/api/returns', () => {
 
         expect(res.status).toBe(400);
     });
+
     it('should return 200 if request is valid', async () => {
         const res = await exec();
 
         expect(res.status).toBe(200);
     });
+
     it('should set return date if request is valid', async () => {
         await exec();
 
@@ -93,6 +99,7 @@ describe('/api/returns', () => {
 
         expect(diff).toBeLessThan(10 * 1000);
     });
+
     it('should calculate rental fee if request is valid', async () => {
         rental.dateOut = moment().add(-7, 'days').toDate();
         await rental.return();
@@ -103,6 +110,7 @@ describe('/api/returns', () => {
 
         expect(rentalInDB.rentalFee).toBe(14);
     });
+
     it('should increment movie stock if request is valid', async () => {
         await Movie.create({
             _id: movieId,
@@ -118,6 +126,7 @@ describe('/api/returns', () => {
 
         expect(movieInDB.numberInStock).toBe(1);
     });
+
     it('should return the rental if request is valid', async () => {
         const res = await exec();
 

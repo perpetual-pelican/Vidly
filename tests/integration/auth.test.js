@@ -2,15 +2,15 @@ const request = require('supertest');
 const { User } = require('../../models/user');
 const { Genre } = require('../../models/genre');
 
-let server;
-
 describe('auth middleware', () => {
+    let server;
     let token;
 
     beforeEach(async () => {
         server = await require('../../index');
         token = new User().generateAuthToken();
     });
+
     afterEach(async () => {
         await Genre.deleteMany({});
         await server.close();
@@ -30,6 +30,7 @@ describe('auth middleware', () => {
 
         expect(res.status).toBe(401);
     });
+
     it('should return 400 if token is invalid', async () => {
         token = 'invalid token';
 
@@ -37,6 +38,7 @@ describe('auth middleware', () => {
 
         expect(res.status).toBe(400);
     });
+
     it('should return 200 if token is valid', async () => {
         const res = await exec();
 

@@ -2,10 +2,11 @@ const request = require('supertest');
 const { Genre } = require('../../models/genre');
 const { User } = require('../../models/user');
 
-let server;
-
 describe('/api/genres', () => {
+    let server;
+
     beforeEach(async () => { server = await require('../../index'); });
+
     afterEach(async () => {
         await Genre.deleteMany({});
         await server.close();
@@ -36,6 +37,7 @@ describe('/api/genres', () => {
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('name', 'genre1');
         });
+
         it('should return 404 if the given name is invalid', async () => {
             const res = await request(server).get('/api/genres/genre1');
 
@@ -47,17 +49,17 @@ describe('/api/genres', () => {
         let token;
         let name;
 
+        beforeEach(() => {
+            token = new User().generateAuthToken();
+            name = 'genre1';
+        });
+
         const exec = () => {
             return request(server)
                 .post('/api/genres')
                 .set('x-auth-token', token)
                 .send(name ? { name } : {});
         };
-
-        beforeEach(() => {
-            token = new User().generateAuthToken();
-            name = 'genre1';
-        });
 
         it('should return 401 if client is not logged in', async () => {
             token = '';
@@ -66,6 +68,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(401);
         });
+
         it('should return 400 if genre name is not provided', async () => {
             name = '';
 
@@ -73,6 +76,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(400);
         });
+
         it('should return 400 if genre is less than 3 characters', async () => {
             name = '12';
 
@@ -80,6 +84,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(400);
         });
+
         it('should return 400 if genre is more than 128 characters', async () => {
             name = new Array(130).join('a');
 
@@ -87,6 +92,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(400);
         });
+
         it('should return 400 if genre already exists', async () => {
             await Genre.create({ name });
 
@@ -94,6 +100,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(400);
         });
+
         it('should save the genre if it is valid', async () => {
             await exec();
             
@@ -101,6 +108,7 @@ describe('/api/genres', () => {
 
             expect(genre).not.toBeNull();
         });
+
         it('should return the genre if it is valid', async () => {
             const res = await exec();
 
@@ -114,19 +122,19 @@ describe('/api/genres', () => {
         let oldName;
         let newName;
 
-        const exec = () => {
-            return request(server)
-                .put('/api/genres/' + oldName)
-                .set('x-auth-token', token)
-                .send(newName ? { name: newName } : {});
-        };
-
         beforeEach(async () => {
             await Genre.create({ name: 'genre1'});
             token = new User().generateAuthToken();
             oldName = 'genre1';
             newName = 'genre2';
         });
+
+        const exec = () => {
+            return request(server)
+                .put('/api/genres/' + oldName)
+                .set('x-auth-token', token)
+                .send(newName ? { name: newName } : {});
+        };
 
         it('should return 401 if client is not logged in', async () => {
             token = '';
@@ -135,6 +143,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(401);
         });
+
         it('should return 404 if the given genre does not exist', async () => {
             oldName = 'genre';
 
@@ -142,6 +151,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(404);
         });
+
         it('should return 400 if genre name is not provided', async () => {
             newName = '';
 
@@ -149,6 +159,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(400);
         });
+
         it('should return 400 if genre is less than 3 characters', async () => {
             newName = '12';
 
@@ -156,6 +167,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(400);
         });
+
         it('should return 400 if genre is more than 128 characters', async () => {
             newName = new Array(130).join('a');
 
@@ -163,6 +175,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(400);
         });
+
         it('should return 400 if genre already exists', async () => {
             newName = 'genre1';
 
@@ -170,6 +183,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(400);
         });
+
         it('should update the genre if input is valid', async () => {
             await exec();
             
@@ -177,6 +191,7 @@ describe('/api/genres', () => {
 
             expect(genre).not.toBeNull();
         });
+
         it('should return the updated genre if it is valid', async () => {
             const res = await exec();
 
@@ -189,17 +204,17 @@ describe('/api/genres', () => {
         let token;
         let name;
 
-        const exec = () => {
-            return request(server)
-                .delete('/api/genres/' + name)
-                .set('x-auth-token', token);
-        };
-
         beforeEach(async () => {
             await Genre.create({ name: 'genre1'});
             token = new User({ isAdmin: true }).generateAuthToken();
             name = 'genre1';
         });
+
+        const exec = () => {
+            return request(server)
+                .delete('/api/genres/' + name)
+                .set('x-auth-token', token);
+        };
 
         it('should return 401 if client is not logged in', async () => {
             token = '';
@@ -208,6 +223,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(401);
         });
+        
         it('should return 403 if client is not admin', async () => {
             token = new User({ isAdmin: false }).generateAuthToken();
 
@@ -215,6 +231,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(403);
         });
+
         it('should return 404 if the given genre does not exist', async () => {
             name = 'genre';
 
@@ -222,6 +239,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(404);
         });
+
         it('should delete the genre if input is valid', async () => {
             await exec();
             
@@ -229,6 +247,7 @@ describe('/api/genres', () => {
 
             expect(genre).toBeNull();
         });
+
         it('should return the deleted genre if input is valid', async () => {
             const res = await exec();
 
