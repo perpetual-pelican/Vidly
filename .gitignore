@@ -1,6 +1,5 @@
 node_modules/
 coverage/
+.vscode/
 logfile.log
 uncaughtExceptions.log
-hash.js
-middleware/async.js
