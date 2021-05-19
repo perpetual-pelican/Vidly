@@ -1,3 +1,4 @@
+const config = require('config');
 const winston = require('winston');
 require('winston-mongodb');
 require('express-async-errors');
@@ -20,7 +21,7 @@ module.exports = function() {
     }));
     winston.add(new winston.transports.File({ filename: 'logfile.log' }));
     winston.add(new winston.transports.MongoDB({
-        db: 'mongodb://localhost/vidly',
+        db: config.get('db'),
         options: { useUnifiedTopology: true }
     }));
 
@@ -37,7 +38,7 @@ module.exports = function() {
     winston.loggers.add('db', {
         transports: [
             new winston.transports.MongoDB({
-                db: 'mongodb://localhost/vidly',
+                db: config.get('db'),
                 options: { useUnifiedTopology: true }
             })
         ]
