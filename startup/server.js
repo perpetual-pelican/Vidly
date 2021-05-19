@@ -1,6 +1,10 @@
 const winston = require('winston');
 
-module.exports = function(app) {
+module.exports = async function(app) {
     const port = process.env.PORT || 3000;
-    return app.listen(port, () => winston.info(`Listening on port ${port}...`));
+    const server = await app.listen(port);
+
+    winston.info(`Listening on port ${port}...`);
+    
+    return server;
 };
