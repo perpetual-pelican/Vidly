@@ -96,12 +96,6 @@ describe('validateUser', () => {
 
         const { error } = validateUser(user);
 
-        const log = jest.fn((error) => {
-            console.info(error);
-        });
-        
-        log(error);
-
         expect(error.details[0].message).toMatch(/email.*valid/);
     });
 
