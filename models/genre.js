@@ -5,7 +5,6 @@ const genreSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
         lowercase: true,
         minlength: 3,
         maxlength: 128
