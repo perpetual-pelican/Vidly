@@ -15,14 +15,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        minlength: 3,
-        maxlength: 128
+        minlength: 5,
+        maxlength: 254
     },
     password: {
         type: String,
         required: true,
         minlength: 8,
-        maxlength: 255
+        maxlength: 26
     },
     isAdmin: {
         type: Boolean,
@@ -40,7 +40,7 @@ const User = mongoose.model('User', userSchema);
 function validateUser(user) {
     const schema = Joi.object({
         name: Joi.string().min(3).max(128).required(),
-        email: Joi.string().min(3).max(128).email().required(),
+        email: Joi.string().min(5).max(254).email().required(),
         password: passwordComplexity().required()
     });
     return schema.validate(user);
