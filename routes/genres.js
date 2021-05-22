@@ -1,7 +1,7 @@
 const express = require('express');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
-const { Genre, validatePost, validatePut } = require('../models/genre');
+const { Genre, validate } = require('../models/genre');
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.get('/:name', async (req, res) => {
 });
 
 router.post('/', auth, async (req, res) => {
-    const { error } = validatePost(req.body);
+    const { error } = validate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
     let genre = await Genre.findOne({ name: req.body.name });
@@ -35,7 +35,7 @@ router.put('/:name', auth, async (req, res) => {
     let genre = await Genre.findOne({ name: req.params.name });
     if (!genre) return res.status(404).send("Genre name was not found");
 
-    const { error } = validatePut(req.body);
+    const { error } = validate(req.body);
     if (error) return res.status(400).send(error.message);
     
     const targetGenre = await Genre.findOne({ name: req.body.name });
