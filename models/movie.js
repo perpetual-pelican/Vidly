@@ -2,8 +2,6 @@ const mongoose = require('mongoose');
 const Joi = require('joi');
 const { genreSchema } = require('../models/genre');
 
-genreSchema.remove('unique');
-
 const Movie = mongoose.model('Movie', new mongoose.Schema({
     title: {
         type: String,
@@ -15,10 +13,6 @@ const Movie = mongoose.model('Movie', new mongoose.Schema({
     genres: {
         type: [genreSchema],
         required: true
-    },
-    tags: {
-        type: [String],
-        max: 128
     },
     numberInStock: {
         type: Number,
@@ -38,7 +32,6 @@ function validatePost(movie) {
     const postSchema = Joi.object({
         title: Joi.string().min(3).max(128).required(),
         genreIds: Joi.array().items(Joi.objectId()).min(1).required(),
-        tags: Joi.array().items(Joi.string().min(3).max(128)).max(128),
         numberInStock: Joi.number().min(0).max(1000).required(),
         dailyRentalRate: Joi.number().min(0).max(20).required()
     });
@@ -49,10 +42,13 @@ function validatePut(movie) {
     const putSchema = Joi.object({
         title: Joi.string().min(3).max(128),
         genreIds: Joi.array().items(Joi.objectId()).min(1),
-        tags: Joi.array().items(Joi.string().min(3).max(128)).max(128),
         numberInStock: Joi.number().min(0).max(1000),
         dailyRentalRate: Joi.number().min(0).max(20)
     });
+
+    if (Object.keys(movie).length === 0)
+        return { error: new Error('At least one property is required to update movie') };
+
     return putSchema.validate(movie);
 }
 
