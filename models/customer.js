@@ -35,6 +35,10 @@ function validatePut(customer) {
         phone: Joi.string().min(5).max(32),
         isGold: Joi.boolean()
     });
+
+    if (Object.keys(customer).length === 0)
+        return { error: new Error('At least one property is required to update customer') };
+
     return putSchema.validate(customer);
 }
 
