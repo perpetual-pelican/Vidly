@@ -3,7 +3,7 @@ const request = require('supertest');
 describe('/', () => {
     let server;
 
-    beforeEach(async () => { server = await require('../../index'); });
+    beforeEach(async () => { server = await require('../../../index'); });
 
     afterEach(async () => { await server.close(); });
 

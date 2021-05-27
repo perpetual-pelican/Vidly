@@ -1,13 +1,13 @@
 const request = require('supertest');
 const bcrypt = require('bcrypt');
-const { User } = require('../../models/user');
+const { User } = require('../../../models/user');
 
 describe('/api/users', () => {
     let server;
     let user;
     let token;
 
-    beforeEach(async () => { server = await require('../../index'); });
+    beforeEach(async () => { server = await require('../../../index'); });
 
     afterEach(async () => {
         await User.deleteMany();

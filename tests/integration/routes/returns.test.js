@@ -1,8 +1,8 @@
 const request = require('supertest');
 const moment = require('moment');
-const { User } = require('../../models/user');
-const { Rental } = require('../../models/rental');
-const { Movie } = require('../../models/movie');
+const { User } = require('../../../models/user');
+const { Rental } = require('../../../models/rental');
+const { Movie } = require('../../../models/movie');
 
 describe('/api/returns', () => {
     let server;
@@ -12,7 +12,7 @@ describe('/api/returns', () => {
     let token;
 
     beforeEach(async () => {
-        server = await require('../../index');
+        server = await require('../../../index');
 
         rental = new Rental({
             customer: {

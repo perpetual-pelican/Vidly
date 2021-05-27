@@ -1,13 +1,13 @@
 const request = require('supertest');
-const { User } = require('../../models/user');
-const { Genre } = require('../../models/genre');
+const { User } = require('../../../models/user');
+const { Genre } = require('../../../models/genre');
 
 describe('auth middleware', () => {
     let server;
     let token;
 
     beforeEach(async () => {
-        server = await require('../../index');
+        server = await require('../../../index');
         token = new User().generateAuthToken();
     });
 

@@ -1,14 +1,14 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
-const { Movie } = require('../../models/movie');
-const { Genre } = require('../../models/genre');
-const { User } = require('../../models/user');
+const { Movie } = require('../../../models/movie');
+const { Genre } = require('../../../models/genre');
+const { User } = require('../../../models/user');
 
 describe('/api/movies', () => {
     let server;
     let genre;
 
-    beforeEach(async () => { server = await require('../../index'); });
+    beforeEach(async () => { server = await require('../../../index'); });
 
     afterEach(async () => {
         await Genre.deleteMany();
