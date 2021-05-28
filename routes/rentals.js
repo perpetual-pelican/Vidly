@@ -52,7 +52,7 @@ router.post('/', auth, async (req, res) => {
         }
     });
 
-    new Fawn.Task()
+    await new Fawn.Task()
         .save('rentals', rental)
         .update('movies', { _id: movie._id }, {
             $inc: { numberInStock: -1 }
@@ -66,7 +66,7 @@ router.delete('/:id', [auth, admin, validateObjectId], async (req, res) => {
     const rental = await Rental.findById(req.params.id);
     if (!rental) return res.status(404).send("Rental title was not found");
 
-    new Fawn.Task()
+    await new Fawn.Task()
         .remove('rentals', { _id: rental._id })
         .update('movies', { _id: rental.movie._id }, {
             $inc: { numberInStock: 1 }
