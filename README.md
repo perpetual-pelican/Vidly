@@ -40,7 +40,7 @@ Node-based video rental processing app using MongoDB/Mongoose and Express
       /api/customers
         /customerId
       /api/genres
-        /genreId
+        /genreName
       /api/movies
         /movieId
       /api/rentals
