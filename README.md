@@ -33,16 +33,17 @@ Node-based video rental processing app using MongoDB/Mongoose and Express
    - beyond this, it is best to use something like Postman to test http requests on the various routes available
  
 ### URL Route Structure
-    http://localhost:[PORT_NUMBER]
-      /api/auth
-      /api/users
-        /me
-      /api/customers
-        /customerId
-      /api/genres
-        /genreName
-      /api/movies
-        /movieId
-      /api/rentals
-        /rentalId
-      /api/returns
+    http://localhost:[PORT_NUMBER]/
+      api/
+        auth
+        users/
+          me
+        customers/
+          customerId
+        genres/
+          genreName
+        movies/
+          movieId
+        rentals/
+          rentalId
+        returns
