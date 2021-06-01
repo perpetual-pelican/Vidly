@@ -1,15 +1,13 @@
-const express = require('express');
 const winston = require('winston');
+const startServer = require('../../../startup/server');
 
 winston.info = jest.fn();
 
-describe('server', () => {
-    let app;
+describe('server startup', () => {
     let server;
 
     beforeEach(async () => {
-        app = express();
-        server = await require('../../../startup/server')(app);
+        server = startServer();
     });
 
     afterEach(async () => {
