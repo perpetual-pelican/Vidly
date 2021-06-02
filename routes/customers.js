@@ -14,7 +14,7 @@ router.get('/', auth, async (req, res) => {
 
 router.get('/:id', [auth, validateObjectId], async (req, res) => {
     const customer = await Customer.findById(req.params.id);
-    if (!customer) return res.status(404).send("Customer id was not found");
+    if (!customer) return res.status(404).send("Customer id not found");
 
     res.send(customer);
 });
@@ -31,7 +31,7 @@ router.post('/', auth, async (req, res) => {
 
 router.put('/:id', [auth, validateObjectId], async (req, res) => {
     let customer = await Customer.findById(req.params.id);
-    if (!customer) return res.status(404).send("Customer id was not found");
+    if (!customer) return res.status(404).send("Customer id not found");
 
     const { error } = validatePut(req.body);
     if (error) return res.status(400).send(error.message);
@@ -44,7 +44,7 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
 
 router.delete('/:id', [auth, admin, validateObjectId], async (req, res) => {
     const customer = await Customer.findByIdAndDelete(req.params.id);
-    if (!customer) return res.status(404).send("Customer id was not found");
+    if (!customer) return res.status(404).send("Customer id not found");
 
     res.send(customer);
 });

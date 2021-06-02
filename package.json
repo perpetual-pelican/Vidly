@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --runInBand --watchAll --coverage"
+    "test": "jest --coverage"
   },
   "jest": {
     "testEnvironment": "node",
     "setupFiles": [
-      "C:\\Users\\pelik\\Coding\\NodeJS\\Vidly\\.jest\\setEnvVars.js"
+      "./.jest/setEnvVars.js"
     ],
     "verbose": true
   },

@@ -1,57 +1,57 @@
 const request = require('supertest');
-const mongoose = require('mongoose');
+const test = require('../../../testSetup');
+const app = require('../../../startup/app');
 const { User } = require('../../../models/user');
 const { Customer } = require('../../../models/customer');
 
 describe('/api/customers', () => {
-    let server;
     let token;
+    let customerObject;
+
+    test.setup('customers');
 
     beforeEach(async () => {
-        server = await require('../../../index');
-        token = new User().generateAuthToken();
-    });
-
-    afterEach(async () => {
-        await Customer.deleteMany();
-        await server.close();
+        token = new User({ isAdmin: false }).generateAuthToken();
+        customerObject = { name: 'Customer Name', phone: '12345' };
     });
 
     describe('GET /', () => {
+        let customers;
+
         beforeEach(async () => {
-            await Customer.insertMany([
-                { name: 'customer1', phone: 'phone' },
-                { name: 'customer2', phone: 'phone' }
-            ]);
+            customers = [
+                await Customer.create(customerObject),
+                await Customer.create({
+                    name: 'Customer Name 2',
+                    phone: '12345'
+                })
+            ];
         });
 
-        const exec = () => {
-            return request(server)
+        const getCustomers = (req) => {
+            return request(app)
                 .get('/api/customers')
-                .set('x-auth-token', token);
+                .set('x-auth-token', req.token);
         };
 
         it('should return 401 if client is not logged in', async () => {
-            token = '';
-
-            const res = await exec();
-
-            expect(res.status).toBe(401);
+            await test.tokenEmpty(getCustomers);
         });
 
         it('should return 400 if token is invalid', async () => {
-            token = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(400);
+            await test.tokenInvalid(getCustomers);
         });
 
-        it('should return customer list if client is logged in', async () => {
-            const res = await exec();
+        it('should return all customers if client is logged in', async () => {
+            const res = await getCustomers({ token });
 
-            expect(res.body.some(c => c.name === 'customer1')).toBe(true);
-            expect(res.body.some(c => c.name === 'customer2')).toBe(true);
+            expect(res.status).toBe(200);
+            expect(res.body.length).toBe(2);
+            for (const customer of customers) {
+                expect(res.body.some(c =>
+                    c.name === customer.name && c.phone === customer.phone
+                )).toBe(true);
+            }
         });
     });
 
@@ -60,195 +60,143 @@ describe('/api/customers', () => {
         let id;
 
         beforeEach(async () => {
-            customer = new Customer({ name: 'customer', phone: 'phone' });
-            await customer.save();
-
+            customer = await new Customer(customerObject).save();
             id = customer._id;
         });
 
-        const exec = () => {
-            return request(server)
-                .get('/api/customers/' + id)
-                .set('x-auth-token', token);
+        const getCustomer = (req) => {
+            return request(app)
+                .get('/api/customers/' + req.id)
+                .set('x-auth-token', req.token);
         };
 
         it('should return 401 if client is not logged in', async () => {
-            token = '';
-
-            const res = await exec();
-
-            expect(res.status).toBe(401);
+            await test.tokenEmpty(getCustomer, id);
         });
 
         it('should return 400 if token is invalid', async () => {
-            token = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(400);
+            await test.tokenInvalid(getCustomer, id);
         });
 
         it('should return 404 if id is invalid', async () => {
-            id = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(404);
+            await test.idInvalid(getCustomer, token);
         });
 
-        it('should return 404 if id not found', async () => {
-            id = mongoose.Types.ObjectId().toHexString();
-
-            const res = await exec();
-
-            expect(res.status).toBe(404);
+        it('should return 404 if id is not found', async () => {
+            await test.idNotFound(getCustomer, token);
         });
 
-        it('should return the customer if client is logged in', async () => {
-            const res = await exec();
+        it('should return the customer if request is valid', async () => {
+            const res = await getCustomer({ token, id });
 
+            expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
             expect(res.body).toHaveProperty('name', customer.name);
+            expect(res.body).toHaveProperty('phone', customer.phone);
         });
     });
 
     describe('POST /', () => {
-        let customer;
-
-        beforeEach(() => {
-            customer = { name: 'customer', phone: 'phone' };
-        });
-
-        const exec = () => {
-            return request(server)
+        const postCustomer = (req) => {
+            if (!req.body)
+                req.body = customerObject;
+            return request(app)
                 .post('/api/customers')
-                .set('x-auth-token', token)
-                .send(customer);
+                .set('x-auth-token', req.token)
+                .send(req.body);
         };
 
         it('should return 401 if client is not logged in', async () => {
-            token = '';
-
-            const res = await exec();
-
-            expect(res.status).toBe(401);
+            await test.tokenEmpty(postCustomer);
         });
 
         it('should return 400 if token is invalid', async () => {
-            token = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(400);
+            await test.tokenInvalid(postCustomer);
         });
 
-        it('should return 400 if input is invalid', async () => {
-            delete customer.name;
-
-            const res = await exec();
-
-            expect(res.status).toBe(400);
+        it('should return 400 if request body is invalid', async () => {
+            await test.requestInvalid(postCustomer, customerObject, token);
         });
 
-        it('should save the customer if input is valid', async () => {
-            await exec();
+        it('should save the customer if request is valid', async () => {
+            await postCustomer({ token });
 
-            const customerInDB = await Customer.findOne({ name: customer.name });
+            const customerInDB = await Customer.findOne(customerObject);
 
-            expect(customerInDB).toHaveProperty('_id');
-            expect(customerInDB).toHaveProperty('name', customer.name);
+            expect(customerInDB).toHaveProperty('name', customerObject.name);
+            expect(customerInDB).toHaveProperty('phone', customerObject.phone);
         });
 
-        it('should return the customer if input is valid', async () => {
-            const res = await exec();
+        it('should return the customer if request is valid', async () => {
+            const res = await postCustomer({ token });
 
+            expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
-            expect(res.body).toHaveProperty('name', customer.name);
+            expect(res.body).toHaveProperty('name', customerObject.name);
+            expect(res.body).toHaveProperty('phone', customerObject.phone);
         });
     });
 
-    describe('PUT /', () => {
+    describe('PUT /:id', () => {
         let customer;
         let id;
-        let updatedCustomer;
+        let customerUpdate;
 
         beforeEach(async () => {
-            customer = new Customer({ name: 'customer', phone: 'phone' });
-            await customer.save();
-
+            customer = await new Customer(customerObject).save();
             id = customer._id;
-
-            updatedCustomer = { name: 'new_name' };
+            customerUpdate = { name: 'Updated Customer Name' };
         });
 
-        const exec = () => {
-            return request(server)
-                .put('/api/customers/' + id)
-                .set('x-auth-token', token)
-                .send(updatedCustomer);
+        const putCustomer = (req) => {
+            if (!req.body)
+                req.body = customerUpdate;
+            return request(app)
+                .put('/api/customers/' + req.id)
+                .set('x-auth-token', req.token)
+                .send(req.body);
         };
 
         it('should return 401 if client is not logged in', async () => {
-            token = '';
-
-            const res = await exec();
-
-            expect(res.status).toBe(401);
+            await test.tokenEmpty(putCustomer, id);
         });
 
         it('should return 400 if token is invalid', async () => {
-            token = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(400);
+            await test.tokenInvalid(putCustomer, id);
         });
 
         it('should return 404 if id is invalid', async () => {
-            id = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(404);
+            await test.idInvalid(putCustomer, token);
         });
 
-        it('should return 404 if id not found', async () => {
-            id = mongoose.Types.ObjectId().toHexString();
-
-            const res = await exec();
-
-            expect(res.status).toBe(404);
+        it('should return 404 if id is not found', async () => {
+            await test.idNotFound(putCustomer, token);
         });
 
-        it('should return 400 if request is empty', async () => {
-            updatedCustomer = {};
-
-            const res = await exec();
-
-            expect(res.status).toBe(400);
+        it('should return 400 if request body is empty', async () => {
+            await test.requestEmpty(putCustomer, token, id);
         });
 
-        it('should return 400 if input is invalid', async () => {
-            updatedCustomer.name = 1;
-
-            const res = await exec();
-
-            expect(res.status).toBe(400);
+        it('should return 400 if request body is invalid', async () => {
+            await test.requestInvalid(putCustomer, customerUpdate, token, id);
         });
 
-        it('should save the customer if input is valid', async () => {
-            await exec();
+        it('should update the customer if request is valid', async () => {
+            await putCustomer({ token, id });
 
             const customerInDB = await Customer.findById(id);
 
-            expect(customerInDB).toHaveProperty('name', updatedCustomer.name);
+            expect(customerInDB).toHaveProperty('name', customerUpdate.name);
+            expect(customerInDB).toHaveProperty('phone', customerObject.phone);
         });
 
-        it('should return the customer if input is valid', async () => {
-            const res = await exec();
+        it('should return the updated customer if request is valid', async () => {
+            const res = await putCustomer({ token, id });
 
+            expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
-            expect(res.body).toHaveProperty('name', updatedCustomer.name);
+            expect(res.body).toHaveProperty('name', customerUpdate.name);
+            expect(res.body).toHaveProperty('phone', customerObject.phone);
         });
     });
 
@@ -258,72 +206,53 @@ describe('/api/customers', () => {
 
         beforeEach(async () => {
             token = new User({ isAdmin: true }).generateAuthToken();
-
-            customer = new Customer({ name: 'customer', phone: 'phone' });
-            await customer.save();
-
+            customer = await new Customer(customerObject).save();
             id = customer._id;
         });
 
-        const exec = () => {
-            return request(server)
-                .delete('/api/customers/' + id)
-                .set('x-auth-token', token);
+        const deleteCustomer = (req) => {
+            return request(app)
+                .delete('/api/customers/' + req.id)
+                .set('x-auth-token', req.token);
         };
 
         it('should return 401 if client is not logged in', async () => {
-            token = '';
-
-            const res = await exec();
-
-            expect(res.status).toBe(401);
+            await test.tokenEmpty(deleteCustomer, id);
         });
 
         it('should return 400 if token is invalid', async () => {
-            token = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(400);
+            await test.tokenInvalid(deleteCustomer, id);
         });
 
         it('should return 403 if user is not an admin', async () => {
             token = new User({ isAdmin: false }).generateAuthToken();
 
-            const res = await exec();
-
-            expect(res.status).toBe(403);
+            await test.adminFalse(deleteCustomer, token, id);
         });
 
         it('should return 404 if id is invalid', async () => {
-            id = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(404);
+            await test.idInvalid(deleteCustomer, token);
         });
 
-        it('should return 404 if id not found', async () => {
-            id = mongoose.Types.ObjectId().toHexString();
-
-            const res = await exec();
-
-            expect(res.status).toBe(404);
+        it('should return 404 if id is not found', async () => {
+            await test.idNotFound(deleteCustomer, token);
         });
 
-        it('should delete the customer if input is valid', async () => {
-            await exec();
+        it('should delete the customer if request is valid', async () => {
+            await deleteCustomer({ token, id });
 
             const customerInDB = await Customer.findById(id);
 
             expect(customerInDB).toBeNull();
         });
 
-        it('should return the customer if input is valid', async () => {
-            const res = await exec();
+        it('should return the customer if request is valid', async () => {
+            const res = await deleteCustomer({ token, id });
 
+            expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
             expect(res.body).toHaveProperty('name', customer.name);
+            expect(res.body).toHaveProperty('phone', customer.phone);
         });
     });
 });

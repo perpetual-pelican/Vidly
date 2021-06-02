@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', validateObjectId, async (req, res) => {
     const movie = await Movie.findById(req.params.id);
-    if (!movie) return res.status(404).send('The movie with the given id was not found');
+    if (!movie) return res.status(404).send('Movie id not found');
 
     res.send(movie);
 });
@@ -27,7 +27,7 @@ router.post('/', auth, async (req, res) => {
     let genres = [];
     for (const genreId of req.body.genreIds) {
         let genre = await Genre.findById(genreId);
-        if (!genre) return res.status(400).send('Invalid genre');
+        if (!genre) return res.status(400).send('Invalid genre id');
         genres.push({ _id: genre._id, name: genre.name });
     }
     const movie = new Movie({
@@ -43,7 +43,7 @@ router.post('/', auth, async (req, res) => {
 
 router.put('/:id', [auth, validateObjectId], async (req, res) => {
     let movie = await Movie.findById(req.params.id);
-    if (!movie) return res.status(404).send('Movie id was not found');
+    if (!movie) return res.status(404).send('Movie id not found');
 
     const { error } = validatePut(req.body);
     if (error) return res.status(400).send(error.message);
@@ -52,7 +52,7 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
         let genres = [];
         for (const genreId of req.body.genreIds) {
             let genre = await Genre.findById(genreId);
-            if (!genre) return res.status(400).send('Invalid genre');
+            if (!genre) return res.status(400).send('Invalid genre id');
             genres.push({ _id: genre._id, name: genre.name });
         }
         movie.genres = genres;
@@ -68,7 +68,7 @@ router.put('/:id', [auth, validateObjectId], async (req, res) => {
 
 router.delete('/:id', [auth, admin, validateObjectId], async (req, res) => {
     const movie = await Movie.findByIdAndDelete(req.params.id);
-    if (!movie) return res.status(404).send("The movie with the given title was not found");
+    if (!movie) return res.status(404).send("Movie id not found");
 
     res.send(movie);
 });

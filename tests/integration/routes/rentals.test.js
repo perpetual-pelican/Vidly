@@ -1,5 +1,7 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
+const test = require('../../../testSetup');
+const app = require('../../../startup/app');
 const { User } = require('../../../models/user');
 const { Customer } = require('../../../models/customer');
 const { Genre } = require('../../../models/genre');
@@ -7,38 +9,40 @@ const { Movie } = require('../../../models/movie');
 const { Rental } = require('../../../models/rental');
 
 describe('/api/rentals', () => {
-    let server;
     let token;
     let customer;
     let genre;
     let movie;
+    let rentalObject;
+
+    test.setup('rentals');
 
     beforeEach(async () => {
-        server = await require('../../../index');
-
-        token = new User().generateAuthToken();
-
+        token = new User({ isAdmin: false }).generateAuthToken();
         customer = await new Customer({
-            name: 'customerName',
-            phone: 'phone'
+            name: 'Customer Name',
+            phone: '12345'
         }).save();
-
-        genre = await new Genre({ name: 'genreName' }).save();
-
+        genre = await new Genre({ name: 'Genre Name' }).save();
         movie = await new Movie({
-            title: 'movieTitle',
+            title: 'Movie Title',
             genres: [genre],
             numberInStock: 1,
             dailyRentalRate: 1
         }).save();
-    });
-
-    afterEach(async () => {
-        await server.close();
-        await Customer.deleteMany();
-        await Genre.deleteMany();
-        await Movie.deleteMany();
-        await Rental.deleteMany();
+        rentalObject = {
+            customer: {
+                _id: customer._id,
+                name: customer.name,
+                phone: customer.phone,
+                isGold: customer.isGold
+            },
+            movie: {
+                _id: movie._id,
+                title: movie.title,
+                dailyRentalRate: movie.dailyRentalRate
+            }
+        };
     });
 
     describe('GET /', () => {
@@ -48,33 +52,18 @@ describe('/api/rentals', () => {
 
         beforeEach(async () => {
             customer2 = await new Customer({
-                name: 'customerName2',
-                phone: 'phone2'
+                name: 'customer Name 2',
+                phone: '12345'
             }).save();
-    
-            genre2 = await new Genre({ name: 'genreName2' }).save();
-    
+            genre2 = await new Genre({ name: 'Genre Name 2' }).save();
             movie2 = await new Movie({
-                title: 'movieTitle2',
+                title: 'Movie Title 2',
                 genres: [genre2],
-                numberInStock: 1,
+                numberInStock: 2,
                 dailyRentalRate: 2
             }).save();
-
             await Rental.insertMany([
-                {
-                    customer: {
-                        _id: customer._id,
-                        name: customer.name,
-                        phone: customer.phone,
-                        isGold: customer.isGold
-                    },
-                    movie: {
-                        _id: movie._id,
-                        title: movie.title,
-                        dailyRentalRate: movie.dailyRentalRate
-                    }
-                },
+                rentalObject,
                 {
                     customer: {
                         _id: customer2._id,
@@ -91,39 +80,38 @@ describe('/api/rentals', () => {
             ]);
         });
 
-        const exec = () => {
-            return request(server)
+        const getRentals = (req) => {
+            return request(app)
                 .get('/api/rentals')
-                .set('x-auth-token', token);
+                .set('x-auth-token', req.token);
         };
 
         it('should return 401 if client is not logged in', async () => {
-            token = '';
-
-            const res = await exec();
-
-            expect(res.status).toBe(401);
+            await test.tokenEmpty(getRentals);
         });
 
         it('should return 400 if token is invalid', async () => {
-            token = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(400);
+            await test.tokenInvalid(getRentals);
         });
 
         it('should return all rentals if client is logged in', async () => {
-            const res = await exec();
+            const res = await getRentals({ token });
 
+            expect(res.status).toBe(200);
             expect(res.body.length).toBe(2);
             expect(res.body.some(r =>
                 r.customer.name === customer.name &&
-                r.movie.title === movie.title
+                r.customer.phone === customer.phone &&
+                r.customer.isGold === customer.isGold &&
+                r.movie.title === movie.title &&
+                r.movie.dailyRentalRate === movie.dailyRentalRate
             )).toBe(true);
             expect(res.body.some(r =>
                 r.customer.name === customer2.name &&
-                r.movie.title === movie2.title
+                r.customer.phone === customer2.phone &&
+                r.customer.isGold === customer2.isGold &&
+                r.movie.title === movie2.title &&
+                r.movie.dailyRentalRate === movie2.dailyRentalRate
             )).toBe(true);
         });
     });
@@ -133,64 +121,34 @@ describe('/api/rentals', () => {
         let id;
 
         beforeEach(async () => {
-            rental = new Rental({
-                customer: {
-                    _id: customer._id,
-                    name: customer.name,
-                    phone: customer.phone,
-                    isGold: customer.isGold
-                },
-                movie: {
-                    _id: movie._id,
-                    title: movie.title,
-                    dailyRentalRate: movie.dailyRentalRate
-                }
-            });
-            await rental.save();
-
+            rental = await new Rental(rentalObject).save();
             id = rental._id;
         });
 
-        const exec = () => {
-            return request(server)
-                .get('/api/rentals/' + id)
-                .set('x-auth-token', token);
+        const getRental = (req) => {
+            return request(app)
+                .get('/api/rentals/' + req.id)
+                .set('x-auth-token', req.token);
         };
 
         it('should return 401 if client is not logged in', async () => {
-            token = '';
-
-            const res = await exec();
-
-            expect(res.status).toBe(401);
+            await test.tokenEmpty(getRental, id);
         });
 
         it('should return 400 if token is invalid', async () => {
-            token = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(400);
+            await test.tokenInvalid(getRental, id);
         });
 
         it('should return 404 if id is invalid', async () => {
-            id = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(404);
+            await test.idInvalid(getRental, token);
         });
 
         it('should return 404 if id is not found', async () => {
-            id = mongoose.Types.ObjectId().toHexString();
-
-            const res = await exec();
-
-            expect(res.status).toBe(404);
+            await test.idNotFound(getRental, token);
         });
 
-        it('should return the rental if it is found', async () => {
-            const res = await exec();
+        it('should return the rental if request is valid', async () => {
+            const res = await getRental({ token, id });
 
             expect(res.body).toHaveProperty('_id');
             expect(res.body).toHaveProperty('customer.name', customer.name);
@@ -199,92 +157,78 @@ describe('/api/rentals', () => {
     });
 
     describe('POST /', () => {
-        let rental;
-
         beforeEach(async () => {
-            rental = {
+            rentalObject = {
                 customerId: customer._id,
                 movieId: movie._id
             };
         });
 
-        const exec = () => {
-            return request(server)
+        const postRental = (req) => {
+            if (!req.body)
+                req.body = rentalObject;
+            return request(app)
                 .post('/api/rentals')
-                .set('x-auth-token', token)
-                .send(rental);
+                .set('x-auth-token', req.token)
+                .send(req.body);
         };
 
         it('should return 401 if client is not logged in', async () => {
-            token = '';
-
-            const res = await exec();
-
-            expect(res.status).toBe(401);
+            await test.tokenEmpty(postRental);
         });
 
         it('should return 400 if token is invalid', async () => {
-            token = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(400);
+            await test.tokenInvalid(postRental);
         });
 
-        it('should return 400 if input is invalid', async () => {
-            delete rental.customerId;
-
-            const res = await exec();
-
-            expect(res.status).toBe(400);
+        it('should return 400 if request body is invalid', async () => {
+            await test.requestInvalid(postRental, rentalObject, token);
         });
 
         it('should return 400 if customer is not found', async () => {
-            rental.customerId = mongoose.Types.ObjectId().toHexString();
+            rentalObject.customerId = mongoose.Types.ObjectId().toHexString();
 
-            const res = await exec();
+            const res = await postRental({ token });
 
             expect(res.status).toBe(400);
-            expect(res.text).toMatch(/customer/);
+            expect(res.text).toMatch(/[Cc]ustomer/);
         });
 
         it('should return 400 if movie is not found', async () => {
-            rental.movieId = mongoose.Types.ObjectId().toHexString();
+            rentalObject.movieId = mongoose.Types.ObjectId().toHexString();
 
-            const res = await exec();
+            const res = await postRental({ token, });
 
             expect(res.status).toBe(400);
-            expect(res.text).toMatch(/movie/);
+            expect(res.text).toMatch(/[Mm]ovie/);
         });
 
         it('should return 400 if movie is out of stock', async () => {
             await Movie.updateOne({ _id: movie._id }, { $set: { numberInStock: 0 } });
 
-            const res = await exec();
+            const res = await postRental({ token });
 
             expect(res.status).toBe(400);
-            expect(res.text).toMatch(/movie/);
+            expect(res.text).toMatch(/[Mm]ovie.*[Ss]tock/);
         });
 
-        it('should save the rental and decrement the movie stock if request is valid', async () => {
-            await exec();
+        it('should save the rental and decrease the movie stock if request is valid', async () => {
+            await postRental({ token });
 
             const rentalInDB = await Rental.findOne({
                 'customer._id': customer._id,
                 'movie._id': movie._id
             });
-
             const movieInDB = await Movie.findById(movie._id);
 
             expect(rentalInDB).toHaveProperty('_id');
             expect(rentalInDB).toHaveProperty('customer._id', customer._id);
             expect(rentalInDB).toHaveProperty('movie._id', movie._id);
-
             expect(movieInDB.numberInStock).toBe(movie.numberInStock - 1);
         });
 
         it('should return the rental if request is valid', async () => {
-            const res = await exec();
+            const res = await postRental({ token });
 
             expect(res.body).toHaveProperty('_id');
             expect(res.body).toHaveProperty('customer._id');
@@ -300,74 +244,40 @@ describe('/api/rentals', () => {
 
         beforeEach(async () => {
             token = new User({ isAdmin: true }).generateAuthToken();
-
-            rental = new Rental({
-                customer: {
-                    _id: customer._id,
-                    name: customer.name,
-                    phone: customer.phone,
-                    isGold: customer.isGold
-                },
-                movie: {
-                    _id: movie._id,
-                    title: movie.title,
-                    dailyRentalRate: movie.dailyRentalRate
-                }
-            });
-            await rental.save();
-
+            rental = await new Rental(rentalObject).save();
             id = rental._id;
         });
 
-        const exec = () => {
-            return request(server)
-                .delete('/api/rentals/' + id)
-                .set('x-auth-token', token);
+        const deleteRental = (req) => {
+            return request(app)
+                .delete('/api/rentals/' + req.id)
+                .set('x-auth-token', req.token);
         };
 
         it('should return 401 if client is not logged in', async () => {
-            token = '';
-
-            const res = await exec();
-
-            expect(res.status).toBe(401);
+            await test.tokenEmpty(deleteRental, id);
         });
 
         it('should return 400 if token is invalid', async () => {
-            token = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(400);
+            await test.tokenInvalid(deleteRental, id);
         });
 
-        it('should return 403 if token is invalid', async () => {
+        it('should return 403 if user is not an admin', async () => {
             token = new User({ isAdmin: false }).generateAuthToken();
 
-            const res = await exec();
-
-            expect(res.status).toBe(403);
+            await test.adminFalse(deleteRental, token, id);
         });
 
         it('should return 404 if id is invalid', async () => {
-            id = 'invalid';
-
-            const res = await exec();
-
-            expect(res.status).toBe(404);
+            await test.idInvalid(deleteRental, token);
         });
 
         it('should return 404 if id is not found', async () => {
-            id = mongoose.Types.ObjectId().toHexString();
-
-            const res = await exec();
-
-            expect(res.status).toBe(404);
-            expect(res.text).toMatch(/not.*found/);
+            await test.idNotFound(deleteRental, token);
         });
 
         it('should delete the rental and increment the movie stock if request is valid', async () => {
-            await exec();
+            await deleteRental({ token, id });
 
             const rentalInDB = await Rental.findOne({
                 'customer._id': customer._id,
@@ -382,7 +292,7 @@ describe('/api/rentals', () => {
         });
 
         it('should return the rental if request is valid', async () => {
-            const res = await exec();
+            const res = await deleteRental({ token, id });
 
             expect(res.body).toHaveProperty('_id');
             expect(res.body).toHaveProperty('customer._id');

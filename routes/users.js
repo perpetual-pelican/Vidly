@@ -8,14 +8,14 @@ const { User, validateUser } = require('../models/user');
 const router = express.Router();
 
 router.get('/', [auth, admin], async (req, res) => {
-    const users = await User.find().sort('name');
+    const users = await User.find().select('-password').sort('name');
 
     res.send(users);
 });
 
 router.get('/me', auth, async (req, res) => {
     const user = await User.findById(req.user._id).select('-password');
-    if (!user) return res.status(400).send('Could not find user in DB');
+    if (!user) return res.status(400).send('User not found');
 
     res.send(user);
 });
@@ -25,7 +25,7 @@ router.post('/', async (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
 
     let user = await User.findOne({ email: req.body.email });
-    if (user) return res.status(400).send('User already registered');
+    if (user) return res.status(400).send('Email already in use');
 
 
     user = new User(_.pick(req.body, ['name', 'email', 'password']));

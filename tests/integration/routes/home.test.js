@@ -1,16 +1,11 @@
 const request = require('supertest');
+const app = require('../../../startup/app');
 
-describe('/', () => {
-    let server;
-
-    beforeEach(async () => { server = await require('../../../index'); });
-
-    afterEach(async () => { await server.close(); });
-
+describe('home', () => {
     it('should return the home page', async () => {
-        const res = await request(server).get('/');
+        const res = await request(app).get('/');
 
         expect(res.status).toBe(200);
-        expect(res.text).toMatch(/Home/);
+        expect(res.text).toMatch(/[Hh]ome/);
     });
 });
