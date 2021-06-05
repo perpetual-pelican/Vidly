@@ -1,50 +1,66 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 const { genreSchema } = require('../models/genre');
 
-const Movie = mongoose.model('Movie', new mongoose.Schema({
+const title = { min: 3, max: 128 };
+const dailyRentalRate = { min: 0, max: 20 };
+const numberInStock = { min: 0, max: 1000 };
+const genres = { min: 1, max: 10 };
+
+const movieSchemaFields = {
     title: {
         type: String,
         required: true,
         trim: true,
-        minlength: 3,
-        maxlength: 128
-    },
-    genres: {
-        type: [genreSchema],
-        required: true
-    },
-    numberInStock: {
-        type: Number,
-        required: true,
-        min: 0,
-        max: 1000
+        minlength: title.min,
+        maxlength: title.max
     },
     dailyRentalRate: {
         type: Number,
         required: true,
-        min: 0,
-        max: 20
+        min: dailyRentalRate.min,
+        max: dailyRentalRate.max
+    }
+};
+
+const Movie = mongoose.model('Movie', new mongoose.Schema({
+    title: movieSchemaFields.title,
+    dailyRentalRate: movieSchemaFields.dailyRentalRate,
+    numberInStock: {
+        type: Number,
+        required: true,
+        min: numberInStock.min,
+        max: numberInStock.max
+    },
+    genres: {
+        type: [genreSchema],
+        default: undefined,
+        unique: true,
+        min: genres.min,
+        max: genres.max
     }
 }));
 
+const joiSchema = {
+    title: Joi.string().min(title.min).max(title.max),
+    dailyRentalRate: Joi.number().precision(2).min(dailyRentalRate.min).max(dailyRentalRate.max),
+    numberInStock: Joi.number().integer().min(numberInStock.min).max(numberInStock.max),
+    genreIds: Joi.array().items(Joi.objectId()).min(genres.min).max(genres.max).unique()
+};
+
 function validatePost(movie) {
     const postSchema = Joi.object({
-        title: Joi.string().min(3).max(128).required(),
-        genreIds: Joi.array().items(Joi.objectId()).min(1).required(),
-        numberInStock: Joi.number().min(0).max(1000).required(),
-        dailyRentalRate: Joi.number().min(0).max(20).required()
+        title: joiSchema.title.required(),
+        dailyRentalRate: joiSchema.dailyRentalRate.required(),
+        numberInStock: joiSchema.numberInStock.required(),
+        genreIds: joiSchema.genreIds
     });
     return postSchema.validate(movie);
 }
 
 function validatePut(movie) {
-    const putSchema = Joi.object({
-        title: Joi.string().min(3).max(128),
-        genreIds: Joi.array().items(Joi.objectId()).min(1),
-        numberInStock: Joi.number().min(0).max(1000),
-        dailyRentalRate: Joi.number().min(0).max(20)
-    });
+    const putSchema = Joi.object(joiSchema);
 
     if (Object.keys(movie).length === 0)
         return { error: new Error('At least one property is required to update movie') };
@@ -52,6 +68,8 @@ function validatePut(movie) {
     return putSchema.validate(movie);
 }
 
+exports.movieSchemaFields = movieSchemaFields;
 exports.Movie = Movie;
 exports.validatePost = validatePost;
 exports.validatePut = validatePut;
+exports.bounds = { title, genres, numberInStock, dailyRentalRate };
