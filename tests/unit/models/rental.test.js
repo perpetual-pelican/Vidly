@@ -98,6 +98,14 @@ describe('Rental model', () => {
             };
         });
 
+        it('should return error if rental contains an invalid property', () => {
+            rental.invalid = 'invalid';
+
+            const { error } = validate(rental);
+
+            expect(error.message).toMatch(/not.*allowed/);
+        });
+
         it('should return error if customerId is undefined', () => {
             delete rental.customerId;
 
