@@ -1,163 +1,253 @@
+const mongoose = require('mongoose');
 const config = require('config');
 const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
-const { User, validateUser } = require('../../../models/user');
+const { User, validate, bounds } = require('../../../models/user');
 
-describe('user.generateAuthToken', () => {
-    it('should return a valid JSON Web Token', () => {
-        const user = {
-            _id: mongoose.Types.ObjectId().toHexString(),
-            isAdmin: true
-        };
-        const token = new User(user).generateAuthToken();
-        const decoded = jwt.verify(token, config.get('jwtPrivateKey'));
+describe('User model', () => {
+    describe('user.generateAuthToken', () => {
+        it('should return a valid JSON Web Token', () => {
+            const user = {
+                _id: mongoose.Types.ObjectId().toHexString(),
+                isAdmin: true
+            };
+            const token = new User(user).generateAuthToken();
+            const decoded = jwt.verify(token, config.get('jwtPrivateKey'));
 
-        expect(decoded).toMatchObject(user);
-    });
-});
-
-describe('validateUser', () => {
-    let user;
-
-    beforeEach(() => {
-        user = {
-            name: "name",
-            email: "user@domain.com",
-            password: "abcdeF1$"
-        };
+            expect(decoded).toMatchObject(user);
+        });
     });
 
-    it('should return error if name is not provided', () => {
-        delete user.name;
+    describe('validate', () => {
+        let user;
 
-        const { error } = validateUser(user);
+        beforeEach(() => {
+            user = {
+                name: 'a'.repeat(bounds.name.min),
+                email: 'a'.repeat(bounds.email.min - 5) + '@a.io',
+                password: 'a'.repeat(bounds.password.min - 3) + 'A1$'
+            };
+        });
 
-        expect(error.details[0].message).toMatch(/name.*required/);
-    });
+        it('should return error if user contains an invalid property', () => {
+            user.invalid = 'invalid';
 
-    it('should return error if name is not string', () => {
-        user.name = {};
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error.message).toMatch(/not.*allowed/);
+        });
 
-        expect(error.details[0].message).toMatch(/name.*string/);
-    });
+        it('should return error if name is undefined', () => {
+            delete user.name;
 
-    it('should return error if name length is shorter than 3', () => {
-        user.name = "12";
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error.message).toMatch(/name.*required/);
+        });
 
-        expect(error.details[0].message).toMatch(/name.*3/);
-    });
+        it('should return error if name is not a string', () => {
+            user.name = {};
 
-    it('should return error if name length is greater than 128', () => {
-        user.name = new Array(130).join('a');
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error.message).toMatch(/name.*string/);
+        });
 
-        expect(error.details[0].message).toMatch(/name.*128/);
-    });
+        it('should return error if name is empty', () => {
+            user.name = '';
 
-    it('should return error if email is not provided', () => {
-        delete user.email;
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error.message).toMatch(/name.*empty/);
+        });
 
-        expect(error.details[0].message).toMatch(/email.*required/);
-    });
+        it(`should return error if name length is less than ${bounds.name.min}`, () => {
+            user.name = 'a'.repeat(bounds.name.min - 1);
 
-    it('should return error if email is not string', () => {
-        user.email = {};
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error.message).toMatch(new RegExp(`name.*${bounds.name.min}`));
+        });
 
-        expect(error.details[0].message).toMatch(/email.*string/);
-    });
+        it(`should not return error if name length is equal to ${bounds.name.min}`, () => {
+            user.name = 'a'.repeat(bounds.name.min);
 
-    it('should return error if email length is shorter than 5', () => {
-        user.email = "1234";
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error).toBe(undefined);
+        });
 
-        expect(error.details[0].message).toMatch(/email.*5/);
-    });
+        it(`should return error if name length is greater than ${bounds.name.max}`, () => {
+            user.name = 'a'.repeat(bounds.name.max + 1);
 
-    it('should return error if email length is greater than 254', () => {
-        user.email = new Array(256).join('a');
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error.message).toMatch(new RegExp(`name.*${bounds.name.max}`));
+        });
 
-        expect(error.details[0].message).toMatch(/email.*254/);
-    });
+        it(`should not return error if name length is equal to ${bounds.name.max}`, () => {
+            user.name = 'a'.repeat(bounds.name.max);
 
-    it('should return error if email is not valid', () => {
-        user.email = "email";
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error).toBe(undefined);
+        });
 
-        expect(error.details[0].message).toMatch(/email.*valid/);
-    });
+        it('should return error if email is undefined', () => {
+            delete user.email;
 
-    it('should return error if password is not provided', () => {
-        delete user.password;
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error.message).toMatch(/email.*required/);
+        });
 
-        expect(error.details[0].message).toMatch(/password.*required/);
-    });
+        it('should return error if email is not a string', () => {
+            user.email = {};
 
-    it('should return error if password is less than 8 characters', () => {
-        user.password = "abcdE1$";
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error.message).toMatch(/email.*string/);
+        });
 
-        expect(error.details[0].message).toMatch(/password.*8/);
-    });
+        it('should return error if email is empty', () => {
+            user.email = '';
 
-    it('should return error if password is greater than 8 characters', () => {
-        user.password = (new Array(25).join('a')) + "B1$";
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error.message).toMatch(/email.*empty/);
+        });
 
-        expect(error.details[0].message).toMatch(/password.*26/);
-    });
+        it('should return error if email is invalid', () => {
+            user.email = 'invalid';
 
-    it('should return error if password does not contain a lowercase letter', () => {
-        user.password = "ABCDEF1$";
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error.message).toMatch(/email.*valid/);
+        });
 
-        expect(error.details[0].message).toMatch(/password.*lower/);
-    });
+        it(`should return error if email length is less than ${bounds.email.min}`, () => {
+            user.email = 'a'.repeat(bounds.email.min - 6) + '@a.io';
 
-    it('should return error if password does not contain an uppercase letter', () => {
-        user.password = "abcdef1$";
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error.message).toMatch(new RegExp(`email.*${bounds.email.min}`));
+        });
 
-        expect(error.details[0].message).toMatch(/password.*upper/);
-    });
+        it(`should not return error if email length is equal to ${bounds.email.min}`, () => {
+            user.email = 'a'.repeat(bounds.email.min - 5) + '@a.io';
 
-    it('should return error if password does not contain a number', () => {
-        user.password = "abcdefG$";
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error).toBe(undefined);
+        });
 
-        expect(error.details[0].message).toMatch(/password.*number/);
-    });
+        it(`should return error if email length is greater than ${bounds.email.max}`, () => {
+            user.email = 'a'.repeat(bounds.email.max - 4) + '@a.io';
 
-    it('should return error if password does not contain a symbol', () => {
-        user.password = "abcdefG1";
+            const { error } = validate(user);
 
-        const { error } = validateUser(user);
+            expect(error.message).toMatch(new RegExp(`email.*${bounds.email.max}`));
+        });
 
-        expect(error.details[0].message).toMatch(/password.*symbol/);
-    });
+        it(`should not return error if email length is equal to ${bounds.email.max}`, () => {
+            user.email = 'a'.repeat(bounds.email.max - 5) + '@a.io';
 
-    it('should not return error if email is valid', () => {
-        const { error } = validateUser(user);
+            const { error } = validate(user);
 
-        expect(error).not.toBeDefined();
+            expect(error).toBe(undefined);
+        });
+
+        it('should return error if password is undefined', () => {
+            delete user.password;
+
+            const { error } = validate(user);
+
+            expect(error.message).toMatch(/password.*required/);
+        });
+
+        it('should return error if password is not a string', () => {
+            user.password = {};
+
+            const { error } = validate(user);
+
+            expect(error.message).toMatch(/password.*string/);
+        });
+
+        it('should return error if password is empty', () => {
+            user.password = '';
+
+            const { error } = validate(user);
+
+            expect(error.message).toMatch(/password.*empty/);
+        });
+
+        it('should return error if password does not contain a lowercase letter', () => {
+            user.password = 'A'.repeat(bounds.password.min - 2) + '1$';
+
+            const { error } = validate(user);
+
+            expect(error.message).toMatch(/password.*lower/);
+        });
+
+        it('should return error if password does not contain an uppercase letter', () => {
+            user.password = 'a'.repeat(bounds.password.min - 2) + '1$';
+
+            const { error } = validate(user);
+
+            expect(error.message).toMatch(/password.*upper/);
+        });
+
+        it('should return error if password does not contain a number', () => {
+            user.password = 'a'.repeat(bounds.password.min - 2) + 'A$';
+
+            const { error } = validate(user);
+
+            expect(error.message).toMatch(/password.*number/);
+        });
+
+        it('should return error if password does not contain a symbol', () => {
+            user.password = 'a'.repeat(bounds.password.min - 2) + 'A1';
+
+            const { error } = validate(user);
+
+            expect(error.message).toMatch(/password.*symbol/);
+        });
+
+        it(`should return error if password length is less than ${bounds.password.min}`, () => {
+            user.password = 'a'.repeat(bounds.password.min - 4) + 'A1$';
+
+            const { error } = validate(user);
+
+            expect(error.message).toMatch(new RegExp(`password.*${bounds.password.min}`));
+        });
+
+        it(`should not return error if password length is equal to ${bounds.password.min}`, () => {
+            user.password = 'a'.repeat(bounds.password.min - 3) + 'A1$';
+
+            const { error } = validate(user);
+
+            expect(error).toBe(undefined);
+        });
+
+        it(`should return error if password length is greater than ${bounds.password.max}`, () => {
+            user.password = 'a'.repeat(bounds.password.max - 2) + 'A1$';
+
+            const { error } = validate(user);
+
+            expect(error.message).toMatch(new RegExp(`password.*${bounds.password.max}`));
+        });
+
+        it(`should not return error if password length is equal to ${bounds.password.max}`, () => {
+            user.password = 'a'.repeat(bounds.password.max - 3) + 'A1$';
+
+            const { error } = validate(user);
+
+            expect(error).toBe(undefined);
+        });
+
+        it('should not return error if user is valid', () => {
+            const { error } = validate(user);
+
+            expect(error).toBe(undefined);
+        });
     });
 });
