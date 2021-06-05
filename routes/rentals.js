@@ -1,10 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const Fawn = require('fawn');
+const _ = require('lodash');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const validateObjectId = require('../middleware/validateObjectId');
-const { Rental, validateRental } = require('../models/rental');
+const validate = require('../middleware/validate');
+const find = require('../middleware/find');
+const send = require('../middleware/send');
+const { Rental, validate: rval } = require('../models/rental');
 const { Customer } = require('../models/customer');
 const { Movie } = require('../models/movie');
 
@@ -18,17 +22,9 @@ router.get('/', auth, async (req, res) => {
     res.send(rentals);
 });
 
-router.get('/:id', [auth, validateObjectId], async (req, res) => {
-    const rental = await Rental.findById(req.params.id);
-    if (!rental) return res.status(404).send("Rental id not found");
+router.get('/:id', auth, validateObjectId, find(Rental), send);
 
-    res.send(rental);
-});
-
-router.post('/', auth, async (req, res) => {
-    const { error } = validateRental(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
+router.post('/', auth, validate(rval), async (req, res) => {
     const customer = await Customer.findById(req.body.customerId);
     if (!customer) return res.status(400).send('Invalid customer id');
 
@@ -39,17 +35,8 @@ router.post('/', auth, async (req, res) => {
         return res.status(400).send('Movie out of stock');
 
     let rental = new Rental({
-        customer: {
-            _id: customer._id,
-            name: customer.name,
-            phone: customer.phone,
-            isGold: customer.isGold
-        },
-        movie: {
-            _id: movie._id,
-            title: movie.title,
-            dailyRentalRate: movie.dailyRentalRate
-        }
+        customer: _.pick(customer, ['_id', 'name', 'phone', 'isGold']),
+        movie: _.pick(movie, ['_id', 'title', 'dailyRentalRate'])
     });
 
     await new Fawn.Task()
@@ -62,10 +49,9 @@ router.post('/', auth, async (req, res) => {
     res.send(rental);
 });
 
-router.delete('/:id', [auth, admin, validateObjectId], async (req, res) => {
-    const rental = await Rental.findById(req.params.id);
-    if (!rental) return res.status(404).send("Rental id not found");
-
+router.delete('/:id', auth, admin, validateObjectId, find(Rental), async (req, res) => {
+    const rental = req.doc;
+    
     await new Fawn.Task()
         .remove('rentals', { _id: rental._id })
         .update('movies', { _id: rental.movie._id }, {

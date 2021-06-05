@@ -1,13 +1,14 @@
-const _ = require('lodash');
 const express = require('express');
 const bcrypt = require('bcrypt');
+const _ = require('lodash');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
-const { User, validateUser } = require('../models/user');
+const validate = require('../middleware/validate');
+const { User, validate: uval } = require('../models/user');
 
 const router = express.Router();
 
-router.get('/', [auth, admin], async (req, res) => {
+router.get('/', auth, admin, async (req, res) => {
     const users = await User.find().select('-password').sort('name');
 
     res.send(users);
@@ -20,13 +21,9 @@ router.get('/me', auth, async (req, res) => {
     res.send(user);
 });
 
-router.post('/', async (req, res) => {
-    const { error } = validateUser(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
+router.post('/', validate(uval), async (req, res) => {
     let user = await User.findOne({ email: req.body.email });
     if (user) return res.status(400).send('Email already in use');
-
 
     user = new User(_.pick(req.body, ['name', 'email', 'password']));
 
