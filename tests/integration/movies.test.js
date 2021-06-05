@@ -1,10 +1,10 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
-const test = require('../../../testSetup');
-const app = require('../../../startup/app');
-const { User } = require('../../../models/user');
-const { Genre } = require('../../../models/genre');
-const { Movie } = require('../../../models/movie');
+const test = require('../../testSetup');
+const app = require('../../startup/app');
+const { User } = require('../../models/user');
+const { Genre } = require('../../models/genre');
+const { Movie } = require('../../models/movie');
 
 describe('/api/movies', () => {
     let genres;

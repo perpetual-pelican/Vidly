@@ -1,8 +1,8 @@
 const request = require('supertest');
-const test = require('../../../testSetup');
-const app = require('../../../startup/app');
-const { User } = require('../../../models/user');
-const { Customer } = require('../../../models/customer');
+const test = require('../../testSetup');
+const app = require('../../startup/app');
+const { User } = require('../../models/user');
+const { Customer } = require('../../models/customer');
 
 describe('/api/customers', () => {
     let token;

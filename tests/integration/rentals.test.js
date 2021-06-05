@@ -1,13 +1,13 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
 const _ = require('lodash');
-const test = require('../../../testSetup');
-const app = require('../../../startup/app');
-const { User } = require('../../../models/user');
-const { Customer } = require('../../../models/customer');
-const { Genre } = require('../../../models/genre');
-const { Movie } = require('../../../models/movie');
-const { Rental } = require('../../../models/rental');
+const test = require('../../testSetup');
+const app = require('../../startup/app');
+const { User } = require('../../models/user');
+const { Customer } = require('../../models/customer');
+const { Genre } = require('../../models/genre');
+const { Movie } = require('../../models/movie');
+const { Rental } = require('../../models/rental');
 
 describe('/api/rentals', () => {
     let token;

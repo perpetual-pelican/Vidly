@@ -1,10 +1,10 @@
 const request = require('supertest');
 const moment = require('moment');
-const test = require('../../../testSetup');
-const app = require('../../../startup/app');
-const { User } = require('../../../models/user');
-const { Movie } = require('../../../models/movie');
-const { Rental } = require('../../../models/rental');
+const test = require('../../testSetup');
+const app = require('../../startup/app');
+const { User } = require('../../models/user');
+const { Movie } = require('../../models/movie');
+const { Rental } = require('../../models/rental');
 
 describe('/api/returns', () => {
     let token;

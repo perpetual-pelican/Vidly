@@ -2,9 +2,9 @@ const request = require('supertest');
 const config = require('config');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const test = require('../../../testSetup');
-const app = require('../../../startup/app');
-const { User } = require('../../../models/user');
+const test = require('../../testSetup');
+const app = require('../../startup/app');
+const { User } = require('../../models/user');
 
 describe('/api/auth', () => {
     let user;

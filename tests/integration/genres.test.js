@@ -1,8 +1,8 @@
 const request = require('supertest');
-const test = require('../../../testSetup');
-const app = require('../../../startup/app');
-const { User } = require('../../../models/user');
-const { Genre } = require('../../../models/genre');
+const test = require('../../testSetup');
+const app = require('../../startup/app');
+const { User } = require('../../models/user');
+const { Genre } = require('../../models/genre');
 
 describe('/api/genres', () => {
     let genreObject;

@@ -1,8 +1,8 @@
 const request = require('supertest');
 const bcrypt = require('bcrypt');
-const test = require('../../../testSetup');
-const app = require('../../../startup/app');
-const { User } = require('../../../models/user');
+const test = require('../../testSetup');
+const app = require('../../startup/app');
+const { User } = require('../../models/user');
 
 describe('/api/users', () => {
     let userObject;
