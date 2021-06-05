@@ -200,7 +200,7 @@ describe('/api/customers', () => {
         });
     });
 
-    describe('DELETE /', () => {
+    describe('DELETE /:id', () => {
         let customer;
         let id;
 

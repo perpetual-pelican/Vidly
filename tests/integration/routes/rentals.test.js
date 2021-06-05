@@ -1,5 +1,6 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
+const _ = require('lodash');
 const test = require('../../../testSetup');
 const app = require('../../../startup/app');
 const { User } = require('../../../models/user');
@@ -26,22 +27,13 @@ describe('/api/rentals', () => {
         genre = await new Genre({ name: 'Genre Name' }).save();
         movie = await new Movie({
             title: 'Movie Title',
-            genres: [genre],
+            dailyRentalRate: 1,
             numberInStock: 1,
-            dailyRentalRate: 1
+            genres: [genre]
         }).save();
         rentalObject = {
-            customer: {
-                _id: customer._id,
-                name: customer.name,
-                phone: customer.phone,
-                isGold: customer.isGold
-            },
-            movie: {
-                _id: movie._id,
-                title: movie.title,
-                dailyRentalRate: movie.dailyRentalRate
-            }
+            customer: _.pick(customer, ['_id', 'name', 'phone', 'isGold']),
+            movie: _.pick(movie, ['_id', 'title', 'dailyRentalRate'])
         };
     });
 
@@ -58,24 +50,15 @@ describe('/api/rentals', () => {
             genre2 = await new Genre({ name: 'Genre Name 2' }).save();
             movie2 = await new Movie({
                 title: 'Movie Title 2',
-                genres: [genre2],
+                dailyRentalRate: 2,
                 numberInStock: 2,
-                dailyRentalRate: 2
+                genres: [genre2]
             }).save();
             await Rental.insertMany([
                 rentalObject,
                 {
-                    customer: {
-                        _id: customer2._id,
-                        name: customer2.name,
-                        phone: customer2.phone,
-                        isGold: customer2.isGold
-                    },
-                    movie: {
-                        _id: movie2._id,
-                        title: movie2.title,
-                        dailyRentalRate: movie2.dailyRentalRate
-                    }
+                    customer: _.pick(customer2, ['_id', 'name', 'phone', 'isGold']),
+                    movie: _.pick(movie2, ['_id', 'title', 'dailyRentalRate'])
                 }
             ]);
         });
@@ -276,7 +259,7 @@ describe('/api/rentals', () => {
             await test.idNotFound(deleteRental, token);
         });
 
-        it('should delete the rental and increment the movie stock if request is valid', async () => {
+        it('should delete the rental and increase the movie stock if request is valid', async () => {
             await deleteRental({ token, id });
 
             const rentalInDB = await Rental.findOne({

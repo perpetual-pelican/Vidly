@@ -32,9 +32,8 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(200);
             expect(res.body.length).toBe(2);
-            for (const genre of genres) {
+            for (const genre of genres)
                 expect(res.body.some(g => g.name === genre.name)).toBe(true);
-            }
         });
     });
 
@@ -110,7 +109,7 @@ describe('/api/genres', () => {
             
             const genreInDB = await Genre.findOne(genreObject);
 
-            expect(genreInDB).toHaveProperty('name', genreObject.name.toLowerCase());
+            expect(genreInDB).toHaveProperty('name', genreObject.name);
         });
 
         it('should return the genre if request is valid', async () => {
@@ -118,7 +117,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
-            expect(res.body).toHaveProperty('name', genreObject.name.toLowerCase());
+            expect(res.body).toHaveProperty('name', genreObject.name);
         });
     });
 
@@ -178,7 +177,7 @@ describe('/api/genres', () => {
             
             const genreInDB = await Genre.findOne(genreUpdate);
 
-            expect(genreInDB).toHaveProperty('name', genreUpdate.name.toLowerCase());
+            expect(genreInDB).toHaveProperty('name', genreUpdate.name);
         });
 
         it('should return the updated genre if request is valid', async () => {
@@ -186,7 +185,7 @@ describe('/api/genres', () => {
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
-            expect(res.body).toHaveProperty('name', genreUpdate.name.toLowerCase());
+            expect(res.body).toHaveProperty('name', genreUpdate.name);
         });
     });
 

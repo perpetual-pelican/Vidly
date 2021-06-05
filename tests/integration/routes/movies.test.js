@@ -19,9 +19,9 @@ describe('/api/movies', () => {
         ];
         movieObject =  {
             title: 'Movie Title',
-            genres: [genres[0]],
+            dailyRentalRate: 1,
             numberInStock: 1,
-            dailyRentalRate: 1
+            genres: [genres[0]]
         };
     });
 
@@ -33,9 +33,9 @@ describe('/api/movies', () => {
                 await new Movie(movieObject).save(),
                 await new Movie({
                     title: ' Movie Title 2',
-                    genres: [genres[0], genres[1]],
-                    numberInStock: 1,
-                    dailyRentalRate: 1
+                    dailyRentalRate: 2,
+                    numberInStock: 2,
+                    genres: [genres[1]]
                 }).save()
             ];
         });
@@ -51,16 +51,15 @@ describe('/api/movies', () => {
             expect(res.body.length).toBe(2);
             expect(res.body.some(m =>
                 m.title === movies[0].title &&
-                m.genres[0].name === movies[0].genres[0].name &&
+                m.dailyRentalRate === movies[0].dailyRentalRate &&
                 m.numberInStock === movies[0].numberInStock &&
-                m.dailyRentalRate === movies[0].dailyRentalRate
+                m.genres[0].name === movies[0].genres[0].name
             )).toBe(true);
             expect(res.body.some(m =>
                 m.title === movies[1].title &&
-                m.genres.some(g => g.name === movies[1].genres[0].name) &&
-                m.genres.some(g => g.name === movies[1].genres[1].name) &&
-                m.numberInStock === movies[0].numberInStock &&
-                m.dailyRentalRate === movies[0].dailyRentalRate
+                m.dailyRentalRate === movies[1].dailyRentalRate &&
+                m.numberInStock === movies[1].numberInStock &&
+                m.genres.some(g => g.name === movies[1].genres[0].name)
             )).toBe(true);
         });
     });
@@ -92,11 +91,11 @@ describe('/api/movies', () => {
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
             expect(res.body).toHaveProperty('title', movie.title);
+            expect(res.body).toHaveProperty('dailyRentalRate', movie.dailyRentalRate);
+            expect(res.body).toHaveProperty('numberInStock', movie.numberInStock);
             expect(res.body).toHaveProperty('genres', expect.arrayContaining([
                 expect.objectContaining({ name: movie.genres[0].name })
             ]));
-            expect(res.body).toHaveProperty('numberInStock', movie.numberInStock);
-            expect(res.body).toHaveProperty('dailyRentalRate', movie.dailyRentalRate);
         });
     });
 
@@ -130,13 +129,22 @@ describe('/api/movies', () => {
             await test.requestInvalid(postMovie, movieObject, token);
         });
 
-        it('should return 400 if any genreId is not found', async () => {
+        it('should return 400 if any genre id is not found', async () => {
             movieObject.genreIds.push(mongoose.Types.ObjectId().toHexString());
 
             const res = await postMovie({ token });
 
             expect(res.status).toBe(400);
-            expect(res.text).toMatch(/[Gg]enre/);
+            expect(res.text).toMatch(/[Gg]enre.*[Ii]d/);
+        });
+
+        it('should return 200 if genreIds is undefined', async () => {
+            delete movieObject.genreIds;
+
+            const res = await postMovie({ token });
+
+            expect(res.status).toBe(200);
+            expect(res.body).not.toHaveProperty('genres');
         });
 
         it('should save the movie if request is valid', async () => {
@@ -145,11 +153,11 @@ describe('/api/movies', () => {
             const movieInDB = await Movie.findOne({ title: movieObject.title });
 
             expect(movieInDB).toHaveProperty('title', movieObject.title);
+            expect(movieInDB).toHaveProperty('dailyRentalRate', movieObject.dailyRentalRate);
+            expect(movieInDB).toHaveProperty('numberInStock', movieObject.numberInStock);
             expect(movieInDB).toHaveProperty('genres', expect.arrayContaining([
                 expect.objectContaining({ name: genres[0].name })
             ]));
-            expect(movieInDB).toHaveProperty('numberInStock', movieObject.numberInStock);
-            expect(movieInDB).toHaveProperty('dailyRentalRate', movieObject.dailyRentalRate);
         });
 
         it('should return the movie if request is valid', async () => {
@@ -158,11 +166,11 @@ describe('/api/movies', () => {
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
             expect(res.body).toHaveProperty('title', movieObject.title);
+            expect(res.body).toHaveProperty('dailyRentalRate', movieObject.dailyRentalRate);
+            expect(res.body).toHaveProperty('numberInStock', movieObject.numberInStock);
             expect(res.body).toHaveProperty('genres', expect.arrayContaining([
                 expect.objectContaining({ name: genres[0].name })
             ]));
-            expect(res.body).toHaveProperty('numberInStock', movieObject.numberInStock);
-            expect(res.body).toHaveProperty('dailyRentalRate', movieObject.dailyRentalRate);
         });
     });
 
@@ -177,8 +185,8 @@ describe('/api/movies', () => {
             movie = await new Movie(movieObject).save();
             id = movie._id;
             movieUpdate = {
-                title: 'updatedMovieTitle',
-                genreIds: [genres[0]._id, genres[1]._id]
+                title: 'Updated Movie Title',
+                genreIds: [genres[1]._id]
             };
         });
 
@@ -221,7 +229,32 @@ describe('/api/movies', () => {
             const res = await putMovie({ token, id });
 
             expect(res.status).toBe(400);
-            expect(res.text).toMatch(/[Gg]enre/);
+            expect(res.text).toMatch(/[Gg]enre.*[Ii]d/);
+        });
+
+        it('should update the movie if genreIds is undefined', async () => {
+            delete movieUpdate.genreIds;
+
+            await putMovie({ token, id });
+
+            const movieInDB = await Movie.findById(movie._id);
+
+            expect(movieInDB).toHaveProperty('title', movieUpdate.title);
+            expect(movieInDB).toHaveProperty('dailyRentalRate', movie.dailyRentalRate);
+            expect(movieInDB).toHaveProperty('numberInStock', movie.numberInStock);
+            expect(movieInDB).toHaveProperty('genres', expect.arrayContaining([
+                expect.objectContaining({ name: movie.genres[0].name })
+            ]));
+        });
+
+        it('should not update genres if genreIds is undefined', async () => {
+            delete movieUpdate.genreIds;
+
+            const res = await putMovie({ token, id });
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty('genres');
+            expect(res.body.genres.some(g => g.name === genres[0].name)).toBe(true);
         });
 
         it('should update movie genres if genreIds are valid', async () => {
@@ -232,27 +265,11 @@ describe('/api/movies', () => {
             const movieInDB = await Movie.findById(movie._id);
 
             expect(movieInDB).toHaveProperty('title', movie.title);
+            expect(movieInDB).toHaveProperty('dailyRentalRate', movie.dailyRentalRate);
+            expect(movieInDB).toHaveProperty('numberInStock', movie.numberInStock);
             expect(movieInDB).toHaveProperty('genres', expect.arrayContaining([
-                expect.objectContaining({ name: movie.genres[0].name }),
                 expect.objectContaining({ name: genres[1].name })
             ]));
-            expect(movieInDB).toHaveProperty('numberInStock', movie.numberInStock);
-            expect(movieInDB).toHaveProperty('dailyRentalRate', movie.dailyRentalRate);
-        });
-
-        it('should update the movie if no genreIds are provided', async () => {
-            delete movieUpdate.genreIds;
-
-            await putMovie({ token, id });
-
-            const movieInDB = await Movie.findById(movie._id);
-
-            expect(movieInDB).toHaveProperty('title', movieUpdate.title);
-            expect(movieInDB).toHaveProperty('genres', expect.arrayContaining([
-                expect.objectContaining({ name: movie.genres[0].name })
-            ]));
-            expect(movieInDB).toHaveProperty('numberInStock', movie.numberInStock);
-            expect(movieInDB).toHaveProperty('dailyRentalRate', movie.dailyRentalRate);
         });
 
         it('should return the movie if request is valid', async () => {
@@ -261,12 +278,11 @@ describe('/api/movies', () => {
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
             expect(res.body).toHaveProperty('title', movieUpdate.title);
+            expect(res.body).toHaveProperty('dailyRentalRate', movie.dailyRentalRate);
+            expect(res.body).toHaveProperty('numberInStock', movie.numberInStock);
             expect(res.body).toHaveProperty('genres', expect.arrayContaining([
-                expect.objectContaining({ name: movie.genres[0].name }),
                 expect.objectContaining({ name: genres[1].name })
             ]));
-            expect(res.body).toHaveProperty('numberInStock', movie.numberInStock);
-            expect(res.body).toHaveProperty('dailyRentalRate', movie.dailyRentalRate);
         });
     });
 
@@ -323,11 +339,11 @@ describe('/api/movies', () => {
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
             expect(res.body).toHaveProperty('title', movie.title);
+            expect(res.body).toHaveProperty('dailyRentalRate', movie.dailyRentalRate);
+            expect(res.body).toHaveProperty('numberInStock', movie.numberInStock);
             expect(res.body).toHaveProperty('genres', expect.arrayContaining([
                 expect.objectContaining({ name: movie.genres[0].name })
             ]));
-            expect(res.body).toHaveProperty('numberInStock', movie.numberInStock);
-            expect(res.body).toHaveProperty('dailyRentalRate', movie.dailyRentalRate);
         });
     });
 });

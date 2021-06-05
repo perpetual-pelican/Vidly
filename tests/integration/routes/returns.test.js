@@ -44,22 +44,22 @@ describe('/api/returns', () => {
         await test.tokenEmpty(postReturn);
     });
 
-    it('should return 400 if customerId is not provided', async () => {
-        returnObject.customerId = '';
+    it('should return 400 if customerId is undefined', async () => {
+        delete returnObject.customerId;
 
         const res = await postReturn({ token });
 
         expect(res.status).toBe(400);
-        expect(res.text).toMatch(/customerId/);
+        expect(res.text).toMatch(/customerId.*required/);
     });
 
-    it('should return 400 if movieId is not provided', async () => {
-        returnObject.movieId = '';
+    it('should return 400 if movieId is undefined', async () => {
+        delete returnObject.movieId;
 
         const res = await postReturn({ token });
 
         expect(res.status).toBe(400);
-        expect(res.text).toMatch(/movieId/);
+        expect(res.text).toMatch(/movieId.*required/);
     });
 
     it('should return 404 if no rental found for customer/movie', async () => {
