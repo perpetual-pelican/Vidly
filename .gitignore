@@ -1,5 +1,4 @@
 node_modules/
 coverage/
 .vscode/
-logfile.log
-uncaughtExceptions.log
+logs/

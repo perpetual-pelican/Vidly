@@ -2,11 +2,14 @@ const winston = require('winston');
 require('winston-mongodb');
 const config = require('config');
 
+const env = process.env.NODE_ENV;
+
 winston.configure({ format: winston.format.prettyPrint() });
 
+if (env === 'development')
+    winston.exceptions.handle(new winston.transports.Console());
 winston.exceptions.handle(
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: 'uncaughtExceptions.log' }),
+    new winston.transports.File({ filename: `logs/${env}/uncaughtExceptions.log` }),
     new winston.transports.MongoDB({
         db: config.get('db'),
         options: { useUnifiedTopology: true }
@@ -15,8 +18,9 @@ winston.exceptions.handle(
 
 process.on('unhandledRejection', (ex) => { throw ex; });
 
-winston.add(new winston.transports.Console());
-winston.add(new winston.transports.File({ filename: 'logfile.log' }));
+if (env === 'development')
+    winston.add(new winston.transports.Console());
+winston.add(new winston.transports.File({ filename: `logs/${env}/info.log` }));
 winston.add(new winston.transports.MongoDB({
     db: config.get('db'),
     options: { useUnifiedTopology: true }
