@@ -2,9 +2,11 @@ const mongoose = require('mongoose');
 const winston = require('winston');
 const connectToDB = require('../../../startup/db');
 
-winston.info = jest.fn();
-
 describe('db startup', () => {
+    beforeEach(() => {
+        winston.info = jest.fn();
+    });
+
     afterEach(async () => {
         await mongoose.disconnect();
     });
