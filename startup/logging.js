@@ -2,7 +2,7 @@ const winston = require('winston');
 require('winston-mongodb');
 const config = require('config');
 
-const env = process.env.NODE_ENV;
+const env = process.env.NODE_ENV || 'development';
 
 winston.configure({ format: winston.format.prettyPrint() });
 

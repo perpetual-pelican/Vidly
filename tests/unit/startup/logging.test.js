@@ -1,5 +1,5 @@
 jest.mock('winston-mongodb', () => {
-    let winston = require('winston');
+    const winston = require('winston');
     winston.transports.MongoDB = jest.fn(() => {
         return new winston.transports.Console();
     });
@@ -14,7 +14,7 @@ describe('logging startup', () => {
         it('should log if an uncaughtException event is encountered', () => {
             require('../../../startup/logging');
 
-            let winston = require('winston');
+            const winston = require('winston');
             winston.exitOnError = false;
             winston.exceptions.logger.log = jest.fn();
 
@@ -72,8 +72,8 @@ describe('logging startup', () => {
             process.env.NODE_ENV = NODE_ENV;
         });
 
-        it('should add Console transports if NODE_ENV is development', () => {
-            process.env.NODE_ENV = 'development';
+        it('should add Console transports if NODE_ENV is development (or not set)', () => {
+            delete process.env.NODE_ENV;
 
             require('../../../startup/logging');
             
