@@ -1,16 +1,20 @@
-const request = require('supertest');
 const mongoose = require('mongoose');
+const _ = require('lodash');
 const test = require('../../testSetup');
 const app = require('../../startup/app');
 const { User } = require('../../models/user');
 const { Genre } = require('../../models/genre');
 const { Movie } = require('../../models/movie');
 
+const { getAll, getOne, post, put, del } = test.request;
+
 describe('/api/movies', () => {
+    const token = new User({ isAdmin: false }).generateAuthToken();
     let genres;
     let movieObject;
+    let req;
 
-    test.setup('movies');
+    test.setup('movies', app);
 
     beforeEach(async () => {
         genres = [
@@ -26,6 +30,7 @@ describe('/api/movies', () => {
     });
 
     describe('GET /', () => {
+        const find = Movie.find;
         let movies;
 
         beforeEach(async () => {
@@ -40,12 +45,21 @@ describe('/api/movies', () => {
             ];
         });
 
-        const getMovies = () => {
-            return request(app).get('/api/movies');
-        };
+        afterEach(() => {
+            Movie.find = find;
+        });
+
+        it('should return 500 if an uncaughtException is encountered', async () => {
+            Movie.find = jest.fn(() => { throw new Error('mock uncaught exception'); });
+
+            const res = await getAll();
+
+            expect(res.status).toBe(500);
+            expect(res.text).toMatch(/Something failed/);
+        });
 
         it('should return all movies', async () => {
-            const res = await getMovies();
+            const res = await getAll();
 
             expect(res.status).toBe(200);
             expect(res.body.length).toBe(2);
@@ -66,27 +80,22 @@ describe('/api/movies', () => {
 
     describe('GET /:id', () => {
         let movie;
-        let id;
 
         beforeEach(async () => {
             movie = await new Movie(movieObject).save();
-            id = movie._id;
+            req = { id: movie._id };
         });
 
-        const getMovie = (req) => {
-            return request(app).get('/api/movies/' + req.id);
-        };
-
         it('should return 404 if id is invalid', async () => {
-            await test.idInvalid(getMovie);
+            await test.idInvalid(getOne, req);
         });
 
         it('should return 404 if id is not found', async () => {
-            await test.idNotFound(getMovie);
+            await test.idNotFound(getOne, req);
         });
 
         it('should return the movie if request is valid', async () => {
-            const res = await getMovie({ id });
+            const res = await getOne(req);
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
@@ -100,55 +109,44 @@ describe('/api/movies', () => {
     });
 
     describe('POST /', () => {
-        let token;
-
         beforeEach(async () => {
-            token = new User().generateAuthToken();
             delete movieObject.genres;
             movieObject.genreIds = [genres[0]._id];
+            req = { token, body: movieObject };
         });
 
-        const postMovie = (req) => {
-            if (!req.body)
-                req.body = movieObject;
-            return request(app)
-                .post('/api/movies')
-                .set('x-auth-token', req.token)
-                .send(req.body);
-        };
-
         it('should return 401 if client is not logged in', async () => {
-            await test.tokenEmpty(postMovie);
+            await test.tokenEmpty(post, req);
         });
 
         it('should return 400 if token is invalid', async () => {
-            await test.tokenInvalid(postMovie);
+            await test.tokenInvalid(post, req);
         });
 
         it('should return 400 if request body is invalid', async () => {
-            await test.requestInvalid(postMovie, movieObject, token);
+            await test.requestInvalid(post, req);
         });
 
         it('should return 400 if any genre id is not found', async () => {
-            movieObject.genreIds.push(mongoose.Types.ObjectId().toHexString());
+            req.body.genreIds.push(mongoose.Types.ObjectId());
 
-            const res = await postMovie({ token });
+            const res = await post(req);
 
             expect(res.status).toBe(400);
             expect(res.text).toMatch(/[Gg]enre.*[Ii]d/);
         });
 
         it('should return 200 if genreIds is undefined', async () => {
-            delete movieObject.genreIds;
+            delete req.body.genreIds;
 
-            const res = await postMovie({ token });
+            const res = await post(req);
 
             expect(res.status).toBe(200);
             expect(res.body).not.toHaveProperty('genres');
         });
 
         it('should save the movie if request is valid', async () => {
-            await postMovie({ token });
+            await post(req);
 
             const movieInDB = await Movie.findOne({ title: movieObject.title });
 
@@ -161,7 +159,7 @@ describe('/api/movies', () => {
         });
 
         it('should return the movie if request is valid', async () => {
-            const res = await postMovie({ token });
+            const res = await post(req);
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
@@ -175,67 +173,59 @@ describe('/api/movies', () => {
     });
 
     describe('PUT /:id', () => {
-        let token;
         let movie;
-        let id;
         let movieUpdate;
 
         beforeEach(async () => {
-            token = new User().generateAuthToken();
             movie = await new Movie(movieObject).save();
-            id = movie._id;
             movieUpdate = {
                 title: 'Updated Movie Title',
                 genreIds: [genres[1]._id]
             };
+            req = {
+                token,
+                id: movie._id,
+                body: movieUpdate
+            };
         });
 
-        const putMovie = (req) => {
-            if (!req.body)
-                req.body = movieUpdate;
-            return request(app)
-                .put('/api/movies/' + req.id)
-                .set('x-auth-token', req.token)
-                .send(req.body);
-        };
-
         it('should return 401 if client is not logged in', async () => {
-            await test.tokenEmpty(putMovie, id);
+            await test.tokenEmpty(put, req);
         });
 
         it('should return 400 if token is invalid', async () => {
-            await test.tokenInvalid(putMovie, id);
+            await test.tokenInvalid(put, req);
         });
 
         it('should return 404 if id is invalid', async () => {
-            await test.idInvalid(putMovie, token);
+            await test.idInvalid(put, req);
         });
 
         it('should return 404 if id is not found', async () => {
-            await test.idNotFound(putMovie, token);
+            await test.idNotFound(put, req);
         });
 
         it('should return 400 if request body is empty', async () => {
-            await test.requestEmpty(putMovie, token, id);
+            await test.requestEmpty(put, req);
         });
 
         it('should return 400 if request body is invalid', async () => {
-            await test.requestInvalid(putMovie, movieUpdate, token, id);
+            await test.requestInvalid(put, req);
         });
 
         it('should return 400 if any genreId is not found', async () => {
-            movieUpdate.genreIds.push(mongoose.Types.ObjectId().toHexString());
+            req.body.genreIds.push(mongoose.Types.ObjectId());
 
-            const res = await putMovie({ token, id });
+            const res = await put(req);
 
             expect(res.status).toBe(400);
             expect(res.text).toMatch(/[Gg]enre.*[Ii]d/);
         });
 
         it('should update the movie if genreIds is undefined', async () => {
-            delete movieUpdate.genreIds;
+            delete req.body.genreIds;
 
-            await putMovie({ token, id });
+            await put(req);
 
             const movieInDB = await Movie.findById(movie._id);
 
@@ -247,20 +237,10 @@ describe('/api/movies', () => {
             ]));
         });
 
-        it('should not update genres if genreIds is undefined', async () => {
-            delete movieUpdate.genreIds;
-
-            const res = await putMovie({ token, id });
-
-            expect(res.status).toBe(200);
-            expect(res.body).toHaveProperty('genres');
-            expect(res.body.genres.some(g => g.name === genres[0].name)).toBe(true);
-        });
-
         it('should update movie genres if genreIds are valid', async () => {
-            delete movieUpdate.title;
+            delete req.body.title;
 
-            await putMovie({ token, id });
+            await put(req);
 
             const movieInDB = await Movie.findById(movie._id);
 
@@ -273,7 +253,7 @@ describe('/api/movies', () => {
         });
 
         it('should return the movie if request is valid', async () => {
-            const res = await putMovie({ token, id });
+            const res = await put(req);
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
@@ -287,54 +267,48 @@ describe('/api/movies', () => {
     });
 
     describe('DELETE /:id', () => {
-        let token;
         let movie;
-        let id;
 
         beforeEach(async () => {
-            token = new User({ isAdmin: true }).generateAuthToken();
             movie = await new Movie(movieObject).save();
-            id = movie._id;
+            req = {
+                token: new User({ isAdmin: true }).generateAuthToken(),
+                id: movie._id
+            };
         });
 
-        const deleteMovie = (req) => {
-            return request(app)
-                .delete('/api/movies/' + req.id)
-                .set('x-auth-token', req.token);
-        };
-
         it('should return 401 if client is not logged in', async () => {
-            await test.tokenEmpty(deleteMovie, id);
+            await test.tokenEmpty(del, req);
         });
 
         it('should return 400 if token is invalid', async () => {
-            await test.tokenInvalid(deleteMovie, id);
+            await test.tokenInvalid(del, req);
         });
 
         it('should return 403 if user is not an admin', async () => {
-            token = new User({ isAdmin: false }).generateAuthToken();
+            req.token = new User({ isAdmin: false }).generateAuthToken();
 
-            await test.adminFalse(deleteMovie, token, id);
+            await test.adminFalse(del, req);
         });
 
         it('should return 404 if id is invalid', async () => {
-            await test.idInvalid(deleteMovie, token);
+            await test.idInvalid(del, req);
         });
 
         it('should return 404 if id is not found', async () => {
-            await test.idNotFound(deleteMovie, token);
+            await test.idNotFound(del, req);
         });
 
         it('should delete the movie if request is valid', async () => {
-            await deleteMovie({ token, id });
+            await del(req);
 
-            const movieInDB = await Movie.findById(id);
+            const movieInDB = await Movie.findById(req.id);
 
             expect(movieInDB).toBeNull();
         });
 
         it('should return the movie if request is valid', async () => {
-            const res = await deleteMovie({ token, id });
+            const res = await del(req);
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');

@@ -1,19 +1,22 @@
-const request = require('supertest');
 const test = require('../../testSetup');
 const app = require('../../startup/app');
 const { User } = require('../../models/user');
 const { Genre } = require('../../models/genre');
 
+const { getAll, getOne, post, put, del } = test.request;
+
 describe('/api/genres', () => {
     let genreObject;
+    let req;
 
-    test.setup('genres');
+    test.setup('genres', app);
 
     beforeEach(() => {
         genreObject = { name: 'Genre Name' };
     });
 
     describe('GET /', () => {
+        const find = Genre.find;
         let genres;
 
         beforeEach(async () => {
@@ -23,12 +26,21 @@ describe('/api/genres', () => {
             ];
         });
 
-        const getGenres = () => {
-            return request(app).get('/api/genres');
-        };
+        afterEach(() => {
+            Genre.find = find;
+        });
+
+        it('should return 500 if an uncaughtException is encountered', async () => {
+            Genre.find = jest.fn(() => { throw new Error('fake uncaught exception'); });
+
+            const res = await getAll();
+
+            expect(res.status).toBe(500);
+            expect(res.text).toMatch(/Something failed/);
+        });
     
         it('should return all genres', async () => {
-            const res = await getGenres();
+            const res = await getAll();
 
             expect(res.status).toBe(200);
             expect(res.body.length).toBe(2);
@@ -39,27 +51,22 @@ describe('/api/genres', () => {
 
     describe('GET /:id', () => {
         let genre;
-        let id;
 
         beforeEach(async () => {
             genre = await new Genre(genreObject).save();
-            id = genre._id;
+            req = { id: genre._id };
         });
 
-        const getGenre = (req) => {
-            return request(app).get('/api/genres/' + req.id);
-        };
-
         it('should return 404 if id is invalid', async () => {
-            await test.idInvalid(getGenre);
+            await test.idInvalid(getOne, req);
         });
 
         it('should return 404 if id is not found', async () => {
-            await test.idNotFound(getGenre);
+            await test.idNotFound(getOne, req);
         });
 
         it('should return the genre if id is found', async () => {
-            const res = await getGenre({ id });
+            const res = await getOne(req);
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
@@ -68,44 +75,36 @@ describe('/api/genres', () => {
     });
 
     describe('POST /', () => {
-        let token;
-
         beforeEach(() => {
-            token = new User().generateAuthToken();
+            req = {
+                token: new User({ isAdmin: false }).generateAuthToken(),
+                body: genreObject
+            };
         });
 
-        const postGenre = (req) => {
-            if (!req.body)
-                req.body = genreObject;
-            return request(app)
-                .post('/api/genres')
-                .set('x-auth-token', req.token)
-                .send(req.body);
-        };
-
         it('should return 401 if client is not logged in', async () => {
-            await test.tokenEmpty(postGenre);
+            await test.tokenEmpty(post, req);
         });
 
         it('should return 400 if token is invalid', async () => {
-            await test.tokenInvalid(postGenre);
+            await test.tokenInvalid(post, req);
         });
 
         it('should return 400 if invalid property is added', async () => {
-            await test.requestInvalid(postGenre, genreObject, token);
+            await test.requestInvalid(post, req);
         });
 
         it('should return 400 if genre name already exists', async () => {
             await Genre.create(genreObject);
 
-            const res = await postGenre({ token });
+            const res = await post(req);
 
             expect(res.status).toBe(400);
             expect(res.text).toMatch(/[Nn]ame.*[Ee]xists/);
         });
 
         it('should save the genre if request is valid', async () => {
-            await postGenre({ token });
+            await post(req);
             
             const genreInDB = await Genre.findOne(genreObject);
 
@@ -113,7 +112,7 @@ describe('/api/genres', () => {
         });
 
         it('should return the genre if request is valid', async () => {
-            const res = await postGenre({ token });
+            const res = await post(req);
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
@@ -122,58 +121,50 @@ describe('/api/genres', () => {
     });
 
     describe('PUT /:id', () => {
-        let token;
         let genre;
-        let id;
         let genreUpdate;
 
         beforeEach(async () => {
-            token = new User().generateAuthToken();
             genre = await new Genre(genreObject).save();
-            id = genre._id;
             genreUpdate = { name: 'Updated Genre Name' };
+            req = {
+                token: new User().generateAuthToken(),
+                id: genre._id,
+                body: genreUpdate
+            };
         });
 
-        const putGenre = (req) => {
-            if (!req.body)
-                req.body = genreUpdate;
-            return request(app)
-                .put('/api/genres/' + req.id)
-                .set('x-auth-token', req.token)
-                .send(req.body);
-        };
-
         it('should return 401 if client is not logged in', async () => {
-            await test.tokenEmpty(putGenre, id);
+            await test.tokenEmpty(put, req);
         });
 
         it('should return 400 if token is invalid', async () => {
-            await test.tokenInvalid(putGenre, id);
+            await test.tokenInvalid(put, req);
         });
 
         it('should return 404 if id is invalid', async () => {
-            await test.idInvalid(putGenre, token);
+            await test.idInvalid(put, req);
         });
 
         it('should return 404 if id is not found', async () => {
-            await test.idNotFound(putGenre, token);
+            await test.idNotFound(put, req);
         });
 
         it('should return 400 if invalid property is added', async () => {
-            await test.requestInvalid(putGenre, genreUpdate, token, id);
+            await test.requestInvalid(put, req);
         });
 
         it('should return 400 if genre name already exists', async () => {
-            genreUpdate.name = genre.name;
+            req.body.name = genre.name;
 
-            const res = await putGenre({ token, id });
+            const res = await put(req);
 
             expect(res.status).toBe(400);
             expect(res.text).toMatch(/[Nn]ame.*[Ee]xists/);
         });
 
         it('should update the genre if request is valid', async () => {
-            await putGenre({ token, id });
+            await put(req);
             
             const genreInDB = await Genre.findOne(genreUpdate);
 
@@ -181,7 +172,7 @@ describe('/api/genres', () => {
         });
 
         it('should return the updated genre if request is valid', async () => {
-            const res = await putGenre({ token, id });
+            const res = await put(req);
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
@@ -190,46 +181,40 @@ describe('/api/genres', () => {
     });
 
     describe('DELETE /:id', () => {
-        let token;
         let genre;
-        let id;
 
         beforeEach(async () => {
-            token = new User({ isAdmin: true }).generateAuthToken();
             genre = await new Genre(genreObject).save();
-            id = genre._id;
+            req = {
+                token: new User({ isAdmin: true }).generateAuthToken(),
+                id: genre._id
+            };
         });
 
-        const deleteGenre = (req) => {
-            return request(app)
-                .delete('/api/genres/' + req.id)
-                .set('x-auth-token', req.token);
-        };
-
         it('should return 401 if client is not logged in', async () => {
-            await test.tokenEmpty(deleteGenre, id);
+            await test.tokenEmpty(del, req);
         });
         
         it('should return 400 if token is invalid', async () => {
-            await test.tokenInvalid(deleteGenre, id);
+            await test.tokenInvalid(del, req);
         });
         
         it('should return 403 if client is not an admin', async () => {
-            token = new User({ isAdmin: false }).generateAuthToken();
+            req.token = new User({ isAdmin: false }).generateAuthToken();
 
-            await test.adminFalse(deleteGenre, token, id);
+            await test.adminFalse(del, req);
         });
 
         it('should return 404 if id is invalid', async () => {
-            await test.idInvalid(deleteGenre, token);
+            await test.idInvalid(del, req);
         });
 
         it('should return 404 if id is not found', async () => {
-            await test.idNotFound(deleteGenre, token);
+            await test.idNotFound(del, req);
         });
 
         it('should delete the genre if request is valid', async () => {
-            await deleteGenre({ token, id });
+            await del(req);
             
             const genreInDB = await Genre.findById(genre._id);
 
@@ -237,7 +222,7 @@ describe('/api/genres', () => {
         });
 
         it('should return the deleted genre if request is valid', async () => {
-            const res = await deleteGenre({ token, id });
+            const res = await del(req);
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');

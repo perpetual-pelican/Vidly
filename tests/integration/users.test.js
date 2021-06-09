@@ -4,11 +4,14 @@ const test = require('../../testSetup');
 const app = require('../../startup/app');
 const { User } = require('../../models/user');
 
+const { getAll, post } = test.request;
+
 describe('/api/users', () => {
     let userObject;
-    let token;
+    let user;
+    let req;
 
-    test.setup('users');
+    test.setup('users', app);
 
     beforeEach(() => {
         userObject = {
@@ -18,55 +21,58 @@ describe('/api/users', () => {
         };
     });
 
-    afterEach(async () => {
-        await User.deleteMany();
-    });
-
     describe('GET /', () => {
-        let user;
+        const find = User.find;
         let adminUser;
 
         beforeEach(async () => {
-            user = await User.create(userObject);
+            user = await new User(userObject).save();
             adminUser = await new User({
                 name: 'Admin Name',
                 email: 'adminEmail@domain.com',
                 password: 'abcdeF1$',
                 isAdmin: true
             }).save();
-            token = adminUser.generateAuthToken();
+            req = { token: adminUser.generateAuthToken() };
         });
 
-        const getUsers = (req) => {
-            return request(app)
-                .get('/api/users')
-                .set('x-auth-token', req.token);
-        };
+        afterEach(() => {
+            User.find = find;
+        });
 
         it('should return 401 if client is not logged in', async () => {
-            await test.tokenEmpty(getUsers);
+            await test.tokenEmpty(getAll, req);
         });
 
         it('should return 400 if token is invalid', async () => {
-            await test.tokenInvalid(getUsers);
+            await test.tokenInvalid(getAll, req);
         });
 
         it('should return 403 if user is not an admin', async () => {
-            token = user.generateAuthToken();
+            req.token = new User({ isAdmin: false }).generateAuthToken();
 
-            await test.adminFalse(getUsers, token);
+            await test.adminFalse(getAll, req);
+        });
+
+        it('should return 500 if an uncaughtException is encountered', async () => {
+            User.find = jest.fn(() => { throw new Error('fake uncaught exception'); });
+
+            const res = await getAll(req);
+
+            expect(res.status).toBe(500);
+            expect(res.text).toMatch(/Something failed/);
         });
 
         it('should return all users if request is valid', async () => {
-            const res = await getUsers({ token });
+            const res = await getAll(req);
 
             expect(res.status).toBe(200);
             expect(res.body.length).toBe(2);
             expect(res.body.some(u =>
-                u.name === userObject.name &&
-                u.email === userObject.email &&
+                u.name === user.name &&
+                u.email === user.email &&
                 u.password === undefined &&
-                u.isAdmin === false
+                u.isAdmin === user.isAdmin
             )).toBe(true);
             expect(res.body.some(u =>
                 u.name === adminUser.name &&
@@ -78,11 +84,9 @@ describe('/api/users', () => {
     });
 
     describe('GET /me', () => {
-        let user;
-
         beforeEach(async () => {
             user = await new User(userObject).save();
-            token = user.generateAuthToken();
+            req = { token: user.generateAuthToken() };
         });
 
         const getUser = (req) => {
@@ -92,56 +96,53 @@ describe('/api/users', () => {
         };
 
         it('should return 401 if client is not logged in', async () => {
-            await test.tokenEmpty(getUser);
+            await test.tokenEmpty(getUser, req);
         });
 
         it('should return 400 if token is invalid', async () => {
-            await test.tokenInvalid(getUser);
+            await test.tokenInvalid(getUser, req);
         });
 
         it('should return 400 if user is not found', async () => {
             await User.deleteMany();
 
-            const res = await getUser({ token });
+            const res = await getUser(req);
 
             expect(res.status).toBe(400);
             expect(res.text).toMatch(/[Nn]ot.*[Ff]ound/);
         });
 
         it('should return the user if request is valid', async () => {
-            const res = await getUser({ token });
+            const res = await getUser(req);
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');
             expect(res.body).toHaveProperty('name', user.name);
             expect(res.body).toHaveProperty('email', user.email);
+            expect(res.body).toHaveProperty('isAdmin', user.isAdmin);
         });
     });
 
     describe('POST /', () => {
-        const postUser = (req) => {
-            if (!req)
-                req = { body: userObject };
-            return request(app)
-                .post('/api/users')
-                .send(req.body);
-        };
+        beforeEach(() => {
+            req = { body: userObject };
+        });
 
         it('should return 400 if request body is invalid', async () => {
-            await test.requestInvalid(postUser, userObject);
+            await test.requestInvalid(post, req);
         });
 
         it('should return 400 if email is already in use', async () => {
             await User.create(userObject);
 
-            const res = await postUser();
+            const res = await post(req);
 
             expect(res.status).toBe(400);
             expect(res.text).toMatch(/[Ee]mail.*[Aa]lready/);
         });
 
         it('should save the user with hash if request is valid', async () => {
-            await postUser();
+            await post(req);
 
             const userInDB = await User.findOne({ email: userObject.email });
 
@@ -151,13 +152,13 @@ describe('/api/users', () => {
         });
 
         it('should add token to header if request is valid', async () => {
-            const res = await postUser();
+            const res = await post(req);
 
             expect(res.header).toHaveProperty('x-auth-token');
         });
 
         it('should return _id, name, and email if request is valid', async () => {
-            const res = await postUser();
+            const res = await post(req);
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('_id');

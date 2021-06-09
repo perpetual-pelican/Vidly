@@ -1,4 +1,3 @@
-const request = require('supertest');
 const config = require('config');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -6,58 +5,70 @@ const test = require('../../testSetup');
 const app = require('../../startup/app');
 const { User } = require('../../models/user');
 
+const { post } = test.request;
+
 describe('/api/auth', () => {
-    let user;
-    let login;
-
-    test.setup('auth');
-
-    beforeEach(async () => {
-        login = {
-            email: 'userEmail@domain.com',
-            password: 'abcdeF1$'
-        };
-        user = await new User({
-            name: 'User Name',
-            email: login.email,
-            password: await bcrypt.hash(login.password, 10),
-            isAdmin: false
-        }).save();
-    });
+    test.setup('auth', app);
 
     describe('POST /', () => {
-        const post = (req) => {
-            if (!req)
-                req = { body: login };
-            return request(app)
-                .post('/api/auth')
-                .send(req.body);
-        };
+        const findOne = User.findOne;
+        let login;
+        let user;
+        let req;
+    
+        beforeEach(async () => {
+            login = {
+                email: 'userEmail@domain.com',
+                password: 'abcdeF1$'
+            };
+            user = await new User({
+                name: 'User Name',
+                email: login.email,
+                password: await bcrypt.hash(login.password, 10),
+                isAdmin: false
+            }).save();
+            req = {
+                body: login
+            };
+        });
+    
+        afterEach(() => {
+            User.findOne = findOne;
+        });
 
         it('should return 400 if request body is invalid', async () => {
-            await test.requestInvalid(post, login);
+            await test.requestInvalid(post, req);
         });
 
         it('should return 400 if email is not found', async () => {
-            login.email = 'not found';
+            req.body.email = 'not found';
 
-            const res = await post();
+            const res = await post(req);
 
             expect(res.status).toBe(400);
             expect(res.text).toMatch(/email.*password/);
         });
 
         it('should return 400 if password is incorrect', async () => {
-            login.password = 'incorrect';
+            req.body.password = 'incorrect';
 
-            const res = await post();
+            const res = await post(req);
 
             expect(res.status).toBe(400);
             expect(res.text).toMatch(/email.*password/);
         });
 
+        it('should return 500 if an uncaughtException is encountered', async () => {
+            User.findOne = jest.fn(() => { throw new Error('fake uncaught exception'); });
+
+            const res = await post(req);
+
+            expect(res.status).toBe(500);
+            expect(res.text).toMatch(/Something failed/);
+        });
+
         it('should return a valid token if request is valid', async () => {
-            const res = await post();
+            const res = await post(req);
 
             const decoded = jwt.verify(res.text, config.get('jwtPrivateKey'));
 
