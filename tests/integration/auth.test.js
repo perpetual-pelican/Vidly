@@ -12,28 +12,32 @@ describe('/api/auth', () => {
 
     describe('POST /', () => {
         const findOne = User.findOne;
-        let login;
+        const login = {
+            email: 'userEmail@domain.com',
+            password: 'abcdeF1$'
+        };
         let user;
         let req;
     
-        beforeEach(async () => {
-            login = {
-                email: 'userEmail@domain.com',
-                password: 'abcdeF1$'
-            };
+        beforeAll(async () => {
             user = await new User({
                 name: 'User Name',
                 email: login.email,
                 password: await bcrypt.hash(login.password, 10),
                 isAdmin: false
             }).save();
-            req = {
-                body: login
-            };
+        });
+
+        beforeEach(() => {
+            req = { body: Object.assign({}, login) };
         });
     
         afterEach(() => {
             User.findOne = findOne;
+        });
+
+        afterAll(async () => {
+            await User.deleteMany();
         });
 
         it('should return 400 if request body is invalid', async () => {

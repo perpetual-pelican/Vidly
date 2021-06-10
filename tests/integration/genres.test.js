@@ -6,20 +6,16 @@ const { Genre } = require('../../models/genre');
 const { getAll, getOne, post, put, del } = test.request;
 
 describe('/api/genres', () => {
-    let genreObject;
-    let req;
-
     test.setup('genres', app);
 
-    beforeEach(() => {
-        genreObject = { name: 'Genre Name' };
-    });
+    const genreObject = { name: 'Genre Name' };
+    let req;
 
     describe('GET /', () => {
         const find = Genre.find;
         let genres;
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             genres = [
                 await new Genre(genreObject).save(),
                 await new Genre({ name: 'Genre Name 2' }).save()
@@ -28,6 +24,10 @@ describe('/api/genres', () => {
 
         afterEach(() => {
             Genre.find = find;
+        });
+
+        afterAll(async () => {
+            await Genre.deleteMany();
         });
 
         it('should return 500 if an uncaughtException is encountered', async () => {
@@ -52,9 +52,16 @@ describe('/api/genres', () => {
     describe('GET /:id', () => {
         let genre;
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             genre = await new Genre(genreObject).save();
+        });
+
+        beforeEach(() => {
             req = { id: genre._id };
+        });
+
+        afterAll(async () => {
+            await Genre.deleteMany();
         });
 
         it('should return 404 if id is invalid', async () => {
@@ -75,11 +82,17 @@ describe('/api/genres', () => {
     });
 
     describe('POST /', () => {
+        const token = new User({ isAdmin: false }).generateAuthToken();
+
         beforeEach(() => {
             req = {
-                token: new User({ isAdmin: false }).generateAuthToken(),
-                body: genreObject
+                token,
+                body: Object.assign({}, genreObject)
             };
+        });
+
+        afterEach(async () => {
+            await Genre.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {
@@ -134,6 +147,10 @@ describe('/api/genres', () => {
             };
         });
 
+        afterEach(async () => {
+            await Genre.deleteMany();
+        });
+
         it('should return 401 if client is not logged in', async () => {
             await test.tokenEmpty(put, req);
         });
@@ -181,14 +198,16 @@ describe('/api/genres', () => {
     });
 
     describe('DELETE /:id', () => {
+        const token = new User({ isAdmin: true }).generateAuthToken();
         let genre;
 
         beforeEach(async () => {
             genre = await new Genre(genreObject).save();
-            req = {
-                token: new User({ isAdmin: true }).generateAuthToken(),
-                id: genre._id
-            };
+            req = { token, id: genre._id };
+        });
+
+        afterEach(async () => {
+            await Genre.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {

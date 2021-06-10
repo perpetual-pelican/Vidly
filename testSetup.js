@@ -27,13 +27,7 @@ module.exports.setup = function(routeName, appToTest) {
         winston.error = jest.fn();
     });
 
-    afterEach(async () => {
-        for (const collectionName of Object.keys(mongoose.connection.collections))
-            await mongoose.connection.collections[collectionName].deleteMany();
-    });
-
     afterAll(async () => {
-        await mongoose.connection.db.dropDatabase();
         await mongoose.disconnect();
     });
 };

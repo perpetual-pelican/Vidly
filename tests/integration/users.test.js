@@ -7,25 +7,22 @@ const { User } = require('../../models/user');
 const { getAll, post } = test.request;
 
 describe('/api/users', () => {
-    let userObject;
+    test.setup('users', app);
+
+    const userObject = {
+        name: "User Name",
+        email: "userEmail@domain.com",
+        password: "abcdeF1$"
+    };
     let user;
     let req;
 
-    test.setup('users', app);
-
-    beforeEach(() => {
-        userObject = {
-            name: "User Name",
-            email: "userEmail@domain.com",
-            password: "abcdeF1$"
-        };
-    });
-
     describe('GET /', () => {
         const find = User.find;
+        let token;
         let adminUser;
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             user = await new User(userObject).save();
             adminUser = await new User({
                 name: 'Admin Name',
@@ -33,11 +30,19 @@ describe('/api/users', () => {
                 password: 'abcdeF1$',
                 isAdmin: true
             }).save();
-            req = { token: adminUser.generateAuthToken() };
+            token = adminUser.generateAuthToken();
+        });
+
+        beforeEach(async () => {
+            req = { token };
         });
 
         afterEach(() => {
             User.find = find;
+        });
+
+        afterAll(async () => {
+            await User.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {
@@ -89,6 +94,10 @@ describe('/api/users', () => {
             req = { token: user.generateAuthToken() };
         });
 
+        afterEach(async () => {
+            await User.deleteMany();
+        });
+
         const getUser = (data) => {
             return request(app)
                 .get('/api/users/me')
@@ -125,7 +134,11 @@ describe('/api/users', () => {
 
     describe('POST /', () => {
         beforeEach(() => {
-            req = { body: userObject };
+            req = { body: Object.assign({}, userObject) };
+        });
+
+        afterEach(async () => {
+            await User.deleteMany();
         });
 
         it('should return 400 if request body is invalid', async () => {

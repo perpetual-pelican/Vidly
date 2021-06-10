@@ -6,21 +6,17 @@ const { Customer } = require('../../models/customer');
 const { getAll, getOne, post, put, del } = test.request;
 
 describe('/api/customers', () => {
-    const token = new User({ isAdmin: false }).generateAuthToken();
-    let customerObject;
-    let req;
-
     test.setup('customers', app);
-
-    beforeEach(() => {
-        customerObject = { name: 'Customer Name', phone: '12345' };
-    });
+    
+    const token = new User({ isAdmin: false }).generateAuthToken();
+    const customerObject = { name: 'Customer Name', phone: '12345' };
+    let req;
 
     describe('GET /', () => {
         const find = Customer.find;
         let customers;
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             customers = [
                 await Customer.create(customerObject),
                 await Customer.create({
@@ -28,11 +24,18 @@ describe('/api/customers', () => {
                     phone: '12345'
                 })
             ];
-            req = { token, body: customerObject };
+        });
+
+        beforeEach(async () => {
+            req = { token };
         });
 
         afterEach(() => {
             Customer.find = find;
+        });
+
+        afterAll(async () => {
+            await Customer.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {
@@ -68,9 +71,16 @@ describe('/api/customers', () => {
     describe('GET /:id', () => {
         let customer;
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             customer = await new Customer(customerObject).save();
+        });
+
+        beforeEach(() => {
             req = { token, id: customer._id };
+        });
+
+        afterAll(async () => {
+            await Customer.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {
@@ -101,7 +111,11 @@ describe('/api/customers', () => {
 
     describe('POST /', () => {
         beforeEach(() => {
-            req = { token, body: customerObject };
+            req = { token, body: Object.assign({}, customerObject) };
+        });
+
+        afterAll(async () => {
+            await Customer.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {
@@ -136,8 +150,8 @@ describe('/api/customers', () => {
     });
 
     describe('PUT /:id', () => {
-        let customer;
         let customerUpdate;
+        let customer;
 
         beforeEach(async () => {
             customer = await new Customer(customerObject).save();
@@ -147,6 +161,10 @@ describe('/api/customers', () => {
                 id: customer._id,
                 body: customerUpdate
             };
+        });
+
+        afterEach(async () => {
+            await Customer.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {
@@ -201,6 +219,10 @@ describe('/api/customers', () => {
                 token: new User({ isAdmin: true }).generateAuthToken(),
                 id: customer._id
             };
+        });
+
+        afterEach(async () => {
+            await Customer.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {

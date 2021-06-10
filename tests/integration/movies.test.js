@@ -9,14 +9,14 @@ const { Movie } = require('../../models/movie');
 const { getAll, getOne, post, put, del } = test.request;
 
 describe('/api/movies', () => {
+    test.setup('movies', app);
+    
     const token = new User({ isAdmin: false }).generateAuthToken();
     let genres;
     let movieObject;
     let req;
 
-    test.setup('movies', app);
-
-    beforeEach(async () => {
+    beforeAll(async () => {
         genres = [
             await new Genre({ name: 'Genre Name' }).save(),
             await new Genre({ name: 'Genre Name 2' }).save()
@@ -29,11 +29,15 @@ describe('/api/movies', () => {
         };
     });
 
+    afterAll(async () => {
+        await Genre.deleteMany();
+    });
+
     describe('GET /', () => {
         const find = Movie.find;
         let movies;
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             movies = [
                 await new Movie(movieObject).save(),
                 await new Movie({
@@ -47,6 +51,10 @@ describe('/api/movies', () => {
 
         afterEach(() => {
             Movie.find = find;
+        });
+
+        afterAll(async () => {
+            await Movies.deleteMany();
         });
 
         it('should return 500 if an uncaughtException is encountered', async () => {
@@ -81,9 +89,16 @@ describe('/api/movies', () => {
     describe('GET /:id', () => {
         let movie;
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             movie = await new Movie(movieObject).save();
+        });
+
+        beforeEach(() => {
             req = { id: movie._id };
+        });
+
+        afterAll(async () => {
+            await Movies.deleteMany();
         });
 
         it('should return 404 if id is invalid', async () => {
@@ -110,9 +125,17 @@ describe('/api/movies', () => {
 
     describe('POST /', () => {
         beforeEach(async () => {
-            delete movieObject.genres;
-            movieObject.genreIds = [genres[0]._id];
-            req = { token, body: movieObject };
+            req = {
+                token,
+                body: Object.assign({},
+                    _.omit(movieObject, ['genres']),
+                    { genreIds: [genres[0]._id]}
+                )
+            };
+        });
+
+        afterEach(async () => {
+            await Movie.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {
@@ -187,6 +210,10 @@ describe('/api/movies', () => {
                 id: movie._id,
                 body: movieUpdate
             };
+        });
+
+        afterEach(async () => {
+            await Movie.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {
@@ -275,6 +302,10 @@ describe('/api/movies', () => {
                 token: new User({ isAdmin: true }).generateAuthToken(),
                 id: movie._id
             };
+        });
+
+        afterEach(async () => {
+            await Movie.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {

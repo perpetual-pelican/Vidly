@@ -8,12 +8,13 @@ const { Rental } = require('../../models/rental');
 const { post } = test.request;
 
 describe('/api/returns', () => {
+    test.setup('returns', app);
+
     const lookup = Rental.lookup;
     const token = new User({ isAdmin: false }).generateAuthToken();
     let rental;
     let returnObject;
-
-    test.setup('returns', app);
+    let req;
 
     beforeEach(async () => {
         rental = await new Rental({
@@ -33,8 +34,10 @@ describe('/api/returns', () => {
         req = { token, body: returnObject };
     });
 
-    afterEach(() => {
+    afterEach(async () => {
         Rental.lookup = lookup;
+        await Movie.deleteMany();
+        await Rental.deleteMany();
     });
     
     it('should return 401 if client is not logged in', async () => {

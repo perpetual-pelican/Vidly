@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const _ = require('lodash');
 const test = require('../../testSetup');
 const app = require('../../startup/app');
 const { User } = require('../../models/user');
@@ -11,29 +10,33 @@ const { Rental } = require('../../models/rental');
 const { getAll, getOne, post, del } = test.request;
 
 describe('/api/rentals', () => {
-    const token = new User({ isAdmin: false }).generateAuthToken();
+    test.setup('rentals', app);
+
+    let token = new User({ isAdmin: false }).generateAuthToken();
     let customer;
+    let movieObject;
     let movie;
     let rentalObject;
     let req;
 
-    test.setup('rentals', app);
-
-    beforeEach(async () => {
+    beforeAll(async () => {
         customer = await new Customer({
             name: 'Customer Name',
             phone: '12345'
         }).save();
-        movie = await new Movie({
+        movieObject = {
             title: 'Movie Title',
             dailyRentalRate: 1,
             numberInStock: 1,
             genres: [new Genre({ name: 'Genre Name' })]
-        }).save();
-        rentalObject = {
-            customer: _.pick(customer, ['_id', 'name', 'phone', 'isGold']),
-            movie: _.pick(movie, ['_id', 'title', 'dailyRentalRate'])
         };
+        movie = await new Movie(movieObject).save();
+        rentalObject = { customer, movie };
+    });
+
+    afterAll(async () => {
+        await Customer.deleteMany();
+        await Movie.deleteMany();
     });
 
     describe('GET /', () => {
@@ -41,7 +44,7 @@ describe('/api/rentals', () => {
         let customer2;
         let movie2;
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             customer2 = await new Customer({
                 name: 'Customer Name 2',
                 phone: '12345'
@@ -54,16 +57,20 @@ describe('/api/rentals', () => {
             }).save();
             await Rental.insertMany([
                 rentalObject,
-                {
-                    customer: _.pick(customer2, ['_id', 'name', 'phone', 'isGold']),
-                    movie: _.pick(movie2, ['_id', 'title', 'dailyRentalRate'])
-                }
+                { customer: customer2, movie: movie2 }
             ]);
+        });
+
+        beforeEach(async () => {
             req = { token };
         });
 
-        afterEach(() => {
+        afterEach(async () => {
             Rental.find = find;
+        });
+
+        afterAll(async () => {
+            await Rental.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {
@@ -108,9 +115,16 @@ describe('/api/rentals', () => {
     describe('GET /:id', () => {
         let rental;
 
-        beforeEach(async () => {
+        beforeAll(async () => {
             rental = await new Rental(rentalObject).save();
+        });
+
+        beforeEach(() => {
             req = { token, id: rental._id };
+        });
+
+        afterAll(async() => {
+            await Rental.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {
@@ -140,11 +154,18 @@ describe('/api/rentals', () => {
 
     describe('POST /', () => {
         beforeEach(async () => {
-            rentalObject = {
-                customerId: customer._id,
-                movieId: movie._id
+            movie = await new Movie(movieObject).save();
+            req = { token,
+                body: {
+                    customerId: customer._id,
+                    movieId: movie._id
+                }
             };
-            req = { token, body: rentalObject };
+        });
+
+        afterEach(async () => {
+            await Movie.deleteMany();
+            await Rental.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {
@@ -213,14 +234,18 @@ describe('/api/rentals', () => {
     });
 
     describe('DELETE /:id', () => {
+        token = new User({ isAdmin: true }).generateAuthToken();
         let rental;
 
         beforeEach(async () => {
+            movie = await new Movie(movieObject).save();
+            rentalObject.movie = movie;
             rental = await new Rental(rentalObject).save();
-            req = {
-                token: new User({ isAdmin: true }).generateAuthToken(),
-                id: rental._id
-            };
+            req = { token, id: rental._id };
+        });
+
+        afterEach(async () => {
+            await Rental.deleteMany();
         });
 
         it('should return 401 if client is not logged in', async () => {
