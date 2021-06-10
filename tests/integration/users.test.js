@@ -89,10 +89,10 @@ describe('/api/users', () => {
             req = { token: user.generateAuthToken() };
         });
 
-        const getUser = (req) => {
+        const getUser = (data) => {
             return request(app)
                 .get('/api/users/me')
-                .set('x-auth-token', req.token);
+                .set('x-auth-token', data.token);
         };
 
         it('should return 401 if client is not logged in', async () => {

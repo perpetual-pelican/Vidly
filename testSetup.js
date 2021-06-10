@@ -9,10 +9,16 @@ let route;
 let app;
 
 module.exports.setup = function(routeName, appToTest) {
+    if (routeName && typeof routeName !== 'string')
+        throw new Error('routeName must be a string');
+    if (appToTest && typeof appToTest !== 'function')
+        throw new Error('appToTest must be an express app');
+
     route = routeName;
     app = appToTest;
+
     beforeAll(async () => {
-        await mongoose.connect(`${config.get('db')}_${routeName}`, {
+        await mongoose.connect(`${config.get('db')}_${route}`, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useFindAndModify: false,
@@ -32,22 +38,22 @@ module.exports.setup = function(routeName, appToTest) {
     });
 };
 
-const checkIfSetupCalled = () => {
+const checkSetup = () => {
     if (!app || !route)
-        throw new Error('setup must be called before using request functions');
+        throw new Error('setup must be called with route and app before using request functions');
 };
 
 module.exports.request = {
     getAll: function(req) {
-        checkIfSetupCalled();
-        if (!req)
+        checkSetup();
+        if (!req || !req.token)
             return request(app).get(`/api/${route}`);
         return request(app)
             .get(`/api/${route}`)
             .set('x-auth-token', req.token);
     },
     getOne: function(req) {
-        checkIfSetupCalled();
+        checkSetup();
         if (!req.token)
             return request(app).get(`/api/${route}/${req.id}`);
         return request(app)
@@ -55,7 +61,7 @@ module.exports.request = {
             .set('x-auth-token', req.token);
     },
     post: function(req) {
-        checkIfSetupCalled();
+        checkSetup();
         if (!req.token) {
             return request(app)
                 .post(`/api/${route}`)
@@ -67,7 +73,7 @@ module.exports.request = {
             .send(req.body);
     },
     put: function(req) {
-        checkIfSetupCalled();
+        checkSetup();
         if (!req.token) {
             return request(app)
                 .put(`/api/${route}/${req.id}`)
@@ -79,7 +85,7 @@ module.exports.request = {
             .send(req.body);
     },
     del: function(req) {
-        checkIfSetupCalled();
+        checkSetup();
         if (!req.token) {
             return request(app).delete(`/api/${route}/${req.id}`);
         }

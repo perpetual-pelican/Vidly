@@ -43,7 +43,7 @@ describe('/api/rentals', () => {
 
         beforeEach(async () => {
             customer2 = await new Customer({
-                name: 'customer Name 2',
+                name: 'Customer Name 2',
                 phone: '12345'
             }).save();
             movie2 = await new Movie({
