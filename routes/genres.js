@@ -1,7 +1,12 @@
 const express = require('express');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
-const { Genre, validatePost, validatePut } = require('../models/genre');
+const validateObjectId = require('../middleware/validateObjectId');
+const validate = require('../middleware/validate');
+const find = require('../middleware/find');
+const send = require('../middleware/send');
+const remove = require('../middleware/remove');
+const { Genre, validate: gval } = require('../models/genre');
 
 const router = express.Router();
 
@@ -11,47 +16,30 @@ router.get('/', async (req, res) => {
     res.send(genres);
 });
 
-router.get('/:name', async (req, res) => {
-    const genre = await Genre.findOne({ name: req.params.name });
-    if (!genre) return res.status(404).send("Genre name was not found");
+router.get('/:id', validateObjectId, find(Genre), send);
 
-    res.send(genre);
-});
-
-router.post('/', auth, async (req, res) => {
-    const { error } = validatePost(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-
-    let genre = await Genre.findOne({ name: req.body.name });
-    if (genre) return res.status(400).send("Genre name already exists");
-
-    genre = new Genre({ name: req.body.name });
-    await genre.save();
-
-    res.send(genre);
-});
-
-router.put('/:name', auth, async (req, res) => {
-    let genre = await Genre.findOne({ name: req.params.name });
-    if (!genre) return res.status(404).send("Genre name was not found");
-
-    const { error } = validatePut(req.body);
-    if (error) return res.status(400).send(error.message);
-    
+router.post('/', auth, validate(gval), async (req, res) => {
     const targetGenre = await Genre.findOne({ name: req.body.name });
     if (targetGenre) return res.status(400).send("Genre name already exists");
 
-    genre.name = req.body.name;
+    const genre = new Genre(req.body);
     await genre.save();
 
     res.send(genre);
 });
 
-router.delete('/:name', [auth, admin], async (req, res) => {
-    const genre = await Genre.findOneAndDelete({ name: req.params.name });
-    if (!genre) return res.status(404).send("Genre name was not found");
+router.put('/:id', auth, validateObjectId, find(Genre), validate(gval), async (req, res) => {
+    const targetGenre = await Genre.findOne({ name: req.body.name });
+    if (targetGenre) return res.status(400).send("Genre name already exists");
+
+    const genre = req.doc;
+
+    genre.set(req.body);
+    await genre.save();
 
     res.send(genre);
 });
+
+router.delete('/:id', auth, admin, validateObjectId, remove(Genre), send);
 
 module.exports = router;

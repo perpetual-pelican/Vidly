@@ -1,45 +1,16 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
 const moment = require('moment');
+const { customerSchema } = require('./customer');
+const { movieSchemaFields } = require('./movie');
 
 const rentalSchema = new mongoose.Schema({
     customer: {
-        type: new mongoose.Schema({
-            name: {
-                type: String,
-                required: true,
-                minlength: 3,
-                maxlength: 128
-            },
-            phone: {
-                type: String,
-                required: true,
-                minlength: 5,
-                maxlength: 32
-            },
-            isGold: {
-                type: Boolean,
-                default: false
-            }
-        }),
+        type: customerSchema,
         required: true
     },
     movie: {
-        type: new mongoose.Schema({
-            title: {
-                type: String,
-                required: true,
-                trim: true,
-                minlength: 3,
-                maxlength: 128
-            },
-            dailyRentalRate: {
-                type: Number,
-                required: true,
-                min: 0,
-                max: 20
-            }
-        }),
+        type: new mongoose.Schema(movieSchemaFields),
         required: true
     },
     dateOut: {
@@ -63,18 +34,18 @@ rentalSchema.statics.lookup = function(customerId, movieId) {
     });
 };
 
-rentalSchema.methods.return = function() {
+rentalSchema.methods.return = async function() {
     this.dateReturned = Date.now();
     
     const daysOut = moment(this.dateReturned).diff(this.dateOut, 'days');
     this.rentalFee = daysOut * this.movie.dailyRentalRate;
 
-    this.save();
+    await this.save();
 };
 
 const Rental = mongoose.model('Rental', rentalSchema);
 
-function validateRental(rental) {
+function validate(rental) {
     const schema = Joi.object({
         customerId: Joi.objectId().required(),
         movieId: Joi.objectId().required()
@@ -83,4 +54,4 @@ function validateRental(rental) {
 }
 
 exports.Rental = Rental;
-exports.validateRental = validateRental;
+exports.validate = validate;

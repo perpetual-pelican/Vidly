@@ -1,14 +1,12 @@
-const express = require('express');
-
-const app = express();
+require('./startup/logging');
+require('./startup/config');
+require('./startup/app');
+const connectToDB = require('./startup/db');
+const startServer = require('./startup/server');
 
 async function main() {
-    require('./startup/logging')();
-    require('./startup/routes')(app);
-    await require('./startup/db')();
-    require('./startup/config')();
-    require('./startup/validation')();
-    return require('./startup/server')(app);
+    await connectToDB();
+    startServer();
 }
 
-module.exports = main();
+main();

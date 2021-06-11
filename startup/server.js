@@ -1,6 +1,11 @@
 const winston = require('winston');
+const app = require('./app');
 
-module.exports = function(app) {
+module.exports = function() {
     const port = process.env.PORT || 3000;
-    return app.listen(port, () => winston.info(`Listening on port ${port}...`));
+    const server = app.listen(port);
+
+    winston.info(`Listening on port ${port}...`);
+
+    return server;
 };

@@ -4,25 +4,29 @@ const jwt = require('jsonwebtoken');
 const Joi = require('joi');
 const passwordComplexity = require('joi-password-complexity');
 
+const name = { min: 3, max: 128 };
+const email = { min: 7, max: 69 };
+const password = { min: 8, max: 72 };
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        minlength: 3,
-        maxlength: 128
+        minLength: name.min,
+        maxLength: name.max
     },
     email: {
         type: String,
         required: true,
         unique: true,
-        minlength: 3,
-        maxlength: 128
+        minLength: email.min,
+        maxLength: email.max
     },
     password: {
         type: String,
         required: true,
-        minlength: 8,
-        maxlength: 255
+        minLength: password.min,
+        maxLength: password.max
     },
     isAdmin: {
         type: Boolean,
@@ -31,20 +35,28 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.methods.generateAuthToken = function() {
-    const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get('jwtPrivateKey'));
-    return token;
+    return jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get('jwtPrivateKey'));
 };
 
 const User = mongoose.model('User', userSchema);
 
-function validateUser(user) {
+function validate(user) {
     const schema = Joi.object({
-        name: Joi.string().min(3).max(128).required(),
-        email: Joi.string().min(3).max(128).email().required(),
-        password: passwordComplexity().required()
+        name: Joi.string().min(name.min).max(name.max).required(),
+        email: Joi.string().min(email.min).max(email.max).email().required(),
+        password: passwordComplexity({
+            min: password.min,
+            max: password.max,
+            lowerCase: 1,
+            upperCase: 1,
+            numeric: 1,
+            symbol: 1,
+            requirementCount: 4
+        }).required()
     });
     return schema.validate(user);
 }
 
 exports.User = User;
-exports.validateUser = validateUser;
+exports.validate = validate;
+exports.bounds = { name, email, password };
