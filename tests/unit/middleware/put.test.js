@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const config = require('config');
+const db = require('../../../startup/config').db;
 const put = require('../../../middleware/put');
 
 describe('put middleware', () => {
@@ -10,7 +10,7 @@ describe('put middleware', () => {
     let next;
 
     beforeAll(async () => {
-        await mongoose.connect(config.get('db') + '_put', {
+        await mongoose.connect(db + '_put', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useFindAndModify: false,

@@ -2,8 +2,8 @@
 
 const request = require('supertest');
 const mongoose = require('mongoose');
-const config = require('config');
 const winston = require('winston');
+const db = require('./startup/config').db;
 
 let route;
 let app;
@@ -18,7 +18,7 @@ module.exports.setup = function(routeName, appToTest) {
     app = appToTest;
 
     beforeAll(async () => {
-        await mongoose.connect(`${config.get('db')}_${route}`, {
+        await mongoose.connect(`${db}_${route}`, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useFindAndModify: false,

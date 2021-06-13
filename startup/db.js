@@ -1,9 +1,8 @@
-const config = require('config');
 const mongoose = require('mongoose');
 const winston = require('winston');
+const db = require('./config').db;
 
 module.exports = async function() {
-    const db = config.get('db');
     await mongoose.connect(db, {
         useNewUrlParser: true,
         useUnifiedTopology: true,

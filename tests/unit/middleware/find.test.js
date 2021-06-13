@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const config = require('config');
+const db = require('../../../startup/config').db;
 const find = require('../../../middleware/find');
 
 describe('find middleware', () => {
@@ -10,7 +10,7 @@ describe('find middleware', () => {
     let next;
 
     beforeAll(async () => {
-        await mongoose.connect(config.get('db') + '_find', {
+        await mongoose.connect(db + '_find', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useFindAndModify: false,

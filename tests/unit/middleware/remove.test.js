@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const config = require('config');
+const db = require('../../../startup/config').db;
 const remove = require('../../../middleware/remove');
 
 describe('remove middleware', () => {
@@ -10,7 +10,7 @@ describe('remove middleware', () => {
     let next;
 
     beforeAll(async () => {
-        await mongoose.connect(config.get('db') + '_remove', {
+        await mongoose.connect(db + '_remove', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
             useFindAndModify: false,

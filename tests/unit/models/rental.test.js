@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const config = require('config');
 const moment = require('moment');
+const db = require('../../../startup/config').db;
 const { Customer } = require('../../../models/customer');
 const { Movie } = require('../../../models/movie');
 const { Rental, validate } = require('../../../models/rental');
@@ -10,7 +10,7 @@ describe('Rental model', () => {
 
     describe('mongodb access functions', () => {
         beforeAll(async () => {
-            await mongoose.connect(config.get('db') + '_rental', {
+            await mongoose.connect(db + '_rental', {
                 useNewUrlParser: true,
                 useUnifiedTopology: true,
                 useFindAndModify: false,
@@ -36,7 +36,6 @@ describe('Rental model', () => {
         });
     
         afterAll(async () => {
-            await mongoose.connection.db.dropDatabase();
             await mongoose.disconnect();
         });
     
