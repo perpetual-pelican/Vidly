@@ -12,19 +12,26 @@ describe('/api/returns', () => {
 
     const lookup = Rental.lookup;
     const token = new User({ isAdmin: false }).generateAuthToken();
+    let movie;
     let rental;
     let returnObject;
     let req;
 
     beforeEach(async () => {
+        movie = await new Movie({
+            title: 'Movie Title',
+            numberInStock: 0,
+            dailyRentalRate: 2
+        }).save();
         rental = await new Rental({
             customer: {
                 name: 'Customer Name',
                 phone: '12345'
             },
             movie: {
-                title: 'Movie Title',
-                dailyRentalRate: 2
+                _id: movie._id,
+                title: movie.title,
+                dailyRentalRate: movie.dailyRentalRate
             }
         }).save();
         returnObject = {
@@ -68,16 +75,7 @@ describe('/api/returns', () => {
         const res = await post(req);
 
         expect(res.status).toBe(404);
-        expect(res.text).toMatch(/[Nn]ot.*[Ff]ound/);
-    });
-
-    it('should return 400 if return was already processed', async () => {
-        await rental.return();
-
-        const res = await post(req);
-
-        expect(res.status).toBe(400);
-        expect(res.text).toMatch(/[Rr]eturn/);
+        expect(res.text).toMatch(/[Rr]ental.*[Cc]ustomer.*[Mm]ovie/);
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
@@ -110,14 +108,6 @@ describe('/api/returns', () => {
     });
 
     it('should update the rental and increase the movie stock if request is valid', async () => {
-        const movie = await new Movie({
-            _id: returnObject.movieId,
-            title: rental.movie.title,
-            genres: [{ name: 'Genre Name' }],
-            numberInStock: 0,
-            dailyRentalRate: rental.movie.dailyRentalRate
-        }).save();
-        
         await post(req);
 
         const rentalInDB = await Rental.findById(rental._id);
