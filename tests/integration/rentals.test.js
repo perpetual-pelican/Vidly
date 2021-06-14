@@ -207,19 +207,28 @@ describe('/api/rentals', () => {
             expect(res.text).toMatch(/[Mm]ovie.*[Ss]tock/);
         });
 
+        it('should return 400 if active rental exists for customer and movie', async () => {
+            await Rental.create({ customer, movie });
+
+            const res = await post(req);
+
+            expect(res.status).toBe(400);
+            expect(res.text).toMatch(/[Aa]lready.*[Rr]ent/);
+        });
+
         it('should save the rental and decrease the movie stock if request is valid', async () => {
             await post(req);
 
+            const movieInDB = await Movie.findById(movie._id);
             const rentalInDB = await Rental.findOne({
                 'customer._id': customer._id,
                 'movie._id': movie._id
             });
-            const movieInDB = await Movie.findById(movie._id);
 
+            expect(movieInDB.numberInStock).toBe(movie.numberInStock - 1);
             expect(rentalInDB).toHaveProperty('_id');
             expect(rentalInDB).toHaveProperty('customer._id', customer._id);
             expect(rentalInDB).toHaveProperty('movie._id', movie._id);
-            expect(movieInDB.numberInStock).toBe(movie.numberInStock - 1);
         });
 
         it('should return the rental if request is valid', async () => {
@@ -239,8 +248,7 @@ describe('/api/rentals', () => {
 
         beforeEach(async () => {
             movie = await new Movie(movieObject).save();
-            rentalObject.movie = movie;
-            rental = await new Rental(rentalObject).save();
+            rental = await new Rental({ customer, movie }).save();
             req = { token, id: rental._id };
         });
 
@@ -270,18 +278,33 @@ describe('/api/rentals', () => {
             await test.idNotFound(del, req);
         });
 
-        it('should delete the rental and increase the movie stock if request is valid', async () => {
+        it('should increase the movie stock and delete the rental if it has not already been returned', async () => {
             await del(req);
 
+            const movieInDB = await Movie.findById(movie._id);
             const rentalInDB = await Rental.findOne({
                 'customer._id': customer._id,
                 'movie._id': movie._id
             });
 
-            const movieInDB = await Movie.findById(movie._id);
-
-            expect(rentalInDB).toBeNull();
             expect(movieInDB.numberInStock).toBe(movie.numberInStock + 1);
+            expect(rentalInDB).toBeNull();
+        });
+
+        it('should only delete the rental if it has already been returned', async () => {
+            await rental.return();
+            const movieBefore = await Movie.findById(movie._id);
+
+            await del(req);
+
+            const movieInDB = await Movie.findById(movie._id);
+            const rentalInDB = await Rental.findOne({
+                'customer._id': customer._id,
+                'movie._id': movie._id
+            });
+
+            expect(movieInDB.numberInStock).toBe(movieBefore.numberInStock);
+            expect(rentalInDB).toBeNull();
         });
 
         it('should return the rental if request is valid', async () => {
