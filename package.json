@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "db": "npx run-rs -v 4.4.6 --keep",
     "start": "node index.js",
     "test": "jest --coverage"
   },
