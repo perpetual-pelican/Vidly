@@ -36,7 +36,7 @@ Node-based video rental processing app using MongoDB/Mongoose and Express
 
 ### View Home Page
  - Open http://localhost:3000 or `http://localhost:[PORT]` in a browser
- - Here, you should see `Home Page` displayed in plain text, indicating a successful response from the server
+ - Here, you should see "Home Page" displayed in plain text, indicating a successful response from the server
    - beyond this, it is best to use something like Postman to test http requests on the various routes available
  
 ### URL Route Structure
