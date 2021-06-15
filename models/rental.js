@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Joi = require('joi');
 const moment = require('moment');
 const { customerSchema } = require('./customer');
-const { movieSchemaFields } = require('./movie');
+const { movieSchemaBase } = require('./movie');
 
 const rentalSchema = new mongoose.Schema({
     customer: {
@@ -10,7 +10,7 @@ const rentalSchema = new mongoose.Schema({
         required: true
     },
     movie: {
-        type: new mongoose.Schema(movieSchemaFields),
+        type: new mongoose.Schema(movieSchemaBase),
         required: true
     },
     dateOut: {
@@ -46,12 +46,13 @@ rentalSchema.methods.return = async function(session) {
 
 const Rental = mongoose.model('Rental', rentalSchema);
 
+const joiSchema = Joi.object({
+  customerId: Joi.objectId().required(),
+  movieId: Joi.objectId().required()
+});
+
 function validate(rental) {
-    const schema = Joi.object({
-        customerId: Joi.objectId().required(),
-        movieId: Joi.objectId().required()
-    });
-    return schema.validate(rental);
+    return joiSchema.validate(rental);
 }
 
 exports.Rental = Rental;

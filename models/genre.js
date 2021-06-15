@@ -15,14 +15,15 @@ const genreSchema = new mongoose.Schema({
 
 const Genre = mongoose.model('Genre', genreSchema);
 
+const joiSchema = Joi.object({
+  name: Joi.string().min(name.min).max(name.max).required()
+});
+
 function validate(genre) {
-    const postSchema = Joi.object({
-        name: Joi.string().min(name.min).max(name.max).required()
-    });
-    return postSchema.validate(genre);
+    return joiSchema.validate(genre);
 }
 
+exports.bounds = { name };
 exports.genreSchema = genreSchema;
 exports.Genre = Genre;
 exports.validate = validate;
-exports.bounds = { name };

@@ -40,23 +40,24 @@ userSchema.methods.generateAuthToken = function() {
 
 const User = mongoose.model('User', userSchema);
 
+const joiSchema = Joi.object({
+  name: Joi.string().min(name.min).max(name.max).required(),
+  email: Joi.string().min(email.min).max(email.max).email().required(),
+  password: passwordComplexity({
+      min: password.min,
+      max: password.max,
+      lowerCase: 1,
+      upperCase: 1,
+      numeric: 1,
+      symbol: 1,
+      requirementCount: 4
+  }).required()
+});
+
 function validate(user) {
-    const schema = Joi.object({
-        name: Joi.string().min(name.min).max(name.max).required(),
-        email: Joi.string().min(email.min).max(email.max).email().required(),
-        password: passwordComplexity({
-            min: password.min,
-            max: password.max,
-            lowerCase: 1,
-            upperCase: 1,
-            numeric: 1,
-            symbol: 1,
-            requirementCount: 4
-        }).required()
-    });
-    return schema.validate(user);
+    return joiSchema.validate(user);
 }
 
+exports.bounds = { name, email, password };
 exports.User = User;
 exports.validate = validate;
-exports.bounds = { name, email, password };

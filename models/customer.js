@@ -33,27 +33,28 @@ const joiSchema = {
     isGold: Joi.boolean()
 };
 
-function validatePost(customer) {
-    const postSchema = Joi.object({
-        name: joiSchema.name.required(),
-        phone: joiSchema.phone.required(),
-        isGold: joiSchema.isGold
-    });
+const joiPostSchema = Joi.object({
+  name: joiSchema.name.required(),
+  phone: joiSchema.phone.required(),
+  isGold: joiSchema.isGold
+});
 
-    return postSchema.validate(customer);
+function validatePost(customer) {
+    return joiPostSchema.validate(customer);
 }
+
+const joiPutSchema = Joi.object(joiSchema);
 
 function validatePut(customer) {
-    const putSchema = Joi.object(joiSchema);
-
-    if (Object.keys(customer).length === 0)
-        return { error: new Error('At least one property is required to update customer') };
-
-    return putSchema.validate(customer);
+    if (Object.keys(customer).length === 0) {
+        const message = 'At least one property is required to update customer';
+        return { error: new Error(message) };
+    }
+    return joiPutSchema.validate(customer);
 }
 
+exports.bounds = { name, phone };
 exports.customerSchema = customerSchema;
 exports.Customer = Customer;
 exports.validatePost = validatePost;
 exports.validatePut = validatePut;
-exports.bounds = { name, phone };
