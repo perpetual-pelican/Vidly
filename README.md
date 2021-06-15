@@ -1,7 +1,7 @@
 # Vidly
 Node-based video rental processing app using MongoDB/Mongoose and Express
- - based on The Complete Node.js Course by Mosh Hamedani.
- - project is still unfinished and has no front-end, but I plan to work on that in the future
+ - based on The Complete Node.js Course by Mosh Hamedani
+ - project has no front-end, but I plan to work on that in the future
 
 ## Setup
 
@@ -13,27 +13,34 @@ Node-based video rental processing app using MongoDB/Mongoose and Express
    - in /etc/mongo/data/db on Mac ( or /usr/local/var/mongodb using homebrew)
 
 ### Install Dependencies
-1. Open a terminal in the repository directory
-2. Run `npm ci` to install all dependencies
+1. Clone the repository
+2. Open a terminal in the repository directory
+3. Run `npm ci` to install all dependencies
+
+### Start DB
+ - In a new terminal, use the command `npm run db` to start the database
+ - A few messages will be displayed, indicating that a replica set is being started
+ - After several seconds, the database will be ready when it says "Connected to oplog"
 
 ### Run Tests
- - Use `npm test` to run all tests. They should all pass if the project has been set up successfully
+ - With the database running, go back to the first terminal and use `npm test` to run all tests
+ - They should all pass if the project has been set up successfully
 
 ### Prepare Environment Variables
-1. set `vidly_jwtPrivateKey` using a private key of your choice
-2. If you wish, set `PORT` to specify a port for the server, otherwise port 3000 will be used
+ - Set `vidly_jwtPrivateKey` using a private key of your choice. This is used for authentication
+ - If you wish, set `PORT` to specify a port for the server, otherwise port 3000 will be used
 
 ### Start Server
- - Run `node index.js`
+ - In the same terminal used to run the tests, use `npm start` to run the server
  - Two info messages should be displayed, indicating successful database connection and server startup
 
-### View the Home Page
- - Open http://localhost:3000 or `http://localhost:[YOUR_PORT_NUMBER]` in a browser
- - Here, you should see `Home Page` displayed in plain text, indicating a 200 response from the server
+### View Home Page
+ - Open http://localhost:3000 or `http://localhost:[PORT]` in a browser
+ - Here, you should see `Home Page` displayed in plain text, indicating a successful response from the server
    - beyond this, it is best to use something like Postman to test http requests on the various routes available
  
 ### URL Route Structure
-    http://localhost:[PORT_NUMBER]/
+    http://localhost:[PORT]/
       api/
         auth
         users/
@@ -41,7 +48,7 @@ Node-based video rental processing app using MongoDB/Mongoose and Express
         customers/
           customerId
         genres/
-          genreName
+          genreId
         movies/
           movieId
         rentals/
