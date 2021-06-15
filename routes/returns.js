@@ -4,11 +4,11 @@ const auth = require('../middleware/auth');
 const validate = require('../middleware/validate');
 const { Rental } = require('../models/rental');
 const { Movie } = require('../models/movie');
-const { validate: rval } = require('../models/rental');
+const { validate: rVal } = require('../models/rental');
 
 const router = express.Router();
 
-router.post('/', auth, validate(rval), async (req, res) => {
+router.post('/', auth, validate(rVal), async (req, res) => {
     const rental = await Rental.lookup(req.body.customerId, req.body.movieId);
     if (!rental)
         return res.status(404).send('No active rental for customer and movie');

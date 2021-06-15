@@ -4,7 +4,7 @@ const _ = require('lodash');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const validate = require('../middleware/validate');
-const { User, validate: uval } = require('../models/user');
+const { User, validate: uVal } = require('../models/user');
 
 const router = express.Router();
 
@@ -21,7 +21,7 @@ router.get('/me', auth, async (req, res) => {
     res.send(user);
 });
 
-router.post('/', validate(uval), async (req, res) => {
+router.post('/', validate(uVal), async (req, res) => {
     let user = await User.findOne({ email: req.body.email });
     if (user) return res.status(400).send('Email already in use');
 

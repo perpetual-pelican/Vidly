@@ -7,7 +7,7 @@ const validateObjectId = require('../middleware/validateObjectId');
 const validate = require('../middleware/validate');
 const find = require('../middleware/find');
 const send = require('../middleware/send');
-const { Rental, validate: rval } = require('../models/rental');
+const { Rental, validate: rVal } = require('../models/rental');
 const { Customer } = require('../models/customer');
 const { Movie } = require('../models/movie');
 
@@ -21,7 +21,7 @@ router.get('/', auth, async (req, res) => {
 
 router.get('/:id', auth, validateObjectId, find(Rental), send);
 
-router.post('/', auth, validate(rval), async (req, res) => {
+router.post('/', auth, validate(rVal), async (req, res) => {
     const customer = await Customer.findById(req.body.customerId);
     if (!customer) return res.status(400).send('Invalid customer id');
 

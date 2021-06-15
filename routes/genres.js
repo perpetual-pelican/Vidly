@@ -6,7 +6,7 @@ const validate = require('../middleware/validate');
 const find = require('../middleware/find');
 const send = require('../middleware/send');
 const remove = require('../middleware/remove');
-const { Genre, validate: gval } = require('../models/genre');
+const { Genre, validate: gVal } = require('../models/genre');
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', validateObjectId, find(Genre), send);
 
-router.post('/', auth, validate(gval), async (req, res) => {
+router.post('/', auth, validate(gVal), async (req, res) => {
     const targetGenre = await Genre.findOne({ name: req.body.name });
     if (targetGenre) return res.status(400).send("Genre name already exists");
 
@@ -28,7 +28,7 @@ router.post('/', auth, validate(gval), async (req, res) => {
     res.send(genre);
 });
 
-router.put('/:id', auth, validateObjectId, find(Genre), validate(gval), async (req, res) => {
+router.put('/:id', auth, validateObjectId, find(Genre), validate(gVal), async (req, res) => {
     const targetGenre = await Genre.findOne({ name: req.body.name });
     if (targetGenre) return res.status(400).send("Genre name already exists");
 
