@@ -8,7 +8,7 @@ const post = require('../middleware/post');
 const put = require('../middleware/put');
 const remove = require('../middleware/remove');
 const send = require('../middleware/send');
-const { Customer, validatePost: postVal, validatePut: putVal } = require('../models/customer');
+const { Customer, validatePost, validatePut } = require('../models/customer');
 
 const router = express.Router();
 
@@ -20,9 +20,9 @@ router.get('/', auth, async (req, res) => {
 
 router.get('/:id', auth, validateObjectId, find(Customer), send);
 
-router.post('/', auth, validate(postVal), post(Customer), send);
+router.post('/', auth, validate(validatePost), post(Customer), send);
 
-router.put('/:id', auth, validateObjectId, find(Customer), validate(putVal), put, send);
+router.put('/:id', auth, validateObjectId, find(Customer), validate(validatePut), put, send);
 
 router.delete('/:id', auth, admin, validateObjectId, remove(Customer), send);
 

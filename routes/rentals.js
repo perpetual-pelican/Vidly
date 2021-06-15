@@ -30,12 +30,12 @@ router.post('/', auth, validate(rVal), async (req, res) => {
 
     if (movie.numberInStock < 1)
         return res.status(400).send('Movie out of stock');
-    movie.set({ numberInStock: movie.numberInStock-1 });
 
     let rental = await Rental.lookup(req.body.customerId, req.body.movieId);
     if (rental)
         return res.status(400).send('Customer is already renting this movie');
 
+    movie.set({ numberInStock: movie.numberInStock-1 });
     rental = new Rental({
         customer: _.pick(customer, ['_id', 'name', 'phone', 'isGold']),
         movie: _.pick(movie, ['_id', 'title', 'dailyRentalRate'])

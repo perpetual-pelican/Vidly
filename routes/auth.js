@@ -18,11 +18,12 @@ router.post('/', validate(validateUser), async (req, res) => {
     res.send(token);
 });
 
+const schema = Joi.object({
+  email: Joi.string().max(255).required(),
+  password: Joi.string().max(255).required()
+});
+
 function validateUser(user) {
-    const schema = Joi.object({
-        email: Joi.string().max(255).required(),
-        password: Joi.string().max(255).required()
-    });
     return schema.validate(user);
 }
 

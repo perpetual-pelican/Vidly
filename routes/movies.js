@@ -6,7 +6,7 @@ const validate = require('../middleware/validate');
 const find = require('../middleware/find');
 const send = require('../middleware/send');
 const remove = require('../middleware/remove');
-const { Movie, validatePost: postVal, validatePut: putVal } = require('../models/movie');
+const { Movie, validatePost, validatePut } = require('../models/movie');
 const { Genre } = require('../models/genre');
 
 const router = express.Router();
@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', validateObjectId, find(Movie), send);
 
-router.post('/', auth, validate(postVal), async (req, res) => {
+router.post('/', auth, validate(validatePost), async (req, res) => {
     if (req.body.genreIds) {
         let genres = [];
         for (const genreId of req.body.genreIds) {
@@ -37,7 +37,7 @@ router.post('/', auth, validate(postVal), async (req, res) => {
     res.send(movie);
 });
 
-router.put('/:id', auth, validateObjectId, find(Movie), validate(putVal), async (req, res) => {
+router.put('/:id', auth, validateObjectId, find(Movie), validate(validatePut), async (req, res) => {
     let movie = req.doc;
 
     if (req.body.genreIds) {
