@@ -3,47 +3,47 @@ const { User } = require('../../../models/user');
 const auth = require('../../../middleware/auth');
 
 describe('auth middleware', () => {
-    let user;
-    let req;
-    let res;
-    let next;
+  let user;
+  let req;
+  let res;
+  let next;
 
-    beforeEach(() => {
-        user = {
-            _id: mongoose.Types.ObjectId().toHexString(),
-            isAdmin: false
-        };
-        const token = new User(user).generateAuthToken();
-        req = { header: jest.fn().mockReturnValue(token) };
-        res = { status: jest.fn().mockReturnValue({ send: jest.fn() }) };
-        next = jest.fn();
-    });
+  beforeEach(() => {
+    user = {
+      _id: mongoose.Types.ObjectId().toHexString(),
+      isAdmin: false
+    };
+    const token = new User(user).generateAuthToken();
+    req = { header: jest.fn().mockReturnValue(token) };
+    res = { status: jest.fn().mockReturnValue({ send: jest.fn() }) };
+    next = jest.fn();
+  });
 
-    it('should set status to 401 if no token provided', async () => {
-        req.header = req.header.mockReturnValue('');
+  it('should set status to 401 if no token provided', async () => {
+    req.header = req.header.mockReturnValue('');
 
-        auth(req, res, next);
+    auth(req, res, next);
 
-        expect(res.status).toHaveBeenCalledWith(401);
-    });
+    expect(res.status).toHaveBeenCalledWith(401);
+  });
 
-    it('should set status to 400 if token is invalid', async () => {
-        req.header = req.header.mockReturnValue('invalid');
+  it('should set status to 400 if token is invalid', async () => {
+    req.header = req.header.mockReturnValue('invalid');
 
-        auth(req, res, next);
+    auth(req, res, next);
 
-        expect(res.status).toHaveBeenCalledWith(400);
-    });
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
 
-    it('should populate req.user with user object if token is valid', () => {
-        auth(req, res, next);
+  it('should populate req.user with user object if token is valid', () => {
+    auth(req, res, next);
 
-        expect(req.user).toMatchObject(user);
-    });
+    expect(req.user).toMatchObject(user);
+  });
 
-    it('should call next if token is valid', () => {
-        auth(req, res, next);
+  it('should call next if token is valid', () => {
+    auth(req, res, next);
 
-        expect(next).toHaveBeenCalled();
-    });
+    expect(next).toHaveBeenCalled();
+  });
 });

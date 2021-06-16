@@ -5,8 +5,8 @@ const connectToDB = require('./startup/db');
 const startServer = require('./startup/server');
 
 async function main() {
-    await connectToDB();
-    startServer();
+  await connectToDB();
+  startServer();
 }
 
 main();

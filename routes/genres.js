@@ -11,26 +11,32 @@ const { Genre, validate: gVal } = require('../models/genre');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-    const genres = await Genre.find().sort('name');
+  const genres = await Genre.find().sort('name');
 
-    res.send(genres);
+  res.send(genres);
 });
 
 router.get('/:id', validateObjectId, find(Genre), send);
 
 router.post('/', auth, validate(gVal), async (req, res) => {
-    let genre = await Genre.findOne({ name: req.body.name });
-    if (genre) return res.status(400).send("Genre name already exists");
+  let genre = await Genre.findOne({ name: req.body.name });
+  if (genre) return res.status(400).send('Genre name already exists');
 
-    genre = new Genre(req.body);
-    await genre.save();
+  genre = new Genre(req.body);
+  await genre.save();
 
-    res.send(genre);
+  res.send(genre);
 });
 
-router.put('/:id', auth, validateObjectId, find(Genre), validate(gVal), async (req, res) => {
+router.put(
+  '/:id',
+  auth,
+  validateObjectId,
+  find(Genre),
+  validate(gVal),
+  async (req, res) => {
     let genre = await Genre.findOne({ name: req.body.name });
-    if (genre) return res.status(400).send("Genre name already exists");
+    if (genre) return res.status(400).send('Genre name already exists');
 
     genre = req.doc;
 
@@ -38,7 +44,8 @@ router.put('/:id', auth, validateObjectId, find(Genre), validate(gVal), async (r
     await genre.save();
 
     res.send(genre);
-});
+  }
+);
 
 router.delete('/:id', auth, admin, validateObjectId, remove(Genre), send);
 

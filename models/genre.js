@@ -1,16 +1,16 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
 
-const name = { min: 3, max: 128};
+const name = { min: 3, max: 128 };
 
 const genreSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true,
-        minlength: name.min,
-        maxlength: name.max
-    }
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: name.min,
+    maxlength: name.max
+  }
 });
 
 const Genre = mongoose.model('Genre', genreSchema);
@@ -20,7 +20,7 @@ const joiSchema = Joi.object({
 });
 
 function validate(genre) {
-    return joiSchema.validate(genre);
+  return joiSchema.validate(genre);
 }
 
 exports.bounds = { name };

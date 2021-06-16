@@ -13,16 +13,24 @@ const { Customer, validatePost, validatePut } = require('../models/customer');
 const router = express.Router();
 
 router.get('/', auth, async (req, res) => {
-    const customers = await Customer.find().sort('name');
+  const customers = await Customer.find().sort('name');
 
-    res.send(customers);
+  res.send(customers);
 });
 
 router.get('/:id', auth, validateObjectId, find(Customer), send);
 
 router.post('/', auth, validate(validatePost), post(Customer), send);
 
-router.put('/:id', auth, validateObjectId, find(Customer), validate(validatePut), put, send);
+router.put(
+  '/:id',
+  auth,
+  validateObjectId,
+  find(Customer),
+  validate(validatePut),
+  put,
+  send
+);
 
 router.delete('/:id', auth, admin, validateObjectId, remove(Customer), send);
 

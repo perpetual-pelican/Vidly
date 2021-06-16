@@ -3,29 +3,29 @@ const { User } = require('../../../models/user');
 const admin = require('../../../middleware/admin');
 
 describe('admin middleware', () => {
-    let req;
-    let res;
-    let next;
+  let req;
+  let res;
+  let next;
 
-    beforeEach(() => {
-        req = {};
-        res = { status: jest.fn().mockReturnValue({ send: jest.fn() }) };
-        next = jest.fn();
-    });
+  beforeEach(() => {
+    req = {};
+    res = { status: jest.fn().mockReturnValue({ send: jest.fn() }) };
+    next = jest.fn();
+  });
 
-    it('should set status to 403 if user is not admin', async () => {
-        req.user = new User({ isAdmin: false });
+  it('should set status to 403 if user is not admin', async () => {
+    req.user = new User({ isAdmin: false });
 
-        admin(req, res, next);
+    admin(req, res, next);
 
-        expect(res.status).toHaveBeenCalledWith(403);
-    });
+    expect(res.status).toHaveBeenCalledWith(403);
+  });
 
-    it('should call next if user is admin', () => {
-        req.user = new User({ isAdmin: true });
+  it('should call next if user is admin', () => {
+    req.user = new User({ isAdmin: true });
 
-        admin(req, res, next);
+    admin(req, res, next);
 
-        expect(next).toHaveBeenCalled();
-    });
+    expect(next).toHaveBeenCalled();
+  });
 });

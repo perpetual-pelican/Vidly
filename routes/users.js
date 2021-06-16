@@ -9,30 +9,30 @@ const { User, validate: uVal } = require('../models/user');
 const router = express.Router();
 
 router.get('/', auth, admin, async (req, res) => {
-    const users = await User.find().select('-password').sort('name');
+  const users = await User.find().select('-password').sort('name');
 
-    res.send(users);
+  res.send(users);
 });
 
 router.get('/me', auth, async (req, res) => {
-    const user = await User.findById(req.user._id).select('-password');
-    if (!user) return res.status(400).send('User not found');
+  const user = await User.findById(req.user._id).select('-password');
+  if (!user) return res.status(400).send('User not found');
 
-    res.send(user);
+  res.send(user);
 });
 
 router.post('/', validate(uVal), async (req, res) => {
-    let user = await User.findOne({ email: req.body.email });
-    if (user) return res.status(400).send('Email already in use');
+  let user = await User.findOne({ email: req.body.email });
+  if (user) return res.status(400).send('Email already in use');
 
-    user = new User(_.pick(req.body, ['name', 'email', 'password']));
-    user.password = await bcrypt.hash(user.password, 10);
-    await user.save();
+  user = new User(_.pick(req.body, ['name', 'email', 'password']));
+  user.password = await bcrypt.hash(user.password, 10);
+  await user.save();
 
-    const token = user.generateAuthToken();
-    const payload = _.pick(user, ['_id', 'name', 'email']);
-    
-    res.header('x-auth-token', token).send(payload);
+  const token = user.generateAuthToken();
+  const payload = _.pick(user, ['_id', 'name', 'email']);
+
+  res.header('x-auth-token', token).send(payload);
 });
 
 module.exports = router;

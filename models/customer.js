@@ -5,32 +5,32 @@ const name = { min: 3, max: 128 };
 const phone = { min: 5, max: 32 };
 
 const customerSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        trim: true,
-        minLength: name.min,
-        maxLength: name.max
-    },
-    phone: {
-        type: String,
-        required: true,
-        trim: true,
-        minLength: phone.min,
-        maxLength: phone.max
-    },
-    isGold: {
-        type: Boolean,
-        default: false
-    }
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+    minLength: name.min,
+    maxLength: name.max
+  },
+  phone: {
+    type: String,
+    required: true,
+    trim: true,
+    minLength: phone.min,
+    maxLength: phone.max
+  },
+  isGold: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
 
 const joiSchema = {
-    name: Joi.string().min(name.min).max(name.max),
-    phone: Joi.string().min(phone.min).max(phone.max),
-    isGold: Joi.boolean()
+  name: Joi.string().min(name.min).max(name.max),
+  phone: Joi.string().min(phone.min).max(phone.max),
+  isGold: Joi.boolean()
 };
 
 const joiPostSchema = Joi.object({
@@ -40,17 +40,17 @@ const joiPostSchema = Joi.object({
 });
 
 function validatePost(customer) {
-    return joiPostSchema.validate(customer);
+  return joiPostSchema.validate(customer);
 }
 
 const joiPutSchema = Joi.object(joiSchema);
 
 function validatePut(customer) {
-    if (Object.keys(customer).length === 0) {
-        const message = 'At least one property is required to update customer';
-        return { error: new Error(message) };
-    }
-    return joiPutSchema.validate(customer);
+  if (Object.keys(customer).length === 0) {
+    const message = 'At least one property is required to update customer';
+    return { error: new Error(message) };
+  }
+  return joiPutSchema.validate(customer);
 }
 
 exports.bounds = { name, phone };

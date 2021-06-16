@@ -7,13 +7,13 @@ const returns = require('../routes/returns');
 const users = require('../routes/users');
 const auth = require('../routes/auth');
 
-module.exports = function(app) {
-    app.use('/', home);
-    app.use('/api/customers', customers);
-    app.use('/api/genres', genres);
-    app.use('/api/movies', movies);
-    app.use('/api/rentals', rentals);
-    app.use('/api/returns', returns);
-    app.use('/api/users', users);
-    app.use('/api/auth', auth);
+module.exports = function (app) {
+  app.use('/', home);
+  app.use('/api/customers', customers);
+  app.use('/api/genres', genres);
+  app.use('/api/movies', movies);
+  app.use('/api/rentals', rentals);
+  app.use('/api/returns', returns);
+  app.use('/api/users', users);
+  app.use('/api/auth', auth);
 };
