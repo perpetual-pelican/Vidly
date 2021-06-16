@@ -1,0 +1,6 @@
+.vscode/
+coverage/
+data/
+logs/
+node_modules/
+README.md
