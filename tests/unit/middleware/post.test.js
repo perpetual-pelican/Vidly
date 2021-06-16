@@ -24,8 +24,11 @@ describe('post middleware', () => {
     next = jest.fn();
   });
 
+  afterEach(async () => {
+    await Model.deleteMany();
+  });
+
   afterAll(async () => {
-    await mongoose.connection.db.dropDatabase();
     await mongoose.disconnect();
   });
 
