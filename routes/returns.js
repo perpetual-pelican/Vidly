@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const winston = require('winston');
 const auth = require('../middleware/auth');
 const validate = require('../middleware/validate');
 const { Rental } = require('../models/rental');
@@ -9,19 +10,35 @@ const { validate: rVal } = require('../models/rental');
 const router = express.Router();
 
 router.post('/', auth, validate(rVal), async (req, res) => {
-  const rental = await Rental.lookup(req.body.customerId, req.body.movieId);
-  if (!rental)
-    return res.status(404).send('No active rental for customer and movie');
+  let rental;
 
-  const movie = await Movie.findById(rental.movie._id);
-  movie.set({ numberInStock: movie.numberInStock + 1 });
+  let success = false;
+  await mongoose.connection
+    .transaction(async (session) => {
+      rental = await Rental.lookup(
+        req.body.customerId,
+        req.body.movieId
+      ).session(session);
+      if (!rental) {
+        res.status(404).send('No active rental for customer and movie');
+        return session.abortTransaction();
+      }
+      await rental.return();
 
-  await mongoose.connection.transaction(async (session) => {
-    await movie.save({ session });
-    await rental.return({ session });
-  });
+      await Movie.updateOne(
+        { _id: rental.movie._id },
+        { $inc: { numberInStock: 1 } },
+        { session }
+      );
 
-  res.send(rental);
+      success = true;
+    })
+    .catch((err) => {
+      winston.error(err.message, { metadata: { error: err } });
+      res.status(500).send('Transaction failed. Data unchanged.');
+    });
+
+  if (success) res.send(rental);
 });
 
 module.exports = router;

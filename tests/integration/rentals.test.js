@@ -35,7 +35,6 @@ describe('/api/rentals', () => {
   });
 
   describe('GET /', () => {
-    const find = Rental.find;
     let customer2;
     let movie2;
 
@@ -60,10 +59,6 @@ describe('/api/rentals', () => {
       req = { token };
     });
 
-    afterEach(async () => {
-      Rental.find = find;
-    });
-
     afterAll(async () => {
       await Rental.deleteMany();
     });
@@ -77,11 +72,13 @@ describe('/api/rentals', () => {
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
+      const find = Rental.find;
       Rental.find = jest.fn(() => {
         throw new Error('fake uncaught exception');
       });
 
       const res = await getAll(req);
+      Rental.find = find;
 
       expect(res.status).toBe(500);
       expect(res.text).toMatch(/Something failed/);
@@ -220,7 +217,23 @@ describe('/api/rentals', () => {
       expect(res.text).toMatch(/[Aa]lready.*[Rr]ent/);
     });
 
-    it('should save the rental and decrease the movie stock if request is valid', async () => {
+    it('should not update movie stock in db if transaction fails after update', async () => {
+      const lookup = Rental.lookup;
+      Rental.lookup = jest.fn(() => {
+        throw Error('fake error in rental post transaction');
+      });
+
+      const res = await post(req);
+      Rental.lookup = lookup;
+
+      const movieInDB = await Movie.findById(movie._id);
+
+      expect(res.status).toBe(500);
+      expect(res.text).toMatch(/[Tt]ransaction.*[Ff]ail/);
+      expect(movieInDB).toHaveProperty('numberInStock', movie.numberInStock);
+    });
+
+    it('should decrease the movie stock and create the rental if request is valid', async () => {
       await post(req);
 
       const movieInDB = await Movie.findById(movie._id);
@@ -282,33 +295,48 @@ describe('/api/rentals', () => {
       await test.idNotFound(del, req);
     });
 
-    it('should increase the movie stock and delete the rental if it has not already been returned', async () => {
-      await del(req);
-
-      const movieInDB = await Movie.findById(movie._id);
-      const rentalInDB = await Rental.findOne({
-        'customer._id': customer._id,
-        'movie._id': movie._id
+    it('should not delete the rental in db if transaction fails after delete', async () => {
+      const updateOne = Movie.updateOne;
+      Movie.updateOne = jest.fn(() => {
+        throw Error('fake error in rental delete transaction');
       });
 
-      expect(movieInDB.numberInStock).toBe(movie.numberInStock + 1);
-      expect(rentalInDB).toBeNull();
+      const res = await del(req);
+      Movie.updateOne = updateOne;
+
+      const rentalInDB = await Rental.findById(rental._id);
+
+      expect(res.status).toBe(500);
+      expect(res.text).toMatch(/[Tt]ransaction.*[Ff]ail/);
+      expect(rentalInDB).toHaveProperty('dateOut');
     });
 
-    it('should only delete the rental if it has already been returned', async () => {
-      await rental.return();
-      const movieBefore = await Movie.findById(movie._id);
-
+    it('should delete the rental and increase the movie stock if rental has not been returned', async () => {
       await del(req);
 
-      const movieInDB = await Movie.findById(movie._id);
       const rentalInDB = await Rental.findOne({
         'customer._id': customer._id,
         'movie._id': movie._id
       });
+      const movieInDB = await Movie.findById(movie._id);
 
-      expect(movieInDB.numberInStock).toBe(movieBefore.numberInStock);
       expect(rentalInDB).toBeNull();
+      expect(movieInDB.numberInStock).toBe(movie.numberInStock + 1);
+    });
+
+    it('should delete the rental and leave movie stock unchanged if it has been returned', async () => {
+      await rental.return();
+
+      await del(req);
+
+      const rentalInDB = await Rental.findOne({
+        'customer._id': customer._id,
+        'movie._id': movie._id
+      });
+      const movieInDB = await Movie.findById(movie._id);
+
+      expect(rentalInDB).toBeNull();
+      expect(movieInDB.numberInStock).toBe(movie.numberInStock);
     });
 
     it('should return the rental if request is valid', async () => {

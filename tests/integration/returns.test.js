@@ -10,7 +10,6 @@ const { post } = test.request;
 describe('/api/returns', () => {
   test.setup('returns', app);
 
-  const lookup = Rental.lookup;
   const token = new User({ isAdmin: false }).generateAuthToken();
   let movie;
   let rental;
@@ -42,7 +41,6 @@ describe('/api/returns', () => {
   });
 
   afterEach(async () => {
-    Rental.lookup = lookup;
     await Movie.deleteMany();
     await Rental.deleteMany();
   });
@@ -78,15 +76,22 @@ describe('/api/returns', () => {
     expect(res.text).toMatch(/[Rr]ental.*[Cc]ustomer.*[Mm]ovie/);
   });
 
-  it('should return 500 if an uncaughtException is encountered', async () => {
+  it('should not delete rental in db if transaction fails after delete', async () => {
+    const lookup = Rental.lookup;
     Rental.lookup = jest.fn(() => {
-      throw new Error('fake uncaught exception');
+      throw Error('fake error in return transaction');
     });
 
     const res = await post(req);
+    Rental.lookup = lookup;
+
+    const rentalInDB = await Rental.findById(rental._id);
 
     expect(res.status).toBe(500);
-    expect(res.text).toMatch(/Something failed/);
+    expect(res.text).toMatch(/[Tt]ransaction.*[Ff]ail/);
+    expect(rentalInDB).toHaveProperty('dateOut');
+    expect(rentalInDB).toHaveProperty('dateReturned', undefined);
+    expect(rentalInDB).toHaveProperty('rentalFee', undefined);
   });
 
   it('should set return date if request is valid', async () => {
@@ -109,7 +114,7 @@ describe('/api/returns', () => {
     expect(rentalInDB.rentalFee).toBe(7 * rental.movie.dailyRentalRate);
   });
 
-  it('should update the rental and increase the movie stock if request is valid', async () => {
+  it('should return the rental and increase the movie stock if request is valid', async () => {
     await post(req);
 
     const rentalInDB = await Rental.findById(rental._id);

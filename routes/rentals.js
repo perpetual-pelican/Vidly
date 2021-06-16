@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const winston = require('winston');
 const _ = require('lodash');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
@@ -25,28 +26,42 @@ router.post('/', auth, validate(rVal), async (req, res) => {
   const customer = await Customer.findById(req.body.customerId);
   if (!customer) return res.status(400).send('Invalid customer id');
 
-  const movie = await Movie.findById(req.body.movieId);
-  if (!movie) return res.status(400).send('Invalid movie id');
+  let rental;
 
-  if (movie.numberInStock < 1)
-    return res.status(400).send('Movie out of stock');
+  let success = false;
+  await mongoose.connection
+    .transaction(async (session) => {
+      const movie = await Movie.findById(req.body.movieId).session(session);
+      if (!movie) {
+        res.status(400).send('Invalid movie id');
+        return session.abortTransaction();
+      }
+      if (movie.numberInStock < 1) {
+        res.status(400).send('Movie out of stock');
+        return session.abortTransaction();
+      }
+      movie.set({ numberInStock: movie.numberInStock - 1 });
+      await movie.save();
 
-  let rental = await Rental.lookup(req.body.customerId, req.body.movieId);
-  if (rental)
-    return res.status(400).send('Customer is already renting this movie');
+      rental = await Rental.lookup(req.body.customerId, req.body.movieId);
+      if (rental) {
+        res.status(400).send('Customer is already renting this movie');
+        return session.abortTransaction();
+      }
+      rental = new Rental({
+        customer: _.pick(customer, ['_id', 'name', 'phone', 'isGold']),
+        movie: _.pick(movie, ['_id', 'title', 'dailyRentalRate'])
+      });
+      await rental.save({ session });
 
-  movie.set({ numberInStock: movie.numberInStock - 1 });
-  rental = new Rental({
-    customer: _.pick(customer, ['_id', 'name', 'phone', 'isGold']),
-    movie: _.pick(movie, ['_id', 'title', 'dailyRentalRate'])
-  });
+      success = true;
+    })
+    .catch((err) => {
+      winston.error(err.message, { metadata: { error: err } });
+      res.status(500).send('Transaction failed. Data unchanged.');
+    });
 
-  await mongoose.connection.transaction(async (session) => {
-    await movie.save({ session });
-    await rental.save({ session });
-  });
-
-  res.send(rental);
+  if (success) res.send(rental);
 });
 
 router.delete(
@@ -58,17 +73,30 @@ router.delete(
   async (req, res) => {
     let rental = req.doc;
 
-    const movie = await Movie.findById(rental.movie._id);
+    let success = false;
+    if (rental.dateReturned) {
+      rental = await rental.remove();
+      success = true;
+    } else {
+      await mongoose.connection
+        .transaction(async (session) => {
+          rental = await rental.remove({ session });
 
-    if (!rental.dateReturned) {
-      movie.set({ numberInStock: movie.numberInStock + 1 });
-      await mongoose.connection.transaction(async (session) => {
-        await movie.save({ session });
-        rental = await rental.remove({ session });
-      });
-    } else rental = await rental.remove();
+          await Movie.updateOne(
+            { _id: rental.movie._id },
+            { $inc: { numberInStock: 1 } },
+            { session }
+          );
 
-    res.send(rental);
+          success = true;
+        })
+        .catch((err) => {
+          winston.error(err.message, { metadata: { error: err } });
+          res.status(500).send('Transaction failed. Data unchanged.');
+        });
+    }
+
+    if (success) res.send(rental);
   }
 );
 
