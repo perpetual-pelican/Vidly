@@ -29,10 +29,6 @@ describe('/api/movies', () => {
     };
   });
 
-  afterAll(async () => {
-    await Genre.deleteMany();
-  });
-
   describe('GET /', () => {
     const find = Movie.find;
     let movies;
@@ -54,7 +50,7 @@ describe('/api/movies', () => {
     });
 
     afterAll(async () => {
-      await Movies.deleteMany();
+      await Movie.deleteMany();
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
@@ -106,7 +102,7 @@ describe('/api/movies', () => {
     });
 
     afterAll(async () => {
-      await Movies.deleteMany();
+      await Movie.deleteMany();
     });
 
     it('should return 404 if id is invalid', async () => {

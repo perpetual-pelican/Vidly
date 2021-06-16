@@ -34,11 +34,6 @@ describe('/api/rentals', () => {
     rentalObject = { customer, movie };
   });
 
-  afterAll(async () => {
-    await Customer.deleteMany();
-    await Movie.deleteMany();
-  });
-
   describe('GET /', () => {
     const find = Rental.find;
     let customer2;

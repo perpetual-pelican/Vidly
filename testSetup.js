@@ -28,6 +28,9 @@ module.exports.setup = function (routeName, appToTest) {
   });
 
   afterAll(async () => {
+    for (const name of Object.keys(mongoose.connection.collections)) {
+      await mongoose.connection.collections[name].deleteMany();
+    }
     await mongoose.disconnect();
   });
 };
