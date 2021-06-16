@@ -4,6 +4,8 @@ Node-based video rental processing app using MongoDB/Mongoose and Express
  - project has no front-end, but I plan to work on that in the future
 
 ## Setup
+### Install Node.js
+ - https://nodejs.org/en/download/
 
 ### Install MongoDB
  - https://docs.mongodb.com/manual/installation/
@@ -18,26 +20,33 @@ Node-based video rental processing app using MongoDB/Mongoose and Express
 3. Run `npm ci` to install all dependencies
 
 ### Start DB
- - In a new terminal, use the command `npm run db` to start the database
+ - Use the command `npm run db` to start the database
  - A few messages will be displayed, indicating that a replica set is being started
  - After several seconds, the database will be ready when it says "Connected to oplog"
+ - Once the database is running, everything else can be done in one terminal
 
 ### Run Tests
- - With the database running, go back to the first terminal and use `npm test` to run all tests
+ - Open up a new terminal and use `npm test` to run all tests
  - They should all pass if the project has been set up successfully
 
 ### Prepare Environment Variables
  - Set `vidly_jwtPrivateKey` using a private key of your choice. This is used for authentication
  - If you wish, set `PORT` to specify a port for the server, otherwise port 3000 will be used
 
+### Populate DB
+ - Use `node seed.js` to fill the database with some basic data
+
 ### Start Server
- - In the same terminal used to run the tests, use `npm start` to run the server
+ - Run `npm start` to start the server
  - Two info messages should be displayed, indicating successful database connection and server startup
 
-### View Home Page
+### Check It Out
  - Open http://localhost:3000 or `http://localhost:[PORT]` in a browser
  - Here, you should see "Home Page" displayed in plain text, indicating a successful response from the server
-   - beyond this, it is best to use something like Postman to test http requests on the various routes available
+ - You should also be able to see some unformatted genre and movie data if you go to these two pages
+   - http://localhost:3000/api/genres
+   - http://localhost:3000/api/movies
+ - Beyond this, it is best to use something like Postman to test http requests on the various routes available
  
 ### URL Route Structure
     http://localhost:[PORT]/
