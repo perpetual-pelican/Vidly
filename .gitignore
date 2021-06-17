@@ -1,5 +1,4 @@
-node_modules/
 coverage/
-.vscode/
-logs/
 data/
+logs/
+node_modules/
