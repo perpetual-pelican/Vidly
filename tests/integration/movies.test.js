@@ -177,7 +177,9 @@ describe('/api/movies', () => {
     it('should save the movie if request is valid', async () => {
       await post(req);
 
-      const movieInDB = await Movie.findOne({ title: movieObject.title });
+      const movieInDB = await Movie.findOne({
+        title: movieObject.title
+      }).lean();
 
       expect(movieInDB).toHaveProperty('title', movieObject.title);
       expect(movieInDB).toHaveProperty(
@@ -278,7 +280,7 @@ describe('/api/movies', () => {
 
       await put(req);
 
-      const movieInDB = await Movie.findById(movie._id);
+      const movieInDB = await Movie.findById(movie._id).lean();
 
       expect(movieInDB).toHaveProperty('title', movieUpdate.title);
       expect(movieInDB).toHaveProperty(
@@ -299,7 +301,7 @@ describe('/api/movies', () => {
 
       await put(req);
 
-      const movieInDB = await Movie.findById(movie._id);
+      const movieInDB = await Movie.findById(movie._id).lean();
 
       expect(movieInDB).toHaveProperty('title', movie.title);
       expect(movieInDB).toHaveProperty(
@@ -372,7 +374,7 @@ describe('/api/movies', () => {
     it('should delete the movie if request is valid', async () => {
       await del(req);
 
-      const movieInDB = await Movie.findById(req.id);
+      const movieInDB = await Movie.findById(req.id).lean();
 
       expect(movieInDB).toBeNull();
     });

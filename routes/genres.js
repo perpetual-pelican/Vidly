@@ -11,12 +11,12 @@ const { Genre, validate: gVal } = require('../models/genre');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const genres = await Genre.find().sort('name');
+  const genres = await Genre.find().sort('name').lean();
 
   res.send(genres);
 });
 
-router.get('/:id', validateObjectId, find(Genre), send);
+router.get('/:id', validateObjectId, find(Genre, 'lean'), send);
 
 router.post('/', auth, validate(gVal), async (req, res) => {
   let genre = await Genre.findOne({ name: req.body.name });
@@ -35,7 +35,7 @@ router.put(
   find(Genre),
   validate(gVal),
   async (req, res) => {
-    let genre = await Genre.findOne({ name: req.body.name });
+    let genre = await Genre.findOne({ name: req.body.name }).lean();
     if (genre) return res.status(400).send('Genre name already exists');
 
     genre = req.doc;

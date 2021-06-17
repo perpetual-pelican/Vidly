@@ -85,7 +85,7 @@ describe('/api/returns', () => {
     const res = await post(req);
     Rental.lookup = lookup;
 
-    const rentalInDB = await Rental.findById(rental._id);
+    const rentalInDB = await Rental.findById(rental._id).lean();
 
     expect(res.status).toBe(500);
     expect(res.text).toMatch(/[Tt]ransaction.*[Ff]ail/);
@@ -97,7 +97,7 @@ describe('/api/returns', () => {
   it('should set return date if request is valid', async () => {
     await post(req);
 
-    const rentalInDB = await Rental.findById(rental._id);
+    const rentalInDB = await Rental.findById(rental._id).lean();
     const diff = Date.now() - rentalInDB.dateReturned;
 
     expect(diff).toBeLessThan(10 * 1000);
@@ -109,7 +109,7 @@ describe('/api/returns', () => {
 
     await post(req);
 
-    const rentalInDB = await Rental.findById(rental._id);
+    const rentalInDB = await Rental.findById(rental._id).lean();
 
     expect(rentalInDB.rentalFee).toBe(7 * rental.movie.dailyRentalRate);
   });
@@ -117,8 +117,8 @@ describe('/api/returns', () => {
   it('should return the rental and increase the movie stock if request is valid', async () => {
     await post(req);
 
-    const rentalInDB = await Rental.findById(rental._id);
-    const movieInDB = await Movie.findById(returnObject.movieId);
+    const rentalInDB = await Rental.findById(rental._id).lean();
+    const movieInDB = await Movie.findById(returnObject.movieId).lean();
 
     expect(rentalInDB).toHaveProperty('dateReturned');
     expect(rentalInDB).toHaveProperty('rentalFee');

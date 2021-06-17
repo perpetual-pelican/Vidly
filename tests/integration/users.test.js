@@ -163,7 +163,7 @@ describe('/api/users', () => {
     it('should save the user with hash if request is valid', async () => {
       await post(req);
 
-      const userInDB = await User.findOne({ email: userObject.email });
+      const userInDB = await User.findOne({ email: userObject.email }).lean();
 
       const isEqual = await bcrypt.compare(
         userObject.password,

@@ -9,23 +9,23 @@ const { User, validate: uVal } = require('../models/user');
 const router = express.Router();
 
 router.get('/', auth, admin, async (req, res) => {
-  const users = await User.find().select('-password').sort('name');
+  const users = await User.find().select('-password').sort('name').lean();
 
   res.send(users);
 });
 
 router.get('/me', auth, async (req, res) => {
-  const user = await User.findById(req.user._id).select('-password');
+  const user = await User.findById(req.user._id).select('-password').lean();
   if (!user) return res.status(400).send('User not found');
 
   res.send(user);
 });
 
 router.post('/', validate(uVal), async (req, res) => {
-  let user = await User.findOne({ email: req.body.email });
+  let user = await User.findOne({ email: req.body.email }).lean();
   if (user) return res.status(400).send('Email already in use');
 
-  user = new User(_.pick(req.body, ['name', 'email', 'password']));
+  user = new User(req.body);
   user.password = await bcrypt.hash(user.password, 10);
   await user.save();
 

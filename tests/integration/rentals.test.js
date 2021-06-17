@@ -226,7 +226,7 @@ describe('/api/rentals', () => {
       const res = await post(req);
       Rental.lookup = lookup;
 
-      const movieInDB = await Movie.findById(movie._id);
+      const movieInDB = await Movie.findById(movie._id).lean();
 
       expect(res.status).toBe(500);
       expect(res.text).toMatch(/[Tt]ransaction.*[Ff]ail/);
@@ -236,11 +236,11 @@ describe('/api/rentals', () => {
     it('should decrease the movie stock and create the rental if request is valid', async () => {
       await post(req);
 
-      const movieInDB = await Movie.findById(movie._id);
+      const movieInDB = await Movie.findById(movie._id).lean();
       const rentalInDB = await Rental.findOne({
         'customer._id': customer._id,
         'movie._id': movie._id
-      });
+      }).lean();
 
       expect(movieInDB.numberInStock).toBe(movie.numberInStock - 1);
       expect(rentalInDB).toHaveProperty('_id');
@@ -304,7 +304,7 @@ describe('/api/rentals', () => {
       const res = await del(req);
       Movie.updateOne = updateOne;
 
-      const rentalInDB = await Rental.findById(rental._id);
+      const rentalInDB = await Rental.findById(rental._id).lean();
 
       expect(res.status).toBe(500);
       expect(res.text).toMatch(/[Tt]ransaction.*[Ff]ail/);
@@ -317,8 +317,8 @@ describe('/api/rentals', () => {
       const rentalInDB = await Rental.findOne({
         'customer._id': customer._id,
         'movie._id': movie._id
-      });
-      const movieInDB = await Movie.findById(movie._id);
+      }).lean();
+      const movieInDB = await Movie.findById(movie._id).lean();
 
       expect(rentalInDB).toBeNull();
       expect(movieInDB.numberInStock).toBe(movie.numberInStock + 1);
@@ -332,8 +332,8 @@ describe('/api/rentals', () => {
       const rentalInDB = await Rental.findOne({
         'customer._id': customer._id,
         'movie._id': movie._id
-      });
-      const movieInDB = await Movie.findById(movie._id);
+      }).lean();
+      const movieInDB = await Movie.findById(movie._id).lean();
 
       expect(rentalInDB).toBeNull();
       expect(movieInDB.numberInStock).toBe(movie.numberInStock);

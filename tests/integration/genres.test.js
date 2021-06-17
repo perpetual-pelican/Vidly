@@ -121,7 +121,7 @@ describe('/api/genres', () => {
     it('should save the genre if request is valid', async () => {
       await post(req);
 
-      const genreInDB = await Genre.findOne(genreObject);
+      const genreInDB = await Genre.findOne(genreObject).lean();
 
       expect(genreInDB).toHaveProperty('name', genreObject.name);
     });
@@ -185,7 +185,7 @@ describe('/api/genres', () => {
     it('should update the genre if request is valid', async () => {
       await put(req);
 
-      const genreInDB = await Genre.findOne(genreUpdate);
+      const genreInDB = await Genre.findOne(genreUpdate).lean();
 
       expect(genreInDB).toHaveProperty('name', genreUpdate.name);
     });
@@ -237,7 +237,7 @@ describe('/api/genres', () => {
     it('should delete the genre if request is valid', async () => {
       await del(req);
 
-      const genreInDB = await Genre.findById(genre._id);
+      const genreInDB = await Genre.findById(genre._id).lean();
 
       expect(genreInDB).toBeNull();
     });

@@ -12,18 +12,18 @@ const { Genre } = require('../models/genre');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const movies = await Movie.find().sort('title');
+  const movies = await Movie.find().sort('title').lean();
 
   res.send(movies);
 });
 
-router.get('/:id', validateObjectId, find(Movie), send);
+router.get('/:id', validateObjectId, find(Movie, 'lean'), send);
 
 router.post('/', auth, validate(validatePost), async (req, res) => {
   if (req.body.genreIds) {
     let genres = [];
     for (const genreId of req.body.genreIds) {
-      let genre = await Genre.findById(genreId);
+      let genre = await Genre.findById(genreId).lean();
       if (!genre) return res.status(400).send('Invalid genre id');
       genres.push(genre);
     }
@@ -49,7 +49,7 @@ router.put(
     if (req.body.genreIds) {
       let genres = [];
       for (const genreId of req.body.genreIds) {
-        let genre = await Genre.findById(genreId);
+        let genre = await Genre.findById(genreId).lean();
         if (!genre) return res.status(400).send('Invalid genre id');
         genres.push(genre);
       }

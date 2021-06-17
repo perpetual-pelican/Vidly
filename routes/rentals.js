@@ -15,15 +15,15 @@ const { Movie } = require('../models/movie');
 const router = express.Router();
 
 router.get('/', auth, async (req, res) => {
-  const rentals = await Rental.find().sort('-dateOut');
+  const rentals = await Rental.find().sort('-dateOut').lean();
 
   res.send(rentals);
 });
 
-router.get('/:id', auth, validateObjectId, find(Rental), send);
+router.get('/:id', auth, validateObjectId, find(Rental, 'lean'), send);
 
 router.post('/', auth, validate(rVal), async (req, res) => {
-  const customer = await Customer.findById(req.body.customerId);
+  const customer = await Customer.findById(req.body.customerId).lean();
   if (!customer) return res.status(400).send('Invalid customer id');
 
   let rental;
@@ -43,7 +43,10 @@ router.post('/', auth, validate(rVal), async (req, res) => {
       movie.set({ numberInStock: movie.numberInStock - 1 });
       await movie.save();
 
-      rental = await Rental.lookup(req.body.customerId, req.body.movieId);
+      rental = await Rental.lookup(
+        req.body.customerId,
+        req.body.movieId
+      ).lean();
       if (rental) {
         res.status(400).send('Customer is already renting this movie');
         return session.abortTransaction();
@@ -61,7 +64,7 @@ router.post('/', auth, validate(rVal), async (req, res) => {
       res.status(500).send('Transaction failed. Data unchanged.');
     });
 
-  if (success) res.send(rental);
+  if (success) res.send(rental.toObject());
 });
 
 router.delete(
@@ -96,7 +99,7 @@ router.delete(
         });
     }
 
-    if (success) res.send(rental);
+    if (success) res.send(rental.toObject());
   }
 );
 

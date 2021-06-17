@@ -13,12 +13,12 @@ const { Customer, validatePost, validatePut } = require('../models/customer');
 const router = express.Router();
 
 router.get('/', auth, async (req, res) => {
-  const customers = await Customer.find().sort('name');
+  const customers = await Customer.find().sort('name').lean();
 
   res.send(customers);
 });
 
-router.get('/:id', auth, validateObjectId, find(Customer), send);
+router.get('/:id', auth, validateObjectId, find(Customer, 'lean'), send);
 
 router.post('/', auth, validate(validatePost), post(Customer), send);
 

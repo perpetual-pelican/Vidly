@@ -137,7 +137,7 @@ describe('/api/customers', () => {
     it('should save the customer if request is valid', async () => {
       await post(req);
 
-      const customerInDB = await Customer.findOne(customerObject);
+      const customerInDB = await Customer.findOne(customerObject).lean();
 
       expect(customerInDB).toHaveProperty('name', customerObject.name);
       expect(customerInDB).toHaveProperty('phone', customerObject.phone);
@@ -198,7 +198,7 @@ describe('/api/customers', () => {
     it('should update the customer if request is valid', async () => {
       await put(req);
 
-      const customerInDB = await Customer.findById(req.id);
+      const customerInDB = await Customer.findById(req.id).lean();
 
       expect(customerInDB).toHaveProperty('name', customerUpdate.name);
       expect(customerInDB).toHaveProperty('phone', customerObject.phone);
@@ -254,7 +254,7 @@ describe('/api/customers', () => {
     it('should delete the customer if request is valid', async () => {
       await del(req);
 
-      const customerInDB = await Customer.findById(req.id);
+      const customerInDB = await Customer.findById(req.id).lean();
 
       expect(customerInDB).toBeNull();
     });
