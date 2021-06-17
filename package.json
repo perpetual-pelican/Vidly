@@ -15,6 +15,10 @@
     ],
     "verbose": true
   },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "none"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
