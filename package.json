@@ -6,7 +6,9 @@
   "scripts": {
     "db": "npx run-rs --mongod",
     "start": "node index.js",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "pretty-quick": "pretty-quick",
+    "prepare": "husky install"
   },
   "jest": {
     "testEnvironment": "node",
@@ -37,9 +39,11 @@
     "winston-mongodb": "^5.0.7"
   },
   "devDependencies": {
+    "husky": "^6.0.0",
     "jest": "^27.0.4",
     "jshint": "^2.13.0",
     "prettier": "2.3.1",
+    "pretty-quick": "^3.1.1",
     "run-rs": "^0.7.4",
     "supertest": "^6.1.3"
   }
