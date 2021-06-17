@@ -1,5 +1,5 @@
 const config = require('config');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const test = require('../../testSetup');
 const app = require('../../startup/app');
