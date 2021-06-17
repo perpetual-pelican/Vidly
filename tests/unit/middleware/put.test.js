@@ -10,13 +10,13 @@ describe('put middleware', () => {
   let next;
 
   beforeAll(async () => {
+    Model = mongoose.model('Model', new mongoose.Schema({ name: String }));
     await mongoose.connect(db + '_put', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
       useCreateIndex: true
     });
-    Model = mongoose.model('Model', new mongoose.Schema({ name: String }));
   });
 
   beforeEach(async () => {

@@ -9,13 +9,13 @@ describe('post middleware', () => {
   let next;
 
   beforeAll(async () => {
+    Model = mongoose.model('Model', new mongoose.Schema({ name: String }));
     await mongoose.connect(db + '_post', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
       useCreateIndex: true
     });
-    Model = mongoose.model('Model', new mongoose.Schema({ name: String }));
   });
 
   beforeEach(async () => {
