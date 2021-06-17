@@ -11,7 +11,6 @@ describe('/api/auth', () => {
   test.setup('auth', app);
 
   describe('POST /', () => {
-    const findOne = User.findOne;
     const login = {
       email: 'userEmail@domain.com',
       password: 'abcdeF1$'
@@ -30,10 +29,6 @@ describe('/api/auth', () => {
 
     beforeEach(() => {
       req = { body: Object.assign({}, login) };
-    });
-
-    afterEach(() => {
-      User.findOne = findOne;
     });
 
     afterAll(async () => {
@@ -63,11 +58,13 @@ describe('/api/auth', () => {
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
+      const findOne = User.findOne;
       User.findOne = jest.fn(() => {
         throw new Error('fake uncaught exception');
       });
 
       const res = await post(req);
+      User.findOne = findOne;
 
       expect(res.status).toBe(500);
       expect(res.text).toMatch(/Something failed/);

@@ -30,7 +30,6 @@ describe('/api/movies', () => {
   });
 
   describe('GET /', () => {
-    const find = Movie.find;
     let movies;
 
     beforeAll(async () => {
@@ -45,20 +44,18 @@ describe('/api/movies', () => {
       ];
     });
 
-    afterEach(() => {
-      Movie.find = find;
-    });
-
     afterAll(async () => {
       await Movie.deleteMany();
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
+      const find = Movie.find;
       Movie.find = jest.fn(() => {
         throw new Error('fake uncaught exception');
       });
 
       const res = await getAll();
+      Movie.find = find;
 
       expect(res.status).toBe(500);
       expect(res.text).toMatch(/Something failed/);

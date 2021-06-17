@@ -12,7 +12,6 @@ describe('/api/genres', () => {
   let req;
 
   describe('GET /', () => {
-    const find = Genre.find;
     let genres;
 
     beforeAll(async () => {
@@ -22,20 +21,18 @@ describe('/api/genres', () => {
       ];
     });
 
-    afterEach(() => {
-      Genre.find = find;
-    });
-
     afterAll(async () => {
       await Genre.deleteMany();
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
+      const find = Genre.find;
       Genre.find = jest.fn(() => {
         throw new Error('fake uncaught exception');
       });
 
       const res = await getAll();
+      Genre.find = find;
 
       expect(res.status).toBe(500);
       expect(res.text).toMatch(/Something failed/);

@@ -18,7 +18,6 @@ describe('/api/users', () => {
   let req;
 
   describe('GET /', () => {
-    const find = User.find;
     let token;
     let adminUser;
 
@@ -35,10 +34,6 @@ describe('/api/users', () => {
 
     beforeEach(async () => {
       req = { token };
-    });
-
-    afterEach(() => {
-      User.find = find;
     });
 
     afterAll(async () => {
@@ -60,11 +55,13 @@ describe('/api/users', () => {
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
+      const find = User.find;
       User.find = jest.fn(() => {
         throw new Error('fake uncaught exception');
       });
 
       const res = await getAll(req);
+      User.find = find;
 
       expect(res.status).toBe(500);
       expect(res.text).toMatch(/Something failed/);

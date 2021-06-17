@@ -13,7 +13,6 @@ describe('/api/customers', () => {
   let req;
 
   describe('GET /', () => {
-    const find = Customer.find;
     let customers;
 
     beforeAll(async () => {
@@ -30,10 +29,6 @@ describe('/api/customers', () => {
       req = { token };
     });
 
-    afterEach(() => {
-      Customer.find = find;
-    });
-
     afterAll(async () => {
       await Customer.deleteMany();
     });
@@ -47,11 +42,13 @@ describe('/api/customers', () => {
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
+      const find = Customer.find;
       Customer.find = jest.fn(() => {
         throw new Error('fake uncaught exception');
       });
 
       const res = await getAll(req);
+      Customer.find = find;
 
       expect(res.status).toBe(500);
       expect(res.text).toMatch(/Something failed/);
