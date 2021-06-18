@@ -60,6 +60,7 @@ describe('/api/rentals', () => {
     });
 
     afterAll(async () => {
+      await Customer.deleteOne(customer2);
       await Rental.deleteMany();
     });
 
@@ -270,6 +271,7 @@ describe('/api/rentals', () => {
     });
 
     afterEach(async () => {
+      await Movie.deleteMany();
       await Rental.deleteMany();
     });
 
