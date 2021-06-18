@@ -7,8 +7,8 @@ const { User } = require('../../models/user');
 
 const { post } = test.request;
 
-describe('/api/auth', () => {
-  test.setup('auth', app);
+describe('/api/login', () => {
+  test.setup('login', app);
 
   describe('POST /', () => {
     const login = {
@@ -29,10 +29,6 @@ describe('/api/auth', () => {
 
     beforeEach(() => {
       req = { body: Object.assign({}, login) };
-    });
-
-    afterAll(async () => {
-      await User.deleteMany();
     });
 
     it('should return 400 if request body is invalid', async () => {
