@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const db = require('../../../startup/config').db;
+const { dbString, dbOptions } = require('../../../startup/config');
 const remove = require('../../../middleware/remove');
 
 describe('remove middleware', () => {
@@ -11,12 +11,7 @@ describe('remove middleware', () => {
 
   beforeAll(async () => {
     Model = mongoose.model('Model', new mongoose.Schema({ name: String }));
-    await mongoose.connect(db + '_remove', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true
-    });
+    await mongoose.connect(`${dbString}_middleware_remove`, dbOptions);
   });
 
   beforeEach(async () => {

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const db = require('../../../startup/config').db;
+const { dbString, dbOptions } = require('../../../startup/config');
 const post = require('../../../middleware/post');
 
 describe('post middleware', () => {
@@ -10,12 +10,7 @@ describe('post middleware', () => {
 
   beforeAll(async () => {
     Model = mongoose.model('Model', new mongoose.Schema({ name: String }));
-    await mongoose.connect(db + '_post', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true
-    });
+    await mongoose.connect(`${dbString}_middleware_post`, dbOptions);
   });
 
   beforeEach(async () => {

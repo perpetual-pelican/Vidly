@@ -3,7 +3,7 @@
 const request = require('supertest');
 const mongoose = require('mongoose');
 const winston = require('winston');
-const db = require('./startup/config').db;
+const { dbString, dbOptions } = require('./startup/config');
 
 let route;
 let app;
@@ -18,12 +18,7 @@ module.exports.setup = function (routeName, appToTest) {
   app = appToTest;
 
   beforeAll(async () => {
-    await mongoose.connect(`${db}_${route}`, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true
-    });
+    await mongoose.connect(`${dbString}_routes_${route}`, dbOptions);
     winston.error = jest.fn();
   });
 

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const winston = require('winston');
-const db = require('../../../startup/config').db;
+const { dbString } = require('../../../startup/config');
 const connectToDB = require('../../../startup/db');
 
 describe('db startup', () => {
@@ -22,6 +22,6 @@ describe('db startup', () => {
     await connectToDB();
 
     expect(winston.info).toHaveBeenCalled();
-    expect(winston.info.mock.calls[0][0]).toMatch(db);
+    expect(winston.info.mock.calls[0][0]).toMatch(dbString);
   });
 });

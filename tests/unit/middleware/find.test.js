@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const db = require('../../../startup/config').db;
+const { dbString, dbOptions } = require('../../../startup/config');
 const find = require('../../../middleware/find');
 
 describe('find middleware', () => {
@@ -11,12 +11,7 @@ describe('find middleware', () => {
 
   beforeAll(async () => {
     Model = mongoose.model('Model', new mongoose.Schema({ name: String }));
-    await mongoose.connect(db + '_find', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true
-    });
+    await mongoose.connect(`${dbString}_middleware_find`, dbOptions);
   });
 
   beforeEach(async () => {

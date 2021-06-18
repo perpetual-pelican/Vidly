@@ -29,31 +29,31 @@ describe('config startup', () => {
     const os = require('os');
     os.type = jest.fn().mockReturnValue('Linux');
 
-    const config = require('../../../startup/config');
+    const { dbString } = require('../../../startup/config');
 
-    expect(config.db).toMatch(/localhost/);
+    expect(dbString).toMatch(/localhost/);
   });
 
   it('should use hostname for db string if os type is Windows', () => {
     const os = require('os');
     os.type = jest.fn().mockReturnValue('Windows_NT');
 
-    const config = require('../../../startup/config');
+    const { dbString } = require('../../../startup/config');
 
-    expect(config.db).toMatch(new RegExp(os.hostname()));
+    expect(dbString).toMatch(new RegExp(os.hostname()));
   });
 
   it('should add development to db string if NODE_ENV is undefined', () => {
     delete process.env.NODE_ENV;
 
-    const config = require('../../../startup/config');
+    const { dbString } = require('../../../startup/config');
 
-    expect(config.db).toMatch(/development/);
+    expect(dbString).toMatch(/development/);
   });
 
   it('should add NODE_ENV to db string if it is defined', () => {
-    const config = require('../../../startup/config');
+    const { dbString } = require('../../../startup/config');
 
-    expect(config.db).toMatch(/test/);
+    expect(dbString).toMatch(/test/);
   });
 });

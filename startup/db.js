@@ -1,14 +1,9 @@
 const mongoose = require('mongoose');
 const winston = require('winston');
-const db = require('./config').db;
+const { dbString, dbOptions } = require('./config');
 
 module.exports = async function () {
-  await mongoose.connect(db, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true
-  });
+  await mongoose.connect(dbString, dbOptions);
 
-  winston.info(`Connected to ${db}...`);
+  winston.info(`Connected to ${dbString}...`);
 };
