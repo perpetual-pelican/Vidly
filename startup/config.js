@@ -11,6 +11,7 @@ const env = process.env.NODE_ENV || 'development';
 module.exports = {
   dbString: `${dbStringBase}_${env}`,
   dbOptions: {
+    replicaSet: 'rs',
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
