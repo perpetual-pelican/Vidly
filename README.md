@@ -51,7 +51,7 @@ Node-based video rental processing app using MongoDB/Mongoose and Express
 ### URL Route Structure
     http://localhost:[PORT]/
       api/
-        auth
+        login
         users/
           me
         customers/
