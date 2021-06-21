@@ -19,6 +19,7 @@ module.exports.setup = function (routeName, appToTest) {
 
   beforeAll(async () => {
     await mongoose.connect(`${dbString}_routes_${route}`, dbOptions);
+    winston.loggers.get = jest.fn().mockReturnValue({ error: jest.fn() });
     winston.error = jest.fn();
   });
 

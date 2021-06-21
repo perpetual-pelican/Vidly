@@ -1,7 +1,8 @@
 const winston = require('winston');
 
 module.exports = function (err, req, res, next) {
-  winston.error(err.message, { metadata: { error: err } });
+  if (process.env.NODE_ENV !== 'production') winston.error('', err);
+  winston.loggers.get('db').error(err.message, { metadata: { error: err } });
 
   res.status(500).send('Something failed');
 };
