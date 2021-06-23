@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const db = require('./startup/config').db;
+const { dbString } = require('./startup/config');
 const { Genre } = require('./models/genre');
 const { Movie } = require('./models/movie');
 
@@ -51,7 +51,7 @@ const data = [
 ];
 
 async function seed() {
-  await mongoose.connect(db, {
+  await mongoose.connect(dbString, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
