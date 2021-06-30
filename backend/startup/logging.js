@@ -28,7 +28,7 @@ if (env === 'development') {
   );
 }
 
-const logFolder = env === 'production' ? 'logs' : `logs/${env}`;
+const logFolder = env === 'production' ? 'logs' : `backend/logs/${env}`;
 
 winston.exceptions.handle(
   new winston.transports.File({
