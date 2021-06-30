@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": ">=8.10.0"
+  },
   "scripts": {
     "db": "cd backend && npx run-rs --mongod",
     "seed": "node backend/seed.js",
@@ -39,9 +42,15 @@
     "winston-mongodb": "^5.0.7"
   },
   "devDependencies": {
+    "eslint": "~6.8.0",
+    "eslint-config-airbnb-base": "~14.2.1",
+    "eslint-config-node": "~4.1.0",
+    "eslint-config-prettier": "~6.15.0",
+    "eslint-plugin-import": "~2.22.1",
+    "eslint-plugin-node": "~11.1.0",
+    "eslint-plugin-prettier": "~3.4.0",
     "husky": "^6.0.0",
     "jest": "^27.0.4",
-    "jshint": "^2.13.0",
     "prettier": "2.3.1",
     "pretty-quick": "^3.1.1",
     "run-rs": "^0.7.4",
