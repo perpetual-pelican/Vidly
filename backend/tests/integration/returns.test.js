@@ -1,5 +1,5 @@
 const moment = require('moment');
-const test = require('../../testSetup');
+const test = require('../testHelper');
 const app = require('../../startup/app');
 const { User } = require('../../models/user');
 const { Movie } = require('../../models/movie');

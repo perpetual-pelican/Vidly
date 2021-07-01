@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const _ = require('lodash');
-const test = require('../../testSetup');
+const test = require('../testHelper');
 const app = require('../../startup/app');
 const { User } = require('../../models/user');
 const { Genre } = require('../../models/genre');

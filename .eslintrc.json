@@ -14,7 +14,7 @@
   },
   "overrides": [
     {
-      "files": ["**/*.test.js", "testSetup.js"],
+      "files": ["**/*.test.js", "testHelper.js"],
       "rules": {
         "global-require": "off",
         "import/no-extraneous-dependencies": "off",
