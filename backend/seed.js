@@ -61,18 +61,19 @@ async function seed() {
   await Movie.deleteMany();
   await Genre.deleteMany();
 
-  for (const genre of data) {
-    const { _id } = await new Genre({ name: genre.name }).save();
-    const movies = genre.movies.map((movie) => ({
-      ...movie,
-      genres: [{ _id, name: genre.name }]
-    }));
-    await Movie.insertMany(movies);
-  }
+  const movies = [];
+  data.forEach((genre) => {
+    const { _id } = new Genre({ name: genre.name }).save();
+    movies.push(
+      ...genre.movies.map((movie) => ({
+        ...movie,
+        genres: [{ _id, name: genre.name }]
+      }))
+    );
+  });
+  await Movie.insertMany(movies);
 
   await mongoose.disconnect();
-
-  console.info('Done!');
 }
 
 seed();

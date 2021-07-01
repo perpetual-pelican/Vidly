@@ -1,6 +1,6 @@
 describe('config startup', () => {
   const vidlyKey = process.env.vidly_jwtPrivateKey;
-  const NODE_ENV = process.env.NODE_ENV;
+  const { NODE_ENV } = process.env;
 
   beforeEach(() => {
     jest.resetModules();

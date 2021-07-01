@@ -21,7 +21,7 @@ if (env === 'development') {
         winston.format.printf(({ level, message, timestamp, stack }) => {
           if (stack)
             return `\n${level}:${message}\n date: ${timestamp}\nstack: "${stack}"\n`;
-          else return `${level}: ${message}`;
+          return `${level}: ${message}`;
         })
       )
     })

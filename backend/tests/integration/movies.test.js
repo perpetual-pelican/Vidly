@@ -49,7 +49,7 @@ describe('/api/movies', () => {
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
-      const find = Movie.find;
+      const { find } = Movie;
       Movie.find = jest.fn(() => {
         throw new Error('fake uncaught exception');
       });
@@ -131,9 +131,7 @@ describe('/api/movies', () => {
     beforeEach(async () => {
       req = {
         token,
-        body: Object.assign({}, _.omit(movieObject, ['genres']), {
-          genreIds: [genres[0]._id]
-        })
+        body: { ..._.omit(movieObject, ['genres']), genreIds: [genres[0]._id] }
       };
     });
 

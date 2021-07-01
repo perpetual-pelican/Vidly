@@ -23,8 +23,8 @@ describe('User model', () => {
     beforeEach(() => {
       user = {
         name: 'a'.repeat(bounds.name.min),
-        email: 'a'.repeat(bounds.email.min - 5) + '@a.io',
-        password: 'a'.repeat(bounds.password.min - 3) + 'A1$'
+        email: `${'a'.repeat(bounds.email.min - 5)}@a.io`,
+        password: `${'a'.repeat(bounds.password.min - 3)}A1$`
       };
     });
 
@@ -125,7 +125,7 @@ describe('User model', () => {
     });
 
     it(`should return error if email length is less than ${bounds.email.min}`, () => {
-      user.email = 'a'.repeat(bounds.email.min - 6) + '@a.io';
+      user.email = `${'a'.repeat(bounds.email.min - 6)}@a.io`;
 
       const { error } = validate(user);
 
@@ -133,7 +133,7 @@ describe('User model', () => {
     });
 
     it(`should not return error if email length is equal to ${bounds.email.min}`, () => {
-      user.email = 'a'.repeat(bounds.email.min - 5) + '@a.io';
+      user.email = `${'a'.repeat(bounds.email.min - 5)}@a.io`;
 
       const { error } = validate(user);
 
@@ -141,7 +141,7 @@ describe('User model', () => {
     });
 
     it(`should return error if email length is greater than ${bounds.email.max}`, () => {
-      user.email = 'a'.repeat(bounds.email.max - 4) + '@a.io';
+      user.email = `${'a'.repeat(bounds.email.max - 4)}@a.io`;
 
       const { error } = validate(user);
 
@@ -149,7 +149,7 @@ describe('User model', () => {
     });
 
     it(`should not return error if email length is equal to ${bounds.email.max}`, () => {
-      user.email = 'a'.repeat(bounds.email.max - 5) + '@a.io';
+      user.email = `${'a'.repeat(bounds.email.max - 5)}@a.io`;
 
       const { error } = validate(user);
 
@@ -181,7 +181,7 @@ describe('User model', () => {
     });
 
     it('should return error if password does not contain a lowercase letter', () => {
-      user.password = 'A'.repeat(bounds.password.min - 2) + '1$';
+      user.password = `${'A'.repeat(bounds.password.min - 2)}1$`;
 
       const { error } = validate(user);
 
@@ -189,7 +189,7 @@ describe('User model', () => {
     });
 
     it('should return error if password does not contain an uppercase letter', () => {
-      user.password = 'a'.repeat(bounds.password.min - 2) + '1$';
+      user.password = `${'a'.repeat(bounds.password.min - 2)}1$`;
 
       const { error } = validate(user);
 
@@ -197,7 +197,7 @@ describe('User model', () => {
     });
 
     it('should return error if password does not contain a number', () => {
-      user.password = 'a'.repeat(bounds.password.min - 2) + 'A$';
+      user.password = `${'a'.repeat(bounds.password.min - 2)}A$`;
 
       const { error } = validate(user);
 
@@ -205,7 +205,7 @@ describe('User model', () => {
     });
 
     it('should return error if password does not contain a symbol', () => {
-      user.password = 'a'.repeat(bounds.password.min - 2) + 'A1';
+      user.password = `${'a'.repeat(bounds.password.min - 2)}A1`;
 
       const { error } = validate(user);
 
@@ -213,7 +213,7 @@ describe('User model', () => {
     });
 
     it(`should return error if password length is less than ${bounds.password.min}`, () => {
-      user.password = 'a'.repeat(bounds.password.min - 4) + 'A1$';
+      user.password = `${'a'.repeat(bounds.password.min - 4)}A1$`;
 
       const { error } = validate(user);
 
@@ -223,7 +223,7 @@ describe('User model', () => {
     });
 
     it(`should not return error if password length is equal to ${bounds.password.min}`, () => {
-      user.password = 'a'.repeat(bounds.password.min - 3) + 'A1$';
+      user.password = `${'a'.repeat(bounds.password.min - 3)}A1$`;
 
       const { error } = validate(user);
 
@@ -231,7 +231,7 @@ describe('User model', () => {
     });
 
     it(`should return error if password length is greater than ${bounds.password.max}`, () => {
-      user.password = 'a'.repeat(bounds.password.max - 2) + 'A1$';
+      user.password = `${'a'.repeat(bounds.password.max - 2)}A1$`;
 
       const { error } = validate(user);
 
@@ -241,7 +241,7 @@ describe('User model', () => {
     });
 
     it(`should not return error if password length is equal to ${bounds.password.max}`, () => {
-      user.password = 'a'.repeat(bounds.password.max - 3) + 'A1$';
+      user.password = `${'a'.repeat(bounds.password.max - 3)}A1$`;
 
       const { error } = validate(user);
 

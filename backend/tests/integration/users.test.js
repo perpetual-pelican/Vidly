@@ -55,7 +55,7 @@ describe('/api/users', () => {
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
-      const find = User.find;
+      const { find } = User;
       User.find = jest.fn(() => {
         throw new Error('fake uncaught exception');
       });
@@ -137,7 +137,7 @@ describe('/api/users', () => {
 
   describe('POST /', () => {
     beforeEach(() => {
-      req = { body: Object.assign({}, userObject) };
+      req = { body: { ...userObject } };
     });
 
     afterEach(async () => {

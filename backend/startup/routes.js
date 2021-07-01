@@ -7,7 +7,7 @@ const returns = require('../routes/returns');
 const users = require('../routes/users');
 const login = require('../routes/login');
 
-module.exports = function (app) {
+module.exports = (app) => {
   app.use('/', home);
   app.use('/api/login', login);
   app.use('/api/users', users);

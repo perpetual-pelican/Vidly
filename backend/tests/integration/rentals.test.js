@@ -73,7 +73,7 @@ describe('/api/rentals', () => {
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
-      const find = Rental.find;
+      const { find } = Rental;
       Rental.find = jest.fn(() => {
         throw new Error('fake uncaught exception');
       });
@@ -219,7 +219,7 @@ describe('/api/rentals', () => {
     });
 
     it('should not update movie stock in db if transaction fails after update', async () => {
-      const lookup = Rental.lookup;
+      const { lookup } = Rental;
       Rental.lookup = jest.fn(() => {
         throw Error('fake error in rental post transaction');
       });
@@ -298,7 +298,7 @@ describe('/api/rentals', () => {
     });
 
     it('should not delete the rental in db if transaction fails after delete', async () => {
-      const updateOne = Movie.updateOne;
+      const { updateOne } = Movie;
       Movie.updateOne = jest.fn(() => {
         throw Error('fake error in rental delete transaction');
       });

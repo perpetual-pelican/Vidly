@@ -8,7 +8,7 @@ const { dbString, dbOptions } = require('./startup/config');
 let route;
 let app;
 
-module.exports.setup = function (routeName, appToTest) {
+module.exports.setup = function setup(routeName, appToTest) {
   if (routeName && typeof routeName !== 'string')
     throw new Error('routeName must be a string');
   if (appToTest && typeof appToTest !== 'function')
@@ -24,9 +24,10 @@ module.exports.setup = function (routeName, appToTest) {
   });
 
   afterAll(async () => {
-    for (const name of Object.keys(mongoose.connection.collections)) {
-      await mongoose.connection.collections[name].deleteMany();
-    }
+    const results = Object.keys(mongoose.connection.collections).map((name) => {
+      return mongoose.connection.collections[name].deleteMany();
+    });
+    await Promise.all(results);
     await mongoose.disconnect();
   });
 };
@@ -39,19 +40,19 @@ const checkSetup = () => {
 };
 
 module.exports.request = {
-  getAll: function (req) {
+  getAll(req) {
     checkSetup();
     if (!req || !req.token) return request(app).get(`/api/${route}`);
     return request(app).get(`/api/${route}`).set('x-auth-token', req.token);
   },
-  getOne: function (req) {
+  getOne(req) {
     checkSetup();
     if (!req.token) return request(app).get(`/api/${route}/${req.id}`);
     return request(app)
       .get(`/api/${route}/${req.id}`)
       .set('x-auth-token', req.token);
   },
-  post: function (req) {
+  post(req) {
     checkSetup();
     if (!req.token) {
       return request(app).post(`/api/${route}`).send(req.body);
@@ -61,7 +62,7 @@ module.exports.request = {
       .set('x-auth-token', req.token)
       .send(req.body);
   },
-  put: function (req) {
+  put(req) {
     checkSetup();
     if (!req.token) {
       return request(app).put(`/api/${route}/${req.id}`).send(req.body);
@@ -71,7 +72,7 @@ module.exports.request = {
       .set('x-auth-token', req.token)
       .send(req.body);
   },
-  del: function (req) {
+  del(req) {
     checkSetup();
     if (!req.token) {
       return request(app).delete(`/api/${route}/${req.id}`);
@@ -82,7 +83,7 @@ module.exports.request = {
   }
 };
 
-module.exports.tokenEmpty = async function (exec, req) {
+module.exports.tokenEmpty = async function tokenEmpty(exec, req) {
   req.token = '';
 
   const res = await exec(req);
@@ -91,7 +92,7 @@ module.exports.tokenEmpty = async function (exec, req) {
   expect(res.text).toMatch(/[Dd]enied/);
 };
 
-module.exports.tokenInvalid = async function (exec, req) {
+module.exports.tokenInvalid = async function tokenInvalid(exec, req) {
   req.token = 'invalid';
 
   const res = await exec(req);
@@ -100,14 +101,14 @@ module.exports.tokenInvalid = async function (exec, req) {
   expect(res.text).toMatch(/[Ii]nvalid.*[Tt]oken/);
 };
 
-module.exports.adminFalse = async function (exec, req) {
+module.exports.adminFalse = async function adminFalse(exec, req) {
   const res = await exec(req);
 
   expect(res.status).toBe(403);
   expect(res.text).toMatch(/[Dd]enied/);
 };
 
-module.exports.idInvalid = async function (exec, req) {
+module.exports.idInvalid = async function idInvalid(exec, req) {
   req.id = 'invalid';
 
   const res = await exec(req);
@@ -116,7 +117,7 @@ module.exports.idInvalid = async function (exec, req) {
   expect(res.text).toMatch(/[Ii]nvalid.*[Ii][Dd]/);
 };
 
-module.exports.idNotFound = async function (exec, req) {
+module.exports.idNotFound = async function idNotFound(exec, req) {
   req.id = mongoose.Types.ObjectId().toHexString();
 
   const res = await exec(req);
@@ -125,7 +126,7 @@ module.exports.idNotFound = async function (exec, req) {
   expect(res.text).toMatch(/[Ii][Dd].*[Nn]ot.*[Ff]ound/);
 };
 
-module.exports.requestEmpty = async function (exec, req) {
+module.exports.requestEmpty = async function requestEmpty(exec, req) {
   req.body = {};
 
   const res = await exec(req);
@@ -134,7 +135,7 @@ module.exports.requestEmpty = async function (exec, req) {
   expect(res.text).toMatch(/[Pp]roperty.*[Rr]equired/);
 };
 
-module.exports.requestInvalid = async function (exec, req) {
+module.exports.requestInvalid = async function requestInvalid(exec, req) {
   if (req.body) req.body.invalidProperty = 'invalid';
   else req.body = { invalidProperty: 'invalid' };
 

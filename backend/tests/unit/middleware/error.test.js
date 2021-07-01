@@ -22,7 +22,7 @@ describe('error middleware', () => {
   });
 
   it('should only log the error to the db if NODE_ENV is production', async () => {
-    const NODE_ENV = process.env.NODE_ENV;
+    const { NODE_ENV } = process.env;
     process.env.NODE_ENV = 'production';
 
     errorMiddleware(err, req, res, next);

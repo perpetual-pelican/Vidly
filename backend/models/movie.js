@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
-const { genreSchema } = require('../models/genre');
+const { genreSchema } = require('./genre');
 
 const title = { min: 3, max: 128 };
 const dailyRentalRate = { min: 0, max: 20 };

@@ -1,7 +1,7 @@
 const winston = require('winston');
 const app = require('./app');
 
-module.exports = function () {
+module.exports = () => {
   const port = process.env.PORT || 3000;
   const server = app.listen(port);
 

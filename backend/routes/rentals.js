@@ -58,13 +58,14 @@ router.post('/', auth, validate(rVal), async (req, res) => {
       await rental.save({ session });
 
       success = true;
+      return success;
     })
     .catch((err) => {
       winston.error(err.message, { metadata: { error: err } });
-      res.status(500).send('Transaction failed. Data unchanged.');
     });
 
-  if (success) res.send(rental.toObject());
+  if (success) return res.send(rental.toObject());
+  return res.status(500).send('Transaction failed. Data unchanged.');
 });
 
 router.delete(
@@ -86,7 +87,7 @@ router.delete(
           rental = await rental.remove({ session });
 
           await Movie.updateOne(
-            { _id: rental.movie._id },
+            { _id: rental.movie.id },
             { $inc: { numberInStock: 1 } },
             { session }
           );
@@ -95,11 +96,11 @@ router.delete(
         })
         .catch((err) => {
           winston.error(err.message, { metadata: { error: err } });
-          res.status(500).send('Transaction failed. Data unchanged.');
         });
     }
 
-    if (success) res.send(rental.toObject());
+    if (success) return res.send(rental.toObject());
+    return res.status(500).send('Transaction failed. Data unchanged.');
   }
 );
 

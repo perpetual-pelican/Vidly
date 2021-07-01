@@ -28,7 +28,7 @@ describe('/api/login', () => {
     });
 
     beforeEach(() => {
-      req = { body: Object.assign({}, login) };
+      req = { body: { ...login } };
     });
 
     it('should return 400 if request body is invalid', async () => {
@@ -54,7 +54,7 @@ describe('/api/login', () => {
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
-      const findOne = User.findOne;
+      const { findOne } = User;
       User.findOne = jest.fn(() => {
         throw new Error('fake uncaught exception');
       });

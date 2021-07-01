@@ -26,7 +26,7 @@ describe('/api/genres', () => {
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
-      const find = Genre.find;
+      const { find } = Genre;
       Genre.find = jest.fn(() => {
         throw new Error('fake uncaught exception');
       });
@@ -43,8 +43,9 @@ describe('/api/genres', () => {
 
       expect(res.status).toBe(200);
       expect(res.body.length).toBe(2);
-      for (const genre of genres)
+      genres.forEach((genre) => {
         expect(res.body.some((g) => g.name === genre.name)).toBe(true);
+      });
     });
   });
 
@@ -86,7 +87,7 @@ describe('/api/genres', () => {
     beforeEach(() => {
       req = {
         token,
-        body: Object.assign({}, genreObject)
+        body: { ...genreObject }
       };
     });
 

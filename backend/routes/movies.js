@@ -21,20 +21,21 @@ router.get('/:id', validateObjectId, find(Movie, 'lean'), send);
 
 router.post('/', auth, validate(validatePost), async (req, res) => {
   if (req.body.genreIds) {
-    let genres = [];
-    for (const genreId of req.body.genreIds) {
-      let genre = await Genre.findById(genreId).lean();
-      if (!genre) return res.status(400).send('Invalid genre id');
-      genres.push(genre);
-    }
-    delete req.body.genreIds;
-    req.body.genres = genres;
+    // Begin retrieving all genres matching genreIds
+    const genres = req.body.genreIds.map((genreId) => {
+      return Genre.findById(genreId).lean();
+    });
+    // Await all genres from db
+    req.body.genres = await Promise.all(genres);
+    // Check if any genreId was not found
+    if (req.body.genres.some((genre) => !genre))
+      return res.status(400).send('Invalid genre id');
   }
 
   const movie = new Movie(req.body);
   await movie.save();
 
-  res.send(movie);
+  return res.send(movie);
 });
 
 router.put(
@@ -44,22 +45,24 @@ router.put(
   find(Movie),
   validate(validatePut),
   async (req, res) => {
-    let movie = req.doc;
+    const movie = req.doc;
 
     if (req.body.genreIds) {
-      let genres = [];
-      for (const genreId of req.body.genreIds) {
-        let genre = await Genre.findById(genreId).lean();
-        if (!genre) return res.status(400).send('Invalid genre id');
-        genres.push(genre);
-      }
-      movie.genres = genres;
+      // Begin retrieving all genres matching genreIds
+      const genres = req.body.genreIds.map((genreId) => {
+        return Genre.findById(genreId).lean();
+      });
+      // Await all genres from db
+      movie.genres = await Promise.all(genres);
+      // Check if any genreId was not found
+      if (movie.genres.some((genre) => !genre))
+        return res.status(400).send('Invalid genre id');
     }
 
     movie.set(req.body);
     await movie.save();
 
-    res.send(movie);
+    return res.send(movie);
   }
 );
 

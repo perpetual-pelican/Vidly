@@ -42,7 +42,7 @@ describe('/api/customers', () => {
     });
 
     it('should return 500 if an uncaughtException is encountered', async () => {
-      const find = Customer.find;
+      const { find } = Customer;
       Customer.find = jest.fn(() => {
         throw new Error('fake uncaught exception');
       });
@@ -59,13 +59,13 @@ describe('/api/customers', () => {
 
       expect(res.status).toBe(200);
       expect(res.body.length).toBe(2);
-      for (const customer of customers) {
+      customers.forEach((customer) => {
         expect(
           res.body.some(
             (c) => c.name === customer.name && c.phone === customer.phone
           )
         ).toBe(true);
-      }
+      });
     });
   });
 
@@ -112,7 +112,7 @@ describe('/api/customers', () => {
 
   describe('POST /', () => {
     beforeEach(() => {
-      req = { token, body: Object.assign({}, customerObject) };
+      req = { token, body: { ...customerObject } };
     });
 
     afterAll(async () => {

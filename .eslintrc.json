@@ -8,5 +8,18 @@
     "airbnb-base",
     "plugin:node/recommended",
     "plugin:prettier/recommended"
+  ],
+  "rules": {
+    "no-underscore-dangle": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.js", "testSetup.js"],
+      "rules": {
+        "global-require": "off",
+        "import/no-extraneous-dependencies": "off",
+        "node/no-unpublished-require": "off"
+      }
+    }
   ]
 }

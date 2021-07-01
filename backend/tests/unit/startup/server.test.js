@@ -15,7 +15,7 @@ describe('server startup', () => {
 
   it('should listen on process.env.PORT if it is defined', () => {
     const app = require('../../../startup/app');
-    const listen = app.listen;
+    const { listen } = app;
     app.listen = jest.fn((port) => {
       return listen(port);
     });

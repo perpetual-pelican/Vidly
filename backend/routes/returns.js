@@ -26,19 +26,20 @@ router.post('/', auth, validate(rVal), async (req, res) => {
       await rental.return();
 
       await Movie.updateOne(
-        { _id: rental.movie._id },
+        { _id: rental.movie.id },
         { $inc: { numberInStock: 1 } },
         { session }
       );
 
       success = true;
+      return success;
     })
     .catch((err) => {
       winston.error(err.message, { metadata: { error: err } });
-      res.status(500).send('Transaction failed. Data unchanged.');
     });
 
-  if (success) res.send(rental);
+  if (success) return res.send(rental);
+  return res.status(500).send('Transaction failed. Data unchanged.');
 });
 
 module.exports = router;

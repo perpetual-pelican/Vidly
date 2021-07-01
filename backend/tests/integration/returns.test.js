@@ -77,7 +77,7 @@ describe('/api/returns', () => {
   });
 
   it('should not delete rental in db if transaction fails after delete', async () => {
-    const lookup = Rental.lookup;
+    const { lookup } = Rental;
     Rental.lookup = jest.fn(() => {
       throw Error('fake error in return transaction');
     });

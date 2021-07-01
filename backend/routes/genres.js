@@ -25,7 +25,7 @@ router.post('/', auth, validate(gVal), async (req, res) => {
   genre = new Genre(req.body);
   await genre.save();
 
-  res.send(genre);
+  return res.send(genre);
 });
 
 router.put(
@@ -43,7 +43,7 @@ router.put(
     genre.set(req.body);
     await genre.save();
 
-    res.send(genre);
+    return res.send(genre);
   }
 );
 

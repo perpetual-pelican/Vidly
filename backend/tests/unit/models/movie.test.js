@@ -258,7 +258,7 @@ describe('Movie model', () => {
 
     it(`should return error if genreIds size is less than ${bounds.genres.min}`, () => {
       movie.genreIds = [];
-      for (let i = 0; i < bounds.genres.min - 1; i++)
+      for (let i = 0; i < bounds.genres.min - 1; i += 1)
         movie.genreIds.push(mongoose.Types.ObjectId().toHexString());
 
       const { error } = validatePost(movie);
@@ -270,7 +270,7 @@ describe('Movie model', () => {
 
     it(`should not return error if genreIds size is equal to ${bounds.genres.min}`, () => {
       movie.genreIds = [];
-      for (let i = 0; i < bounds.genres.min; i++)
+      for (let i = 0; i < bounds.genres.min; i += 1)
         movie.genreIds.push(mongoose.Types.ObjectId().toHexString());
 
       const { error } = validatePost(movie);
@@ -279,7 +279,7 @@ describe('Movie model', () => {
     });
     it(`should return error if genreIds size is greater than ${bounds.genres.max}`, () => {
       movie.genreIds = [];
-      for (let i = 0; i < bounds.genres.max + 1; i++)
+      for (let i = 0; i < bounds.genres.max + 1; i += 1)
         movie.genreIds.push(mongoose.Types.ObjectId().toHexString());
 
       const { error } = validatePost(movie);
@@ -291,7 +291,7 @@ describe('Movie model', () => {
 
     it(`should not return error if genreIds size is equal to ${bounds.genres.max}`, () => {
       movie.genreIds = [];
-      for (let i = 0; i < bounds.genres.max; i++)
+      for (let i = 0; i < bounds.genres.max; i += 1)
         movie.genreIds.push(mongoose.Types.ObjectId().toHexString());
 
       const { error } = validatePost(movie);
@@ -591,7 +591,7 @@ describe('Movie model', () => {
 
     it(`should return error if genreIds size is less than ${bounds.genres.min}`, () => {
       movie.genreIds = [];
-      for (let i = 0; i < bounds.genres.min - 1; i++)
+      for (let i = 0; i < bounds.genres.min - 1; i += 1)
         movie.genreIds.push(mongoose.Types.ObjectId().toHexString());
 
       const { error } = validatePut(movie);
@@ -603,7 +603,7 @@ describe('Movie model', () => {
 
     it(`should not return error if genreIds size is equal to ${bounds.genres.min}`, () => {
       movie.genreIds = [];
-      for (let i = 0; i < bounds.genres.min; i++)
+      for (let i = 0; i < bounds.genres.min; i += 1)
         movie.genreIds.push(mongoose.Types.ObjectId().toHexString());
 
       const { error } = validatePut(movie);
@@ -613,7 +613,7 @@ describe('Movie model', () => {
 
     it(`should return error if genreIds size is greater than ${bounds.genres.max}`, () => {
       movie.genreIds = [];
-      for (let i = 0; i < bounds.genres.max + 1; i++)
+      for (let i = 0; i < bounds.genres.max + 1; i += 1)
         movie.genreIds.push(mongoose.Types.ObjectId().toHexString());
 
       const { error } = validatePut(movie);
@@ -625,7 +625,7 @@ describe('Movie model', () => {
 
     it(`should not return error if genreIds size is equal to ${bounds.genres.max}`, () => {
       movie.genreIds = [];
-      for (let i = 0; i < bounds.genres.max; i++)
+      for (let i = 0; i < bounds.genres.max; i += 1)
         movie.genreIds.push(mongoose.Types.ObjectId().toHexString());
 
       const { error } = validatePut(movie);

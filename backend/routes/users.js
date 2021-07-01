@@ -18,7 +18,7 @@ router.get('/me', auth, async (req, res) => {
   const user = await User.findById(req.user._id).select('-password').lean();
   if (!user) return res.status(400).send('User not found');
 
-  res.send(user);
+  return res.send(user);
 });
 
 router.post('/', validate(uVal), async (req, res) => {
@@ -32,7 +32,7 @@ router.post('/', validate(uVal), async (req, res) => {
   const token = user.generateAuthToken();
   const payload = _.pick(user, ['_id', 'name', 'email']);
 
-  res.header('x-auth-token', token).send(payload);
+  return res.header('x-auth-token', token).send(payload);
 });
 
 module.exports = router;

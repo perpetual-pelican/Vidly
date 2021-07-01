@@ -6,18 +6,6 @@ const { User } = require('../models/user');
 
 const router = express.Router();
 
-router.post('/', validate(validateUser), async (req, res) => {
-  let user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(400).send('Invalid email or password');
-
-  const validPassword = await bcrypt.compare(req.body.password, user.password);
-  if (!validPassword) return res.status(400).send('Invalid email or password');
-
-  const token = user.generateAuthToken();
-
-  res.send(token);
-});
-
 const schema = Joi.object({
   email: Joi.string().max(255).required(),
   password: Joi.string().max(255).required()
@@ -26,5 +14,17 @@ const schema = Joi.object({
 function validateUser(user) {
   return schema.validate(user);
 }
+
+router.post('/', validate(validateUser), async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) return res.status(400).send('Invalid email or password');
+
+  const validPassword = await bcrypt.compare(req.body.password, user.password);
+  if (!validPassword) return res.status(400).send('Invalid email or password');
+
+  const token = user.generateAuthToken();
+
+  return res.send(token);
+});
 
 module.exports = router;

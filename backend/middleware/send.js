@@ -1,3 +1,3 @@
 module.exports = async (req, res) => {
-  res.send(req.doc);
+  return res.send(req.doc);
 };

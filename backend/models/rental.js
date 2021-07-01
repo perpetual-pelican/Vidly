@@ -27,7 +27,7 @@ const rentalSchema = new mongoose.Schema({
   }
 });
 
-rentalSchema.statics.lookup = function (customerId, movieId) {
+rentalSchema.statics.lookup = function lookup(customerId, movieId) {
   return this.findOne({
     'customer._id': customerId,
     'movie._id': movieId,
@@ -35,7 +35,7 @@ rentalSchema.statics.lookup = function (customerId, movieId) {
   });
 };
 
-rentalSchema.methods.return = async function (session) {
+rentalSchema.methods.return = async function returnRental(session) {
   this.dateReturned = Date.now();
 
   const daysOut = moment(this.dateReturned).diff(this.dateOut, 'days');
