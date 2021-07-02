@@ -123,12 +123,12 @@ describe('logging startup', () => {
         );
         expect(winston.transports.MongoDB).toHaveBeenCalledTimes(2);
         expect(winston.transports.MongoDB.mock.calls[0][0]).toMatchObject({
-          db: `${dbString.slice(0, -4)}development`,
-          options: { replicaSet: 'rs', useUnifiedTopology: true }
+          db: dbString,
+          options: { useUnifiedTopology: true }
         });
         expect(winston.transports.MongoDB.mock.calls[1][0]).toMatchObject({
-          db: `${dbString.slice(0, -4)}development`,
-          options: { replicaSet: 'rs', useUnifiedTopology: true }
+          db: dbString,
+          options: { useUnifiedTopology: true }
         });
         expect(process.on).toHaveBeenCalledWith(
           'unhandledRejection',
@@ -164,12 +164,12 @@ describe('logging startup', () => {
         );
         expect(winston.transports.MongoDB).toHaveBeenCalledTimes(2);
         expect(winston.transports.MongoDB.mock.calls[0][0]).toMatchObject({
-          db: `${dbString.slice(0, -4)}production`,
-          options: { replicaSet: 'rs', useUnifiedTopology: true }
+          db: dbString,
+          options: { useUnifiedTopology: true }
         });
         expect(winston.transports.MongoDB.mock.calls[1][0]).toMatchObject({
-          db: `${dbString.slice(0, -4)}production`,
-          options: { replicaSet: 'rs', useUnifiedTopology: true }
+          db: dbString,
+          options: { useUnifiedTopology: true }
         });
         expect(process.on).toHaveBeenCalledWith(
           'unhandledRejection',

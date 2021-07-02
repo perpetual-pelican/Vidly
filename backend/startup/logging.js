@@ -36,7 +36,7 @@ winston.exceptions.handle(
   }),
   new winston.transports.MongoDB({
     db: dbString,
-    options: { replicaSet: 'rs', useUnifiedTopology: true }
+    options: { useUnifiedTopology: true }
   })
 );
 
@@ -68,7 +68,7 @@ winston.loggers.add('db', {
   transports: [
     new winston.transports.MongoDB({
       db: dbString,
-      options: { replicaSet: 'rs', useUnifiedTopology: true }
+      options: { useUnifiedTopology: true }
     })
   ]
 });

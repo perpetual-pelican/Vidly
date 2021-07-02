@@ -25,7 +25,7 @@ describe('config startup', () => {
     }).not.toThrow();
   });
 
-  it('should use localhost for db string if os type is not Windows', () => {
+  it('should use localhost for dbString if os type is not Windows', () => {
     const os = require('os');
     os.type = jest.fn().mockReturnValue('Linux');
 
@@ -34,7 +34,7 @@ describe('config startup', () => {
     expect(dbString).toMatch(/localhost/);
   });
 
-  it('should use hostname for db string if os type is Windows', () => {
+  it('should use hostname for dbString if os type is Windows', () => {
     const os = require('os');
     os.type = jest.fn().mockReturnValue('Windows_NT');
 
@@ -43,17 +43,17 @@ describe('config startup', () => {
     expect(dbString).toMatch(new RegExp(os.hostname()));
   });
 
-  it('should add development to db string if NODE_ENV is undefined', () => {
+  it('should add "development" to dbName if NODE_ENV is undefined', () => {
     delete process.env.NODE_ENV;
 
-    const { dbString } = require('../../../startup/config');
+    const { dbOptions } = require('../../../startup/config');
 
-    expect(dbString).toMatch(/development/);
+    expect(dbOptions.dbName).toMatch(/development/);
   });
 
-  it('should add NODE_ENV to db string if it is defined', () => {
-    const { dbString } = require('../../../startup/config');
+  it('should add NODE_ENV to dbName if it is defined', () => {
+    const { dbOptions } = require('../../../startup/config');
 
-    expect(dbString).toMatch(/test/);
+    expect(dbOptions.dbName).toMatch(/test/);
   });
 });
