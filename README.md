@@ -34,7 +34,7 @@ Node-based video rental processing app using MongoDB/Mongoose and Express
  - If you wish, set `PORT` to specify a port for the server, otherwise port 3000 will be used
 
 ### Populate DB
- - Use `node seed.js` to fill the database with some basic data
+ - Use `npm run seed` to fill the database with some basic data
 
 ### Start Server
  - Run `npm start` to start the server
