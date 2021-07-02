@@ -1,21 +1,18 @@
 const mongoose = require('mongoose');
 const winston = require('winston');
-const { dbString } = require('../../../startup/config');
+const { dbString, dbOptions } = require('../../../startup/config');
 const connectToDB = require('../../../startup/db');
 
 describe('db startup', () => {
   beforeEach(() => {
+    mongoose.connect = jest.fn();
     winston.info = jest.fn();
-  });
-
-  afterEach(async () => {
-    await mongoose.disconnect();
   });
 
   it('should connect to vidly_test mongodb', async () => {
     await connectToDB();
 
-    expect(mongoose.connection.db.databaseName).toMatch(/vidly_test/);
+    expect(mongoose.connect).toHaveBeenCalledWith(dbString, dbOptions);
   });
 
   it('should log the connection status to winston', async () => {

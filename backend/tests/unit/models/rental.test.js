@@ -1,107 +1,55 @@
 const mongoose = require('mongoose');
 const moment = require('moment');
-const { dbString, dbOptions } = require('../../../startup/config');
-const { Customer } = require('../../../models/customer');
-const { Movie } = require('../../../models/movie');
 const { Rental, validate } = require('../../../models/rental');
 
 describe('Rental model', () => {
   let rental;
 
-  describe('mongodb access functions', () => {
-    beforeAll(async () => {
-      await mongoose.connect(`${dbString}_models_rental`, dbOptions);
+  beforeEach(() => {
+    rental = new Rental({
+      customer: { _id: 1 },
+      movie: { _id: 2, dailyRentalRate: 0.99 }
     });
+    Rental.findOne = jest.fn();
+    rental.save = jest.fn();
+  });
 
-    beforeEach(async () => {
-      rental = await new Rental({
-        customer: new Customer({
-          name: 'Customer Name',
-          phone: 'Customer Phone'
-        }),
-        movie: new Movie({
-          title: 'Movie Title',
-          dailyRentalRate: 0.99
-        })
-      }).save();
-    });
+  describe('Rental.lookup', () => {
+    it('should return an active rental for the given customer and movie', async () => {
+      Rental.lookup(rental.customer._id, rental.movie._id);
 
-    afterEach(async () => {
-      await Rental.deleteMany();
-    });
-
-    afterAll(async () => {
-      await mongoose.disconnect();
-    });
-
-    describe('Rental.lookup', () => {
-      it('should return null if customerId is not found', async () => {
-        const rentalInDB = await Rental.lookup(
-          mongoose.Types.ObjectId(),
-          rental.movie._id
-        );
-
-        expect(rentalInDB).toBeNull();
-      });
-
-      it('should return null if movieId is not found', async () => {
-        const rentalInDB = await Rental.lookup(
-          rental.customer._id,
-          mongoose.Types.ObjectId()
-        );
-
-        expect(rentalInDB).toBeNull();
-      });
-
-      it('should return rental if both customerId and movieId are found', async () => {
-        const rentalInDB = await Rental.lookup(
-          rental.customer._id,
-          rental.movie._id
-        );
-
-        expect(rentalInDB).toHaveProperty(
-          'customer.name',
-          rental.customer.name
-        );
-        expect(rentalInDB).toHaveProperty(
-          'customer.phone',
-          rental.customer.phone
-        );
-        expect(rentalInDB).toHaveProperty('movie.title', rental.movie.title);
-        expect(rentalInDB).toHaveProperty(
-          'movie.dailyRentalRate',
-          rental.movie.dailyRentalRate
-        );
+      expect(Rental.findOne).toHaveBeenCalledWith({
+        'customer._id': rental.customer._id,
+        'movie._id': rental.movie._id,
+        dateReturned: undefined
       });
     });
+  });
 
-    describe('rental.return', () => {
-      it('should set dateReturned', async () => {
-        await rental.return();
+  describe('rental.return', () => {
+    it('should set dateReturned', async () => {
+      await rental.return();
 
-        expect(rental).toHaveProperty('dateReturned');
-      });
+      expect(rental).toHaveProperty('dateReturned');
+    });
 
-      it('should set rentalFee', async () => {
-        rental.dateOut = moment().add(-7, 'days').toDate();
-        await rental.save();
+    it('should set rentalFee', async () => {
+      rental.dateOut = moment().add(-7, 'days').toDate();
 
-        await rental.return();
+      await rental.return();
 
-        expect(rental).toHaveProperty(
-          'rentalFee',
-          rental.movie.dailyRentalRate * 7
-        );
-      });
+      expect(rental).toHaveProperty(
+        'rentalFee',
+        rental.movie.dailyRentalRate * 7
+      );
+    });
 
-      it('should set dateReturned and rentalFee in db', async () => {
-        await rental.return();
+    it('should set dateReturned and rentalFee in db', async () => {
+      const session = { sessionProperties: 'session values' };
 
-        const rentalInDB = await Rental.findById(rental._id);
+      await rental.return(session);
 
-        expect(rentalInDB).toHaveProperty('dateReturned');
-        expect(rentalInDB).toHaveProperty('rentalFee');
-      });
+      expect(rental.save).toHaveBeenCalledWith(session);
     });
   });
 

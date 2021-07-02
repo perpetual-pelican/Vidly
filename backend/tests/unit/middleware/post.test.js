@@ -1,30 +1,24 @@
-const mongoose = require('mongoose');
-const { dbString, dbOptions } = require('../../../startup/config');
 const post = require('../../../middleware/post');
 
 describe('post middleware', () => {
+  let doc;
   let Model;
   let req;
   let res;
   let next;
 
-  beforeAll(async () => {
-    Model = mongoose.model('Model', new mongoose.Schema({ name: String }));
-    await mongoose.connect(`${dbString}_middleware_post`, dbOptions);
-  });
-
   beforeEach(async () => {
-    req = { body: { name: 'Model Name' } };
+    doc = { save: jest.fn() };
+    Model = jest.fn().mockReturnValue(doc);
+    req = { body: doc };
     res = {};
     next = jest.fn();
   });
 
-  afterEach(async () => {
-    await Model.deleteMany();
-  });
+  it('should create a new document with the given Model', async () => {
+    await post(Model)(req, res, next);
 
-  afterAll(async () => {
-    await mongoose.disconnect();
+    expect(Model).toHaveBeenCalledWith(req.body);
   });
 
   it('should populate req.doc with the created document', async () => {
@@ -36,12 +30,10 @@ describe('post middleware', () => {
   it('should save the document to the database', async () => {
     await post(Model)(req, res, next);
 
-    const docInDB = await Model.findOne(req.body);
-
-    expect(docInDB).toMatchObject(req.body);
+    expect(doc.save).toHaveBeenCalled();
   });
 
-  it('should call next if document is found', async () => {
+  it('should call next after document is saved', async () => {
     await post(Model)(req, res, next);
 
     expect(next).toHaveBeenCalled();
