@@ -7,9 +7,9 @@
     "install": "cd backend && npm ci && cd ../frontend && npm ci",
     "prepare": "husky install",
     "db": "cd backend && npx run-rs --mongod",
-    "seed": "node backend/seed.js",
-    "server": "node backend/index.js",
-    "server-test": "cd backend && jest --coverage"
+    "seed": "cd backend && node seed.js",
+    "server": "cd backend && node index.js",
+    "server-test": "cd backend && npx jest --coverage"
   },
   "devDependencies": {
     "husky": "^6.0.0",
