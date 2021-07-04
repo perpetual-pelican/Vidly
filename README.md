@@ -7,10 +7,11 @@ Node-based video rental processing app using MongoDB/Mongoose and Express
 ### Install Node.js
  - https://nodejs.org/en/download/
 
-### Install MongoDB
+### Install MongoDB Community Edition
  - https://docs.mongodb.com/manual/installation/
+ - Add MongoDB binaries folder to PATH
  - By default, the MongoDB data is stored locally
-   - in ProgramFiles under MongoDB on Windows
+   - in C:\ProgramFiles\MongoDB\4.4\Server (for version 4.4) on Windows
    - in /var/lib/mongodb on Linux
    - in /etc/mongo/data/db on Mac ( or /usr/local/var/mongodb using homebrew)
 

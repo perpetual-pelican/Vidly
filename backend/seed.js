@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { dbString } = require('./startup/config');
+const { dbString, dbOptions } = require('./startup/config');
 const { Genre } = require('./models/genre');
 const { Movie } = require('./models/movie');
 
@@ -51,12 +51,7 @@ const data = [
 ];
 
 async function seed() {
-  await mongoose.connect(dbString, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false,
-    useCreateIndex: true
-  });
+  await mongoose.connect(dbString, dbOptions);
 
   await Movie.deleteMany();
   await Genre.deleteMany();

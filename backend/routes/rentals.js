@@ -62,10 +62,10 @@ router.post('/', auth, validate(rVal), async (req, res) => {
     })
     .catch((err) => {
       winston.error(err.message, { metadata: { error: err } });
+      return res.status(500).send('Transaction failed. Data unchanged.');
     });
 
   if (success) return res.send(rental.toObject());
-  return res.status(500).send('Transaction failed. Data unchanged.');
 });
 
 router.delete(
@@ -96,11 +96,11 @@ router.delete(
         })
         .catch((err) => {
           winston.error(err.message, { metadata: { error: err } });
+          return res.status(500).send('Transaction failed. Data unchanged.');
         });
     }
 
     if (success) return res.send(rental.toObject());
-    return res.status(500).send('Transaction failed. Data unchanged.');
   }
 );
 

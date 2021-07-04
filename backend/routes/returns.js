@@ -36,10 +36,10 @@ router.post('/', auth, validate(rVal), async (req, res) => {
     })
     .catch((err) => {
       winston.error(err.message, { metadata: { error: err } });
+      return res.status(500).send('Transaction failed. Data unchanged.');
     });
 
   if (success) return res.send(rental);
-  return res.status(500).send('Transaction failed. Data unchanged.');
 });
 
 module.exports = router;
