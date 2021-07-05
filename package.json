@@ -2,10 +2,12 @@
   "name": "vidly",
   "version": "1.0.0",
   "license": "ISC",
+  "repository": "https://github.com/perpetual-pelican/Vidly.git",
+  "description": "a video rental processing app built with Node, Express, MongoDB, and React",
   "main": "backend/index.js",
   "scripts": {
-    "install": "cd backend && npm ci && cd ../frontend && npm ci",
     "prepare": "husky install",
+    "install": "cd backend && npm ci && cd ../frontend && npm ci",
     "db": "cd backend && npx run-rs --mongod",
     "seed": "cd backend && node seed.js",
     "server": "cd backend && node index.js",
@@ -21,7 +23,8 @@
     "pretty-quick": "^3.1.1"
   },
   "engines": {
-    "node": ">=8.10.0"
+    "node": ">=8.10.0",
+    "npm": ">=5.2.0"
   },
   "prettier": {
     "singleQuote": true,
