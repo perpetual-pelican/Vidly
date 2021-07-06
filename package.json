@@ -13,7 +13,7 @@
     "install": "cd backend && npm ci",
     "db": "cd backend && npx run-rs --mongod",
     "seed": "cd backend && node seed.js",
-    "server": "cd backend && node index.js",
+    "start": "cd backend && node index.js",
     "test": "cd backend && npx jest --coverage"
   },
   "devDependencies": {
