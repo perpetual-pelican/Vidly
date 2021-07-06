@@ -108,17 +108,17 @@ describe('logging startup', () => {
         expect(winston.transports.File).toHaveBeenCalledTimes(3);
         expect(winston.transports.File).toHaveBeenCalledWith(
           expect.objectContaining({
-            filename: 'backend/logs/development/uncaughtExceptions.log'
+            filename: 'logs/development/uncaughtExceptions.log'
           })
         );
         expect(winston.transports.File).toHaveBeenCalledWith(
           expect.objectContaining({
-            filename: 'backend/logs/development/info.log'
+            filename: 'logs/development/info.log'
           })
         );
         expect(winston.transports.File).toHaveBeenCalledWith(
           expect.objectContaining({
-            filename: 'backend/logs/development/error.log'
+            filename: 'logs/development/error.log'
           })
         );
         expect(winston.transports.MongoDB).toHaveBeenCalledTimes(2);
