@@ -7,6 +7,9 @@
   "main": "backend/index.js",
   "scripts": {
     "prepare": "husky install",
+    "lint": "eslint .",
+    "lint-fix": "eslint --fix .",
+    "format": "prettier --write .",
     "install": "cd backend && npm ci && cd ../frontend && npm ci",
     "db": "cd backend && npx run-rs --mongod",
     "seed": "cd backend && node seed.js",
