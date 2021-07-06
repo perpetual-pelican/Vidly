@@ -1,7 +1,9 @@
 {
-  "name": "backend",
+  "name": "vidly-backend",
   "version": "1.0.0",
   "license": "ISC",
+  "repository": "https://github.com/perpetual-pelican/vidly-backend.git",
+  "description": "Node-based backend api for video rental processing - built with Express and MongoDB/Mongoose",
   "main": "index.js",
   "directories": {
     "test": "tests"
@@ -33,7 +35,8 @@
     "supertest": "^6.1.3"
   },
   "engines": {
-    "node": ">=8.10.0"
+    "node": ">=8.10.0",
+    "npm": ">=5.2.0"
   },
   "jest": {
     "testEnvironment": "node",
