@@ -31,7 +31,7 @@ describe('error middleware', () => {
     expect(winston.error).not.toHaveBeenCalled();
     expect(winston.loggers.get).toHaveBeenCalledWith('db');
     expect(winstonDBLogger.error).toHaveBeenCalledWith(err.message, {
-      metadata: { error: err }
+      metadata: { error: err },
     });
   });
 
@@ -41,7 +41,7 @@ describe('error middleware', () => {
     expect(winston.error).toHaveBeenCalledWith('', err);
     expect(winston.loggers.get).toHaveBeenCalledWith('db');
     expect(winstonDBLogger.error).toHaveBeenCalledWith(err.message, {
-      metadata: { error: err }
+      metadata: { error: err },
     });
   });
 

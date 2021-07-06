@@ -11,7 +11,7 @@ describe('auth middleware', () => {
   beforeEach(() => {
     user = {
       _id: mongoose.Types.ObjectId().toHexString(),
-      isAdmin: false
+      isAdmin: false,
     };
     const token = new User(user).generateAuthToken();
     req = { header: jest.fn().mockReturnValue(token) };

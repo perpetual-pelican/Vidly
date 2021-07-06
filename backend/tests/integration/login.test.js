@@ -13,7 +13,7 @@ describe('/api/login', () => {
   describe('POST /', () => {
     const login = {
       email: 'userEmail@domain.com',
-      password: 'abcdeF1$'
+      password: 'abcdeF1$',
     };
     let user;
     let req;
@@ -23,7 +23,7 @@ describe('/api/login', () => {
         name: 'User Name',
         email: login.email,
         password: await bcrypt.hash(login.password, 10),
-        isAdmin: false
+        isAdmin: false,
       }).save();
     });
 

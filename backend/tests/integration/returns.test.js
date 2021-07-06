@@ -20,22 +20,22 @@ describe('/api/returns', () => {
     movie = await new Movie({
       title: 'Movie Title',
       numberInStock: 0,
-      dailyRentalRate: 2
+      dailyRentalRate: 2,
     }).save();
     rental = await new Rental({
       customer: {
         name: 'Customer Name',
-        phone: '12345'
+        phone: '12345',
       },
       movie: {
         _id: movie._id,
         title: movie.title,
-        dailyRentalRate: movie.dailyRentalRate
-      }
+        dailyRentalRate: movie.dailyRentalRate,
+      },
     }).save();
     returnObject = {
       customerId: rental.customer._id,
-      movieId: rental.movie._id
+      movieId: rental.movie._id,
     };
     req = { token, body: returnObject };
   });
@@ -135,7 +135,7 @@ describe('/api/returns', () => {
         'movie',
         'dateOut',
         'dateReturned',
-        'rentalFee'
+        'rentalFee',
       ])
     );
   });

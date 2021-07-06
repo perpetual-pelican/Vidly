@@ -1,7 +1,7 @@
 const {
   validatePost,
   validatePut,
-  bounds
+  bounds,
 } = require('../../../models/customer');
 
 describe('Customer model', () => {
@@ -11,7 +11,7 @@ describe('Customer model', () => {
     customer = {
       name: 'a'.repeat(bounds.name.min),
       phone: '0'.repeat(bounds.phone.min),
-      isGold: false
+      isGold: false,
     };
   });
 

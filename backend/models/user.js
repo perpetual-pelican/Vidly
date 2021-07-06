@@ -13,25 +13,25 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minLength: name.min,
-    maxLength: name.max
+    maxLength: name.max,
   },
   email: {
     type: String,
     required: true,
     unique: true,
     minLength: email.min,
-    maxLength: email.max
+    maxLength: email.max,
   },
   password: {
     type: String,
     required: true,
     minLength: password.min,
-    maxLength: password.max
+    maxLength: password.max,
   },
   isAdmin: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 userSchema.methods.generateAuthToken = function generateAuthToken() {
@@ -53,8 +53,8 @@ const joiSchema = Joi.object({
     upperCase: 1,
     numeric: 1,
     symbol: 1,
-    requirementCount: 4
-  }).required()
+    requirementCount: 4,
+  }).required(),
 });
 
 function validate(user) {

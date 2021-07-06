@@ -19,7 +19,7 @@ describe('remove middleware', () => {
       findByIdAndDelete: jest.fn((id) => {
         if (id === doc._id) return { lean };
         return { lean: jest.fn() };
-      })
+      }),
     };
     req = { params: { id: doc._id } };
     send = jest.fn();

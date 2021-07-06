@@ -8,7 +8,7 @@ describe('Rental model', () => {
   beforeEach(() => {
     rental = new Rental({
       customer: { _id: 1 },
-      movie: { _id: 2, dailyRentalRate: 0.99 }
+      movie: { _id: 2, dailyRentalRate: 0.99 },
     });
     Rental.findOne = jest.fn();
     rental.save = jest.fn();
@@ -21,7 +21,7 @@ describe('Rental model', () => {
       expect(Rental.findOne).toHaveBeenCalledWith({
         'customer._id': rental.customer._id,
         'movie._id': rental.movie._id,
-        dateReturned: undefined
+        dateReturned: undefined,
       });
     });
   });
@@ -57,7 +57,7 @@ describe('Rental model', () => {
     beforeEach(() => {
       rental = {
         customerId: mongoose.Types.ObjectId().toHexString(),
-        movieId: mongoose.Types.ObjectId().toHexString()
+        movieId: mongoose.Types.ObjectId().toHexString(),
       };
     });
 

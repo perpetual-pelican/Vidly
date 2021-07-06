@@ -53,7 +53,7 @@ router.post('/', auth, validate(rVal), async (req, res) => {
       }
       rental = new Rental({
         customer: _.pick(customer, ['_id', 'name', 'phone', 'isGold']),
-        movie: _.pick(movie, ['_id', 'title', 'dailyRentalRate'])
+        movie: _.pick(movie, ['_id', 'title', 'dailyRentalRate']),
       });
       await rental.save({ session });
 

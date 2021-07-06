@@ -10,19 +10,19 @@ const customerSchema = new mongoose.Schema({
     required: true,
     trim: true,
     minLength: name.min,
-    maxLength: name.max
+    maxLength: name.max,
   },
   phone: {
     type: String,
     required: true,
     trim: true,
     minLength: phone.min,
-    maxLength: phone.max
+    maxLength: phone.max,
   },
   isGold: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
@@ -30,13 +30,13 @@ const Customer = mongoose.model('Customer', customerSchema);
 const joiSchema = {
   name: Joi.string().min(name.min).max(name.max),
   phone: Joi.string().min(phone.min).max(phone.max),
-  isGold: Joi.boolean()
+  isGold: Joi.boolean(),
 };
 
 const joiPostSchema = Joi.object({
   name: joiSchema.name.required(),
   phone: joiSchema.phone.required(),
-  isGold: joiSchema.isGold
+  isGold: joiSchema.isGold,
 });
 
 function validatePost(customer) {

@@ -8,7 +8,7 @@ describe('User model', () => {
     it('should return a valid JSON Web Token', () => {
       const user = {
         _id: mongoose.Types.ObjectId().toHexString(),
-        isAdmin: true
+        isAdmin: true,
       };
       const token = new User(user).generateAuthToken();
       const decoded = jwt.verify(token, config.get('jwtPrivateKey'));
@@ -24,7 +24,7 @@ describe('User model', () => {
       user = {
         name: 'a'.repeat(bounds.name.min),
         email: `${'a'.repeat(bounds.email.min - 5)}@a.io`,
-        password: `${'a'.repeat(bounds.password.min - 3)}A1$`
+        password: `${'a'.repeat(bounds.password.min - 3)}A1$`,
       };
     });
 

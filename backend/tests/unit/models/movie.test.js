@@ -9,7 +9,7 @@ describe('Movie model', () => {
       title: 'a'.repeat(bounds.title.min),
       dailyRentalRate: bounds.dailyRentalRate.min,
       numberInStock: bounds.numberInStock.min,
-      genreIds: [mongoose.Types.ObjectId().toHexString()]
+      genreIds: [mongoose.Types.ObjectId().toHexString()],
     };
   });
 

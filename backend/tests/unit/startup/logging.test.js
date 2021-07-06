@@ -53,12 +53,12 @@ describe('logging startup', () => {
           colorize: jest.fn().mockReturnValue('colorize'),
           timestamp: jest.fn().mockReturnValue('timestamp'),
           json: jest.fn().mockReturnValue('json'),
-          printf: jest.fn()
+          printf: jest.fn(),
         };
         const configure = jest.fn();
         const transports = {
           Console: jest.fn(),
-          File: jest.fn()
+          File: jest.fn(),
         };
         const exceptions = { handle: jest.fn() };
         const add = jest.fn();
@@ -108,27 +108,27 @@ describe('logging startup', () => {
         expect(winston.transports.File).toHaveBeenCalledTimes(3);
         expect(winston.transports.File).toHaveBeenCalledWith(
           expect.objectContaining({
-            filename: 'logs/development/uncaughtExceptions.log'
+            filename: 'logs/development/uncaughtExceptions.log',
           })
         );
         expect(winston.transports.File).toHaveBeenCalledWith(
           expect.objectContaining({
-            filename: 'logs/development/info.log'
+            filename: 'logs/development/info.log',
           })
         );
         expect(winston.transports.File).toHaveBeenCalledWith(
           expect.objectContaining({
-            filename: 'logs/development/error.log'
+            filename: 'logs/development/error.log',
           })
         );
         expect(winston.transports.MongoDB).toHaveBeenCalledTimes(2);
         expect(winston.transports.MongoDB.mock.calls[0][0]).toMatchObject({
           db: dbString,
-          options: { useUnifiedTopology: true }
+          options: { useUnifiedTopology: true },
         });
         expect(winston.transports.MongoDB.mock.calls[1][0]).toMatchObject({
           db: dbString,
-          options: { useUnifiedTopology: true }
+          options: { useUnifiedTopology: true },
         });
         expect(process.on).toHaveBeenCalledWith(
           'unhandledRejection',
@@ -149,27 +149,27 @@ describe('logging startup', () => {
         expect(winston.transports.File).toHaveBeenCalledTimes(3);
         expect(winston.transports.File).toHaveBeenCalledWith(
           expect.objectContaining({
-            filename: 'logs/uncaughtExceptions.log'
+            filename: 'logs/uncaughtExceptions.log',
           })
         );
         expect(winston.transports.File).toHaveBeenCalledWith(
           expect.objectContaining({
-            filename: 'logs/info.log'
+            filename: 'logs/info.log',
           })
         );
         expect(winston.transports.File).toHaveBeenCalledWith(
           expect.objectContaining({
-            filename: 'logs/error.log'
+            filename: 'logs/error.log',
           })
         );
         expect(winston.transports.MongoDB).toHaveBeenCalledTimes(2);
         expect(winston.transports.MongoDB.mock.calls[0][0]).toMatchObject({
           db: dbString,
-          options: { useUnifiedTopology: true }
+          options: { useUnifiedTopology: true },
         });
         expect(winston.transports.MongoDB.mock.calls[1][0]).toMatchObject({
           db: dbString,
-          options: { useUnifiedTopology: true }
+          options: { useUnifiedTopology: true },
         });
         expect(process.on).toHaveBeenCalledWith(
           'unhandledRejection',
@@ -185,7 +185,7 @@ describe('logging startup', () => {
         mockLog = {
           level: 'logtype',
           message: 'text',
-          timestamp: 'date and time'
+          timestamp: 'date and time',
         };
       });
 

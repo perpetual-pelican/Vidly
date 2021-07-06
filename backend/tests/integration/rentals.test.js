@@ -22,13 +22,13 @@ describe('/api/rentals', () => {
   beforeAll(async () => {
     customer = await new Customer({
       name: 'Customer Name',
-      phone: '12345'
+      phone: '12345',
     }).save();
     movieObject = {
       title: 'Movie Title',
       dailyRentalRate: 1,
       numberInStock: 1,
-      genres: [new Genre({ name: 'Genre Name' })]
+      genres: [new Genre({ name: 'Genre Name' })],
     };
     movie = await new Movie(movieObject).save();
     rentalObject = { customer, movie };
@@ -41,17 +41,17 @@ describe('/api/rentals', () => {
     beforeAll(async () => {
       customer2 = await new Customer({
         name: 'Customer Name 2',
-        phone: '12345'
+        phone: '12345',
       }).save();
       movie2 = await new Movie({
         title: 'Movie Title 2',
         dailyRentalRate: 2,
         numberInStock: 2,
-        genres: [new Genre({ name: 'Genre Name 2' })]
+        genres: [new Genre({ name: 'Genre Name 2' })],
       }).save();
       await Rental.insertMany([
         rentalObject,
-        { customer: customer2, movie: movie2 }
+        { customer: customer2, movie: movie2 },
       ]);
     });
 
@@ -160,8 +160,8 @@ describe('/api/rentals', () => {
         token,
         body: {
           customerId: customer._id,
-          movieId: movie._id
-        }
+          movieId: movie._id,
+        },
       };
     });
 
@@ -240,7 +240,7 @@ describe('/api/rentals', () => {
       const movieInDB = await Movie.findById(movie._id).lean();
       const rentalInDB = await Rental.findOne({
         'customer._id': customer._id,
-        'movie._id': movie._id
+        'movie._id': movie._id,
       }).lean();
 
       expect(movieInDB.numberInStock).toBe(movie.numberInStock - 1);
@@ -318,7 +318,7 @@ describe('/api/rentals', () => {
 
       const rentalInDB = await Rental.findOne({
         'customer._id': customer._id,
-        'movie._id': movie._id
+        'movie._id': movie._id,
       }).lean();
       const movieInDB = await Movie.findById(movie._id).lean();
 
@@ -333,7 +333,7 @@ describe('/api/rentals', () => {
 
       const rentalInDB = await Rental.findOne({
         'customer._id': customer._id,
-        'movie._id': movie._id
+        'movie._id': movie._id,
       }).lean();
       const movieInDB = await Movie.findById(movie._id).lean();
 

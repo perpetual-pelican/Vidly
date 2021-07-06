@@ -9,24 +9,24 @@ const data = [
     movies: [
       { title: 'Murderbots 2', dailyRentalRate: 0.99, numberInStock: 15 },
       { title: 'Cop Movie', dailyRentalRate: 1.99, numberInStock: 10 },
-      { title: 'Deathdome', dailyRentalRate: 2.99, numberInStock: 5 }
-    ]
+      { title: 'Deathdome', dailyRentalRate: 2.99, numberInStock: 5 },
+    ],
   },
   {
     name: 'Adventure',
     movies: [
       { title: 'Lost Kids', dailyRentalRate: 0.99, numberInStock: 15 },
       { title: 'River Rafters', dailyRentalRate: 1.99, numberInStock: 10 },
-      { title: 'Through the Woods', dailyRentalRate: 2.99, numberInStock: 5 }
-    ]
+      { title: 'Through the Woods', dailyRentalRate: 2.99, numberInStock: 5 },
+    ],
   },
   {
     name: 'Comedy',
     movies: [
       { title: 'Cat Commanders', dailyRentalRate: 0.99, numberInStock: 5 },
       { title: 'Desperate Dudes', dailyRentalRate: 1.99, numberInStock: 10 },
-      { title: 'Baby Baller', dailyRentalRate: 2.99, numberInStock: 15 }
-    ]
+      { title: 'Baby Baller', dailyRentalRate: 2.99, numberInStock: 15 },
+    ],
   },
   {
     name: 'Fantasy',
@@ -35,19 +35,19 @@ const data = [
       {
         title: 'The Long, Cold Dark',
         dailyRentalRate: 1.99,
-        numberInStock: 10
+        numberInStock: 10,
       },
-      { title: 'Sewer Dwellers', dailyRentalRate: 2.99, numberInStock: 5 }
-    ]
+      { title: 'Sewer Dwellers', dailyRentalRate: 2.99, numberInStock: 5 },
+    ],
   },
   {
     name: 'Horror',
     movies: [
       { title: 'The Spider Queen', dailyRentalRate: 0.99, numberInStock: 15 },
       { title: 'After Hours', dailyRentalRate: 1.99, numberInStock: 10 },
-      { title: 'Beyond the Veil', dailyRentalRate: 2.99, numberInStock: 5 }
-    ]
-  }
+      { title: 'Beyond the Veil', dailyRentalRate: 2.99, numberInStock: 5 },
+    ],
+  },
 ];
 
 async function seed() {
@@ -62,7 +62,7 @@ async function seed() {
     movies.push(
       ...genre.movies.map((movie) => ({
         ...movie,
-        genres: [{ _id, name: genre.name }]
+        genres: [{ _id, name: genre.name }],
       }))
     );
   });

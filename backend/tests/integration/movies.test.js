@@ -19,13 +19,13 @@ describe('/api/movies', () => {
   beforeAll(async () => {
     genres = [
       await new Genre({ name: 'Genre Name' }).save(),
-      await new Genre({ name: 'Genre Name 2' }).save()
+      await new Genre({ name: 'Genre Name 2' }).save(),
     ];
     movieObject = {
       title: 'Movie Title',
       dailyRentalRate: 1,
       numberInStock: 1,
-      genres: [genres[0]]
+      genres: [genres[0]],
     };
   });
 
@@ -39,8 +39,8 @@ describe('/api/movies', () => {
           title: ' Movie Title 2',
           dailyRentalRate: 2,
           numberInStock: 2,
-          genres: [genres[1]]
-        }).save()
+          genres: [genres[1]],
+        }).save(),
       ];
     });
 
@@ -121,7 +121,7 @@ describe('/api/movies', () => {
       expect(res.body).toHaveProperty(
         'genres',
         expect.arrayContaining([
-          expect.objectContaining({ name: movie.genres[0].name })
+          expect.objectContaining({ name: movie.genres[0].name }),
         ])
       );
     });
@@ -131,7 +131,7 @@ describe('/api/movies', () => {
     beforeEach(async () => {
       req = {
         token,
-        body: { ..._.omit(movieObject, ['genres']), genreIds: [genres[0]._id] }
+        body: { ..._.omit(movieObject, ['genres']), genreIds: [genres[0]._id] },
       };
     });
 
@@ -173,7 +173,7 @@ describe('/api/movies', () => {
       await post(req);
 
       const movieInDB = await Movie.findOne({
-        title: movieObject.title
+        title: movieObject.title,
       }).lean();
 
       expect(movieInDB).toHaveProperty('title', movieObject.title);
@@ -188,7 +188,7 @@ describe('/api/movies', () => {
       expect(movieInDB).toHaveProperty(
         'genres',
         expect.arrayContaining([
-          expect.objectContaining({ name: genres[0].name })
+          expect.objectContaining({ name: genres[0].name }),
         ])
       );
     });
@@ -210,7 +210,7 @@ describe('/api/movies', () => {
       expect(res.body).toHaveProperty(
         'genres',
         expect.arrayContaining([
-          expect.objectContaining({ name: genres[0].name })
+          expect.objectContaining({ name: genres[0].name }),
         ])
       );
     });
@@ -224,12 +224,12 @@ describe('/api/movies', () => {
       movie = await new Movie(movieObject).save();
       movieUpdate = {
         title: 'Updated Movie Title',
-        genreIds: [genres[1]._id]
+        genreIds: [genres[1]._id],
       };
       req = {
         token,
         id: movie._id,
-        body: movieUpdate
+        body: movieUpdate,
       };
     });
 
@@ -286,7 +286,7 @@ describe('/api/movies', () => {
       expect(movieInDB).toHaveProperty(
         'genres',
         expect.arrayContaining([
-          expect.objectContaining({ name: movie.genres[0].name })
+          expect.objectContaining({ name: movie.genres[0].name }),
         ])
       );
     });
@@ -307,7 +307,7 @@ describe('/api/movies', () => {
       expect(movieInDB).toHaveProperty(
         'genres',
         expect.arrayContaining([
-          expect.objectContaining({ name: genres[1].name })
+          expect.objectContaining({ name: genres[1].name }),
         ])
       );
     });
@@ -323,7 +323,7 @@ describe('/api/movies', () => {
       expect(res.body).toHaveProperty(
         'genres',
         expect.arrayContaining([
-          expect.objectContaining({ name: genres[1].name })
+          expect.objectContaining({ name: genres[1].name }),
         ])
       );
     });
@@ -336,7 +336,7 @@ describe('/api/movies', () => {
       movie = await new Movie(movieObject).save();
       req = {
         token: new User({ isAdmin: true }).generateAuthToken(),
-        id: movie._id
+        id: movie._id,
       };
     });
 
@@ -385,7 +385,7 @@ describe('/api/movies', () => {
       expect(res.body).toHaveProperty(
         'genres',
         expect.arrayContaining([
-          expect.objectContaining({ name: movie.genres[0].name })
+          expect.objectContaining({ name: movie.genres[0].name }),
         ])
       );
     });

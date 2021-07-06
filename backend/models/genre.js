@@ -9,14 +9,14 @@ const genreSchema = new mongoose.Schema({
     required: true,
     trim: true,
     minlength: name.min,
-    maxlength: name.max
-  }
+    maxlength: name.max,
+  },
 });
 
 const Genre = mongoose.model('Genre', genreSchema);
 
 const joiSchema = Joi.object({
-  name: Joi.string().min(name.min).max(name.max).required()
+  name: Joi.string().min(name.min).max(name.max).required(),
 });
 
 function validate(genre) {

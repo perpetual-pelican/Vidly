@@ -17,7 +17,7 @@ describe('/api/genres', () => {
     beforeAll(async () => {
       genres = [
         await new Genre(genreObject).save(),
-        await new Genre({ name: 'Genre Name 2' }).save()
+        await new Genre({ name: 'Genre Name 2' }).save(),
       ];
     });
 
@@ -87,7 +87,7 @@ describe('/api/genres', () => {
     beforeEach(() => {
       req = {
         token,
-        body: { ...genreObject }
+        body: { ...genreObject },
       };
     });
 
@@ -143,7 +143,7 @@ describe('/api/genres', () => {
       req = {
         token: new User().generateAuthToken(),
         id: genre._id,
-        body: genreUpdate
+        body: genreUpdate,
       };
     });
 

@@ -14,16 +14,16 @@ if (env === 'development') {
         winston.format.timestamp({
           format: () => {
             return new Date().toLocaleString('en-US', {
-              timeZone: 'America/Chicago'
+              timeZone: 'America/Chicago',
             });
-          }
+          },
         }),
         winston.format.printf(({ level, message, timestamp, stack }) => {
           if (stack)
             return `\n${level}:${message}\n date: ${timestamp}\nstack: "${stack}"\n`;
           return `${level}: ${message}`;
         })
-      )
+      ),
     })
   );
 }
@@ -32,11 +32,11 @@ const logFolder = env === 'production' ? 'logs' : `logs/${env}`;
 
 winston.exceptions.handle(
   new winston.transports.File({
-    filename: `${logFolder}/uncaughtExceptions.log`
+    filename: `${logFolder}/uncaughtExceptions.log`,
   }),
   new winston.transports.MongoDB({
     db: dbString,
-    options: { useUnifiedTopology: true }
+    options: { useUnifiedTopology: true },
   })
 );
 
@@ -52,7 +52,7 @@ const fileFormat = winston.format.combine(
 winston.add(
   new winston.transports.File({
     filename: `${logFolder}/info.log`,
-    format: fileFormat
+    format: fileFormat,
   })
 );
 
@@ -60,7 +60,7 @@ winston.add(
   new winston.transports.File({
     level: 'error',
     filename: `${logFolder}/error.log`,
-    format: fileFormat
+    format: fileFormat,
   })
 );
 
@@ -68,7 +68,7 @@ winston.loggers.add('db', {
   transports: [
     new winston.transports.MongoDB({
       db: dbString,
-      options: { useUnifiedTopology: true }
-    })
-  ]
+      options: { useUnifiedTopology: true },
+    }),
+  ],
 });

@@ -7,31 +7,31 @@ const { movieSchemaBase } = require('./movie');
 const rentalSchema = new mongoose.Schema({
   customer: {
     type: customerSchema,
-    required: true
+    required: true,
   },
   movie: {
     type: new mongoose.Schema(movieSchemaBase),
-    required: true
+    required: true,
   },
   dateOut: {
     type: Date,
     required: true,
-    default: Date.now
+    default: Date.now,
   },
   dateReturned: {
-    type: Date
+    type: Date,
   },
   rentalFee: {
     type: Number,
-    min: 0
-  }
+    min: 0,
+  },
 });
 
 rentalSchema.statics.lookup = function lookup(customerId, movieId) {
   return this.findOne({
     'customer._id': customerId,
     'movie._id': movieId,
-    dateReturned: undefined
+    dateReturned: undefined,
   });
 };
 
@@ -48,7 +48,7 @@ const Rental = mongoose.model('Rental', rentalSchema);
 
 const joiSchema = Joi.object({
   customerId: Joi.objectId().required(),
-  movieId: Joi.objectId().required()
+  movieId: Joi.objectId().required(),
 });
 
 function validate(rental) {

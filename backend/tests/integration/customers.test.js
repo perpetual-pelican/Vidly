@@ -20,8 +20,8 @@ describe('/api/customers', () => {
         await Customer.create(customerObject),
         await Customer.create({
           name: 'Customer Name 2',
-          phone: '12345'
-        })
+          phone: '12345',
+        }),
       ];
     });
 
@@ -160,7 +160,7 @@ describe('/api/customers', () => {
       req = {
         token,
         id: customer._id,
-        body: customerUpdate
+        body: customerUpdate,
       };
     });
 
@@ -218,7 +218,7 @@ describe('/api/customers', () => {
       customer = await new Customer(customerObject).save();
       req = {
         token: new User({ isAdmin: true }).generateAuthToken(),
-        id: customer._id
+        id: customer._id,
       };
     });
 

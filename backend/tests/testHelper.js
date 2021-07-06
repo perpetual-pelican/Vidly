@@ -20,7 +20,7 @@ module.exports.setup = function setup(routeName, appToTest) {
   beforeAll(async () => {
     await mongoose.connect(dbString, {
       ...dbOptions,
-      dbName: `${dbOptions.dbName}_routes_${route}`
+      dbName: `${dbOptions.dbName}_routes_${route}`,
     });
     winston.loggers.get = jest.fn().mockReturnValue({ error: jest.fn() });
     winston.error = jest.fn();
@@ -83,7 +83,7 @@ module.exports.request = {
     return request(app)
       .delete(`/api/${route}/${req.id}`)
       .set('x-auth-token', req.token);
-  }
+  },
 };
 
 module.exports.tokenEmpty = async function tokenEmpty(exec, req) {

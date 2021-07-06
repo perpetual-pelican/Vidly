@@ -12,7 +12,7 @@ describe('/api/users', () => {
   const userObject = {
     name: 'User Name',
     email: 'userEmail@domain.com',
-    password: 'abcdeF1$'
+    password: 'abcdeF1$',
   };
   let user;
   let req;
@@ -27,7 +27,7 @@ describe('/api/users', () => {
         name: 'Admin Name',
         email: 'adminEmail@domain.com',
         password: 'abcdeF1$',
-        isAdmin: true
+        isAdmin: true,
       }).save();
       token = adminUser.generateAuthToken();
     });

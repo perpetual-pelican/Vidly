@@ -14,14 +14,14 @@ const movieSchemaBase = {
     required: true,
     trim: true,
     minlength: title.min,
-    maxlength: title.max
+    maxlength: title.max,
   },
   dailyRentalRate: {
     type: Number,
     required: true,
     min: dailyRentalRate.min,
-    max: dailyRentalRate.max
-  }
+    max: dailyRentalRate.max,
+  },
 };
 
 const movieSchema = new mongoose.Schema({
@@ -31,15 +31,15 @@ const movieSchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: numberInStock.min,
-    max: numberInStock.max
+    max: numberInStock.max,
   },
   genres: {
     type: [genreSchema],
     default: undefined,
     unique: true,
     min: genres.min,
-    max: genres.max
-  }
+    max: genres.max,
+  },
 });
 
 const Movie = mongoose.model('Movie', movieSchema);
@@ -58,14 +58,14 @@ const joiSchema = {
     .items(Joi.objectId())
     .min(genres.min)
     .max(genres.max)
-    .unique()
+    .unique(),
 };
 
 const joiPostSchema = Joi.object({
   title: joiSchema.title.required(),
   dailyRentalRate: joiSchema.dailyRentalRate.required(),
   numberInStock: joiSchema.numberInStock.required(),
-  genreIds: joiSchema.genreIds
+  genreIds: joiSchema.genreIds,
 });
 
 function validatePost(movie) {

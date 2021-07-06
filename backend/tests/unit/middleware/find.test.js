@@ -19,7 +19,7 @@ describe('find middleware', () => {
       findById: jest.fn((id) => {
         if (id === doc._id) return { doc, lean };
         return undefined;
-      })
+      }),
     };
     req = { params: { id: doc._id } };
     send = jest.fn();
