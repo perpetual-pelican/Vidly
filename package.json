@@ -10,11 +10,11 @@
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
     "format": "prettier --write .",
-    "install": "cd backend && npm ci && cd ../frontend && npm ci",
+    "install": "cd backend && npm ci",
     "db": "cd backend && npx run-rs --mongod",
     "seed": "cd backend && node seed.js",
     "server": "cd backend && node index.js",
-    "server-test": "cd backend && npx jest --coverage"
+    "test": "cd backend && npx jest --coverage"
   },
   "devDependencies": {
     "eslint": "~7.30.0",
