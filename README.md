@@ -1,5 +1,5 @@
 # Vidly
-Node-based video rental processing app built with Express and MongoDB/Mongoose
+Node-based video rental processing web app built with Express and MongoDB/Mongoose
  - expanded from code written while following The Complete Node.js Course by Mosh Hamedani
  - project has no frontend, but I plan to build one with React in the near future
 
