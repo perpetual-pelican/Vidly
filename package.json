@@ -11,7 +11,7 @@
     "lint-fix": "eslint --fix .",
     "format": "prettier --write .",
     "install": "cd backend && npm ci",
-    "db": "cd backend && npx run-rs --mongod",
+    "db": "cd backend && npx run-rs -v 4.4.6",
     "seed": "cd backend && node seed.js",
     "start": "cd backend && node index.js",
     "test": "cd backend && npx jest --coverage"
