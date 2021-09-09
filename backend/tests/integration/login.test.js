@@ -1,9 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const test = require('../testHelper');
-const app = require('../../startup/app');
-const { jwtPrivateKey } = require('../../startup/config');
-const { User } = require('../../models/user');
+const app = require('../../src/startup/app');
+const { jwtPrivateKey } = require('../../src/startup/config');
+const { User } = require('../../src/models/user');
 
 const { post } = test.request;
 

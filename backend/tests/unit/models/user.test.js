@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const { User, validate, bounds } = require('../../../models/user');
-const { jwtPrivateKey } = require('../../../startup/config');
+const { User, validate, bounds } = require('../../../src/models/user');
+const { jwtPrivateKey } = require('../../../src/startup/config');
 
 describe('User model', () => {
   describe('user.generateAuthToken', () => {
