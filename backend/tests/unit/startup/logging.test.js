@@ -89,63 +89,9 @@ describe('logging startup', () => {
         process.env.NODE_ENV = NODE_ENV;
       });
 
-      it('should add Console transports if NODE_ENV is development or not set', () => {
-        delete process.env.NODE_ENV;
-
+      it('should create logs for uncaught exceptions, errors, and info', () => {
         require('../../../startup/logging');
 
-        expect(winston.configure).toHaveBeenCalledTimes(1);
-        expect(winston.configure).toHaveBeenCalledWith(
-          expect.objectContaining({ format: 'prettyPrint' })
-        );
-        expect(winston.format.prettyPrint).toHaveBeenCalledTimes(1);
-        expect(winston.exceptions.handle).toHaveBeenCalledTimes(2);
-        expect(winston.add).toHaveBeenCalledTimes(3);
-        expect(winston.transports.Console).toHaveBeenCalledTimes(4);
-        expect(winston.format.timestamp.mock.calls[0][0].format()).toMatch(
-          /\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2} [AP]M/
-        );
-        expect(winston.transports.File).toHaveBeenCalledTimes(3);
-        expect(winston.transports.File).toHaveBeenCalledWith(
-          expect.objectContaining({
-            filename: 'logs/development/uncaughtExceptions.log',
-          })
-        );
-        expect(winston.transports.File).toHaveBeenCalledWith(
-          expect.objectContaining({
-            filename: 'logs/development/info.log',
-          })
-        );
-        expect(winston.transports.File).toHaveBeenCalledWith(
-          expect.objectContaining({
-            filename: 'logs/development/error.log',
-          })
-        );
-        expect(winston.transports.MongoDB).toHaveBeenCalledTimes(2);
-        expect(winston.transports.MongoDB.mock.calls[0][0]).toMatchObject({
-          db: dbString,
-          options: { useUnifiedTopology: true },
-        });
-        expect(winston.transports.MongoDB.mock.calls[1][0]).toMatchObject({
-          db: dbString,
-          options: { useUnifiedTopology: true },
-        });
-        expect(process.on).toHaveBeenCalledWith(
-          'unhandledRejection',
-          expect.any(Function)
-        );
-      });
-
-      it('should not use Console transports if NODE_ENV is production', () => {
-        process.env.NODE_ENV = 'production';
-
-        require('../../../startup/logging');
-
-        expect(winston.configure).not.toHaveBeenCalled();
-        expect(winston.format.prettyPrint).not.toHaveBeenCalled();
-        expect(winston.exceptions.handle).toHaveBeenCalledTimes(1);
-        expect(winston.add).toHaveBeenCalledTimes(2);
-        expect(winston.transports.Console).toHaveBeenCalledTimes(2);
         expect(winston.transports.File).toHaveBeenCalledTimes(3);
         expect(winston.transports.File).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -162,6 +108,35 @@ describe('logging startup', () => {
             filename: 'logs/error.log',
           })
         );
+      });
+
+      it('should add Console transports if NODE_ENV is development or not set', () => {
+        delete process.env.NODE_ENV;
+
+        require('../../../startup/logging');
+
+        expect(winston.configure).toHaveBeenCalledWith(
+          expect.objectContaining({ format: 'prettyPrint' })
+        );
+        expect(winston.format.prettyPrint).toHaveBeenCalledTimes(1);
+        expect(winston.exceptions.handle).toHaveBeenCalledTimes(2);
+        expect(winston.add).toHaveBeenCalledTimes(3);
+        expect(winston.transports.Console).toHaveBeenCalledTimes(4);
+        expect(winston.format.timestamp.mock.calls[0][0].format()).toMatch(
+          /\d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2} [AP]M/
+        );
+      });
+
+      it('should not use Console transports if NODE_ENV is production', () => {
+        process.env.NODE_ENV = 'production';
+
+        require('../../../startup/logging');
+
+        expect(winston.configure).not.toHaveBeenCalled();
+        expect(winston.format.prettyPrint).not.toHaveBeenCalled();
+        expect(winston.exceptions.handle).toHaveBeenCalledTimes(1);
+        expect(winston.add).toHaveBeenCalledTimes(2);
+        expect(winston.transports.Console).toHaveBeenCalledTimes(2);
         expect(winston.transports.MongoDB).toHaveBeenCalledTimes(2);
         expect(winston.transports.MongoDB.mock.calls[0][0]).toMatchObject({
           db: dbString,
