@@ -14,7 +14,7 @@
     "db": "cd backend && npx run-rs -v 4.4.6",
     "seed": "cd backend && node seed.js",
     "start": "cd backend && node index.js",
-    "test": "cd backend && npx jest --coverage"
+    "test": "cd backend && npx jest --coverage --maxWorkers 4"
   },
   "devDependencies": {
     "eslint": "~7.30.0",
