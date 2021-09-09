@@ -1,0 +1,9 @@
+**/.dockerignore
+**/coverage
+**/data
+**/docker-compose*
+**/Dockerfile*
+**/logs
+**/mongo-setup
+**/node_modules
+**/seed.js
