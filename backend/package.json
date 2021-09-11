@@ -9,7 +9,7 @@
     "test": "tests"
   },
   "scripts": {
-    "db": "npx run-rs -v 4.4.6",
+    "db": "npx run-rs -v 4.4.6 --keep",
     "seed": "node seed.js",
     "start": "node index.js",
     "test": "jest --coverage --maxWorkers 4"
