@@ -43,3 +43,8 @@ export async function fetchMovies(setMovies) {
     console.error(e);
   }
 }
+
+export async function postMovie(body) {
+  const res = await axios.post('/api/movies', body);
+  return res.data;
+}
