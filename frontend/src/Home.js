@@ -1,37 +1,54 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  makeStyles,
+} from '@material-ui/core';
+import Login from './Login';
+import Signup from './Signup';
 import Genres from './Genres';
 import Movies from './Movies';
 
+const useStyles = makeStyles({
+  title: {
+    flexGrow: 1,
+  },
+});
+
 const Home = () => {
   const token = sessionStorage.getItem('token');
+  const classes = useStyles();
 
   return (
     <>
-      <h1>Vidly</h1>
-      {token && (
-        <div>
-          <button
-            onClick={(event) => {
-              event.preventDefault();
-              sessionStorage.removeItem('token');
-              window.location.reload(false);
-            }}
-          >
-            Logout
-          </button>
-        </div>
-      )}
-      {!token && (
-        <>
-          <div>
-            <Link to="/login">Login</Link>
-          </div>
-          <div>
-            <Link to="/signup">Signup</Link>
-          </div>
-        </>
-      )}
+      <AppBar>
+        <Toolbar>
+          <Typography variant="h4" className={classes.title}>
+            Vidly
+          </Typography>
+          {token && (
+            <Button
+              color="inherit"
+              onClick={(event) => {
+                event.preventDefault();
+                sessionStorage.removeItem('token');
+                window.location.reload(false);
+              }}
+            >
+              Logout
+            </Button>
+          )}
+          {!token && (
+            <>
+              <Login />
+              <Signup />
+            </>
+          )}
+        </Toolbar>
+      </AppBar>
+      <Toolbar />
       <Genres />
       <Movies />
     </>
