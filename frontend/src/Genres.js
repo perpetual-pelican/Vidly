@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { fetchGenres } from './util/request';
 
 const Genres = () => {
   const [genres, setGenres] = useState([]);
 
   useEffect(() => {
-    const fetchGenres = async () => {
-      try {
-        const res = await axios.get('/api/genres');
-        setGenres(res.data);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    fetchGenres();
+    fetchGenres(setGenres);
   }, []);
 
   return (

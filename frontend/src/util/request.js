@@ -20,3 +20,12 @@ export async function login(body) {
   sessionStorage.setItem('token', res.headers['x-auth-token']);
   return res.data;
 }
+
+export async function fetchGenres(setGenres) {
+  try {
+    const res = await axios.get('/api/genres');
+    setGenres(res.data);
+  } catch (e) {
+    console.error(e);
+  }
+}
