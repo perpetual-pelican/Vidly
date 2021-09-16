@@ -1,59 +1,58 @@
 import React, { useState } from 'react';
-import { Link, Redirect, useHistory } from 'react-router-dom';
-import axios from 'axios';
+import { TextField } from '@material-ui/core';
+import { login } from './util/request';
+import AuthDialog from './components/AuthDialog';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const history = useHistory();
 
-  const token = sessionStorage.getItem('token');
-  if (token) return <Redirect to="/" />;
-
-  const onSubmit = async (event) => {
-    event.preventDefault();
-
+  const submit = async () => {
     const body = { email, password };
     try {
-      const res = await axios.post('/api/login', body, {
-        validateStatus: (status) => status >= 200 && status < 500,
-      });
-      if (res.status !== 200) {
-        alert(res.data);
-        return;
+      const data = await login(body);
+      if (typeof data === 'string') {
+        alert(data);
+        return false;
       }
-      sessionStorage.setItem('token', res.data);
-      history.push('/');
     } catch (e) {
       console.error(e);
     }
+    return true;
+  };
+
+  const resetForm = () => {
+    setEmail('');
+    setPassword('');
   };
 
   return (
-    <div>
-      <Link to="/">Home</Link>
-      <form onSubmit={onSubmit}>
-        <div>
-          <label>E-mail: </label>
-          <input
-            type="email"
-            placeholder="e-mail"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-        </div>
-        <div>
-          <label>Password: </label>
-          <input
-            type="password"
-            placeholder="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </div>
-        <input type="submit" value="Login" />
-      </form>
-    </div>
+    <AuthDialog
+      title="Login"
+      text="Enter your email address and password to log in."
+      submit={submit}
+      resetForm={resetForm}
+    >
+      <TextField
+        autoFocus
+        fullWidth
+        margin="dense"
+        type="email"
+        id="email"
+        label="Email Address"
+        value={email}
+        onChange={(event) => setEmail(event.target.value)}
+      />
+      <TextField
+        fullWidth
+        margin="dense"
+        type="password"
+        id="password"
+        label="Password"
+        value={password}
+        onChange={(event) => setPassword(event.target.value)}
+      />
+    </AuthDialog>
   );
 };
 

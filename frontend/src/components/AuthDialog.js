@@ -21,8 +21,11 @@ const AuthDialog = (props) => {
   };
 
   const handleSubmit = async () => {
-    props.submit();
-    handleClose();
+    const success = await props.submit();
+    if (success) {
+      handleClose();
+      window.location.reload(false);
+    }
   };
 
   return (
