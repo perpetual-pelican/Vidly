@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { fetchMovies } from './util/request';
 
 const Movies = () => {
   const [movies, setMovies] = useState([]);
 
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const res = await axios.get('/api/movies');
-        setMovies(res.data);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    fetchMovies();
+    fetchMovies(setMovies);
   }, []);
 
   return (

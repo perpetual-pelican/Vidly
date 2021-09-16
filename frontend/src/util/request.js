@@ -34,3 +34,12 @@ export async function postGenre(body) {
   const res = await axios.post('/api/genres', body);
   return res.data;
 }
+
+export async function fetchMovies(setMovies) {
+  try {
+    const res = await axios.get('/api/movies');
+    setMovies(res.data);
+  } catch (e) {
+    console.error(e);
+  }
+}
