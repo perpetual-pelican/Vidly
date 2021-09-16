@@ -29,3 +29,8 @@ export async function fetchGenres(setGenres) {
     console.error(e);
   }
 }
+
+export async function postGenre(body) {
+  const res = await axios.post('/api/genres', body);
+  return res.data;
+}
