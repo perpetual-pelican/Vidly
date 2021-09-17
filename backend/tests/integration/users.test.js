@@ -1,7 +1,9 @@
 const request = require('supertest');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const test = require('../testHelper');
 const app = require('../../src/startup/app');
+const { jwtPrivateKey } = require('../../src/startup/config');
 const { User } = require('../../src/models/user');
 
 const { getAll, post } = test.request;
@@ -170,10 +172,13 @@ describe('/api/users', () => {
       expect(isEqual).toBe(true);
     });
 
-    it('should add token to header if request is valid', async () => {
+    it('should add a valid token to header if request is valid', async () => {
       const res = await post(req);
 
-      expect(res.header).toHaveProperty('x-auth-token');
+      expect(res.headers).toHaveProperty('x-auth-token');
+      const decoded = jwt.verify(res.headers['x-auth-token'], jwtPrivateKey);
+      expect(decoded).toHaveProperty('_id');
+      expect(decoded).toHaveProperty('isAdmin', false);
     });
 
     it('should return _id, name, and email if request is valid', async () => {
