@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField } from '@material-ui/core';
+import { TextField } from '@mui/material';
 import { register } from './util/request';
 import AuthDialog from './components/AuthDialog';
 

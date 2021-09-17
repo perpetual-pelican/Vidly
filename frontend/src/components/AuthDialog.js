@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-} from '@material-ui/core';
+} from '@mui/material';
 
 const AuthDialog = (props) => {
   const [open, setOpen] = useState('');

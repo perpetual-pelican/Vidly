@@ -1,31 +1,18 @@
 import React from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  makeStyles,
-} from '@material-ui/core';
+import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import Login from './Login';
 import Signup from './Signup';
 import Genres from './Genres';
 import Movies from './Movies';
 
-const useStyles = makeStyles({
-  title: {
-    flexGrow: 1,
-  },
-});
-
 const Home = () => {
   const token = sessionStorage.getItem('token');
-  const classes = useStyles();
 
   return (
     <>
       <AppBar>
         <Toolbar>
-          <Typography variant="h4" className={classes.title}>
+          <Typography variant="h4" sx={{ flexGrow: 1 }}>
             Vidly
           </Typography>
           {token && (
