@@ -37,12 +37,12 @@ const Signup = () => {
     try {
       const data = await register(body);
       if (typeof data === 'string') {
-        setErrors((errors) => ({ ...errors, form: data }));
+        setErrors((currentErrors) => ({ ...currentErrors, form: data }));
         return false;
       } else {
-        setErrors((errors) => {
-          delete errors.form;
-          return errors;
+        setErrors((currentErrors) => {
+          delete currentErrors.form;
+          return currentErrors;
         });
       }
     } catch (e) {
@@ -60,28 +60,29 @@ const Signup = () => {
   const validate = (field, validator, value, value2) => {
     const { error } = validator(value, value2);
     if (error) {
-      setErrors((errors) => {
-        errors[field] = errorMessages[field];
-        return errors;
+      setErrors((currentErrors) => {
+        currentErrors[field] = errorMessages[field];
+        return currentErrors;
       });
       setFormIsValid(false);
     } else if (errors[field]) {
-      setErrors((errors) => {
-        delete errors[field];
-        validateForm(errors);
-        return errors;
+      setErrors((currentErrors) => {
+        delete currentErrors[field];
+        validateForm(currentErrors);
+        return currentErrors;
       });
     }
   };
 
-  const validateForm = (errors) => {
+  const validateForm = (currentErrors) => {
     const filledFieldCount = Object.keys(fields).length - 4;
     const isFilled = filledFieldCount >= 3 ? true : false;
     const hasError =
-      errors.name || errors.email || errors.password || errors.confirmPassword;
+      currentErrors.name ||
+      currentErrors.email ||
+      currentErrors.password ||
+      currentErrors.confirmPassword;
     if (!isFilled || hasError) {
-      console.log(filledFieldCount);
-      console.log(errors);
       setFormIsValid(false);
     } else {
       setFormIsValid(true);
@@ -110,11 +111,17 @@ const Signup = () => {
         label="Name"
         value={fields.name}
         onChange={(event) => {
-          setFields((fields) => ({ ...fields, name: event.target.value }));
+          setFields((currentFields) => ({
+            ...currentFields,
+            name: event.target.value,
+          }));
           validate('name', validateName, event.target.value);
         }}
         onBlur={(event) => {
-          setFields((fields) => ({ ...fields, nameIsFilled: true }));
+          setFields((currentFields) => ({
+            ...currentFields,
+            nameIsFilled: true,
+          }));
           validate('name', validateName, event.target.value);
         }}
       />
@@ -130,11 +137,17 @@ const Signup = () => {
         label="Email Address"
         value={fields.email}
         onChange={(event) => {
-          setFields((fields) => ({ ...fields, email: event.target.value }));
+          setFields((currentFields) => ({
+            ...currentFields,
+            email: event.target.value,
+          }));
           validate('email', validateEmail, event.target.value);
         }}
         onBlur={(event) => {
-          setFields((fields) => ({ ...fields, emailIsFilled: true }));
+          setFields((currentFields) => ({
+            ...currentFields,
+            emailIsFilled: true,
+          }));
           validate('email', validateEmail, event.target.value);
         }}
       />
@@ -150,7 +163,10 @@ const Signup = () => {
         label="Password"
         value={fields.password}
         onChange={(event) => {
-          setFields((fields) => ({ ...fields, password: event.target.value }));
+          setFields((currentFields) => ({
+            ...currentFields,
+            password: event.target.value,
+          }));
           validate('password', validatePassword, event.target.value);
           validate(
             'confirmPassword',
@@ -160,7 +176,10 @@ const Signup = () => {
           );
         }}
         onBlur={(event) => {
-          setFields((fields) => ({ ...fields, passwordIsFilled: true }));
+          setFields((currentFields) => ({
+            ...currentFields,
+            passwordIsFilled: true,
+          }));
           validate('password', validatePassword, event.target.value);
           validate(
             'confirmPassword',
@@ -182,8 +201,8 @@ const Signup = () => {
         label="Confirm Password"
         value={fields.confirmPassword}
         onChange={(event) => {
-          setFields((fields) => ({
-            ...fields,
+          setFields((currentFields) => ({
+            ...currentFields,
             confirmPassword: event.target.value,
             confirmPasswordIsFilled: true,
           }));
