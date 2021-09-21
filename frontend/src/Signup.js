@@ -49,7 +49,7 @@ const Signup = () => {
     setFormIsValid(false);
   };
 
-  const validate = (field, validator, value, value2) => {
+  const validateField = (field, validator, value, value2) => {
     const { error } = validator(value, value2);
     if (error) {
       setErrors((currentErrors) => {
@@ -107,14 +107,14 @@ const Signup = () => {
             ...currentFields,
             name: event.target.value,
           }));
-          validate('name', validateName, event.target.value);
+          validateField('name', validateName, event.target.value);
         }}
         onBlur={(event) => {
           setFields((currentFields) => ({
             ...currentFields,
             nameIsFilled: true,
           }));
-          validate('name', validateName, event.target.value);
+          validateField('name', validateName, event.target.value);
         }}
       />
       {fields.emailIsFilled && errors.email ? (
@@ -133,14 +133,14 @@ const Signup = () => {
             ...currentFields,
             email: event.target.value,
           }));
-          validate('email', validateEmail, event.target.value);
+          validateField('email', validateEmail, event.target.value);
         }}
         onBlur={(event) => {
           setFields((currentFields) => ({
             ...currentFields,
             emailIsFilled: true,
           }));
-          validate('email', validateEmail, event.target.value);
+          validateField('email', validateEmail, event.target.value);
         }}
       />
       {fields.passwordIsFilled && errors.password ? (
@@ -159,8 +159,8 @@ const Signup = () => {
             ...currentFields,
             password: event.target.value,
           }));
-          validate('password', validatePassword, event.target.value);
-          validate(
+          validateField('password', validatePassword, event.target.value);
+          validateField(
             'confirmPassword',
             validatePasswordMatch,
             event.target.value,
@@ -172,8 +172,8 @@ const Signup = () => {
             ...currentFields,
             passwordIsFilled: true,
           }));
-          validate('password', validatePassword, event.target.value);
-          validate(
+          validateField('password', validatePassword, event.target.value);
+          validateField(
             'confirmPassword',
             validatePasswordMatch,
             event.target.value,
@@ -198,7 +198,7 @@ const Signup = () => {
             confirmPassword: event.target.value,
             confirmPasswordIsFilled: true,
           }));
-          validate(
+          validateField(
             'confirmPassword',
             validatePasswordMatch,
             fields.password,
