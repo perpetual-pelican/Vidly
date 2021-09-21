@@ -1,6 +1,5 @@
 exports.user = {
-  name: { min: 3, max: 128 },
-  email: { min: 7, max: 69 },
+  name: { max: 64 },
   password: { min: 8, max: 72 },
 };
 

@@ -3,14 +3,9 @@ const passwordComplexity = require('joi-password-complexity').default;
 const tlds = require('@sideway/address/lib/tlds');
 const { user } = require('./modelConstraints');
 
-const nameSchema = Joi.string()
-  .min(user.name.min)
-  .max(user.name.max)
-  .required();
+const nameSchema = Joi.string().max(user.name.max).required();
 
 const emailSchema = Joi.string()
-  .min(user.email.min)
-  .max(user.email.max)
   .email({
     tlds: {
       allow: tlds,

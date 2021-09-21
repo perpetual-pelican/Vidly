@@ -11,10 +11,10 @@ const {
 } = require('./util/userValidators');
 
 const errorMessages = {
-  name: `Name must be between ${bounds.name.min} and ${bounds.name.max} characters`,
+  name: `Name must be between 1 and ${bounds.name.max} characters`,
   email: `Please enter a valid email`,
   password: `Password must be between ${bounds.password.min} and ${bounds.password.max} characters and include 1 lowercase, 1 uppercase, 1 number, and 1 symbol`,
-  confirmPassword: 'Passwords must match',
+  confirmPassword: `Passwords don't match`,
 };
 
 const Signup = () => {

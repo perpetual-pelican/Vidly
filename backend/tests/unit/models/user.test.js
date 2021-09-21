@@ -22,8 +22,8 @@ describe('User model', () => {
 
     beforeEach(() => {
       user = {
-        name: 'a'.repeat(bounds.name.min),
-        email: `${'a'.repeat(bounds.email.min - 5)}@a.io`,
+        name: 'a',
+        email: `$a@b.co`,
         password: `${'a'.repeat(bounds.password.min - 3)}A1$`,
       };
     });
@@ -58,22 +58,6 @@ describe('User model', () => {
       const { error } = validate(user);
 
       expect(error.message).toMatch(/name.*empty/);
-    });
-
-    it(`should return error if name length is less than ${bounds.name.min}`, () => {
-      user.name = 'a'.repeat(bounds.name.min - 1);
-
-      const { error } = validate(user);
-
-      expect(error.message).toMatch(new RegExp(`name.*${bounds.name.min}`));
-    });
-
-    it(`should not return error if name length is equal to ${bounds.name.min}`, () => {
-      user.name = 'a'.repeat(bounds.name.min);
-
-      const { error } = validate(user);
-
-      expect(error).toBe(undefined);
     });
 
     it(`should return error if name length is greater than ${bounds.name.max}`, () => {
@@ -122,38 +106,6 @@ describe('User model', () => {
       const { error } = validate(user);
 
       expect(error.message).toMatch(/email.*valid/);
-    });
-
-    it(`should return error if email length is less than ${bounds.email.min}`, () => {
-      user.email = `${'a'.repeat(bounds.email.min - 6)}@a.io`;
-
-      const { error } = validate(user);
-
-      expect(error.message).toMatch(new RegExp(`email.*${bounds.email.min}`));
-    });
-
-    it(`should not return error if email length is equal to ${bounds.email.min}`, () => {
-      user.email = `${'a'.repeat(bounds.email.min - 5)}@a.io`;
-
-      const { error } = validate(user);
-
-      expect(error).toBe(undefined);
-    });
-
-    it(`should return error if email length is greater than ${bounds.email.max}`, () => {
-      user.email = `${'a'.repeat(bounds.email.max - 4)}@a.io`;
-
-      const { error } = validate(user);
-
-      expect(error.message).toMatch(new RegExp(`email.*${bounds.email.max}`));
-    });
-
-    it(`should not return error if email length is equal to ${bounds.email.max}`, () => {
-      user.email = `${'a'.repeat(bounds.email.max - 5)}@a.io`;
-
-      const { error } = validate(user);
-
-      expect(error).toBe(undefined);
     });
 
     it('should return error if password is undefined', () => {
