@@ -189,7 +189,7 @@ const Signup = () => {
         fullWidth
         margin="dense"
         type="password"
-        id="confirm password"
+        id="confirmPassword"
         label="Confirm Password"
         value={fields.confirmPassword}
         onChange={(event) => {
