@@ -51,7 +51,11 @@ const AuthDialog = (props) => {
           <Button color="primary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button color="primary" onClick={handleSubmit}>
+          <Button
+            color="primary"
+            onClick={handleSubmit}
+            disabled={props.submitDisabled}
+          >
             {props.title}
           </Button>
         </DialogActions>
