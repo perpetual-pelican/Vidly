@@ -2,20 +2,12 @@ import React, { useState } from 'react';
 import { TextField, Alert } from '@mui/material';
 import { register } from './util/request';
 import AuthDialog from './components/AuthDialog';
-import { user as bounds } from './util/modelConstraints';
 const {
   validateName,
   validateEmail,
   validatePassword,
   validatePasswordMatch,
 } = require('./util/userValidators');
-
-const errorMessages = {
-  name: `Name must be between 1 and ${bounds.name.max} characters`,
-  email: `Please enter a valid email`,
-  password: `Password must be between ${bounds.password.min} and ${bounds.password.max} characters and include 1 lowercase, 1 uppercase, 1 number, and 1 symbol`,
-  confirmPassword: `Passwords don't match`,
-};
 
 const Signup = () => {
   const [fields, setFields] = useState({
@@ -61,7 +53,7 @@ const Signup = () => {
     const { error } = validator(value, value2);
     if (error) {
       setErrors((currentErrors) => {
-        currentErrors[field] = errorMessages[field];
+        currentErrors[field] = error.details[0].message;
         return currentErrors;
       });
       setFormIsValid(false);
