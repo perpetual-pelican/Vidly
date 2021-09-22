@@ -9,9 +9,9 @@
     "test": "tests"
   },
   "scripts": {
-    "db": "npx run-rs -v 4.4.6 --keep",
+    "db": "npx run-rs -v 4.4.6",
     "seed": "node seed.js",
-    "start": "concurrently \"npx run-rs -v 4.4.6 --keep\" \"node index.js\"",
+    "start": "node index.js",
     "test": "jest --coverage --maxWorkers 4"
   },
   "dependencies": {

@@ -66,22 +66,14 @@ describe('/api/login', () => {
       expect(res.text).toMatch(/Something failed/);
     });
 
-    it('should add a valid token to header if request is valid', async () => {
-      const res = await post(req);
-
-      expect(res.headers).toHaveProperty('x-auth-token');
-      const decoded = jwt.verify(res.headers['x-auth-token'], jwtPrivateKey);
-      expect(decoded).toHaveProperty('_id');
-      expect(decoded).toHaveProperty('isAdmin', user.isAdmin);
-    });
-
     it('should return a valid token if request is valid', async () => {
       const res = await post(req);
 
+      const decoded = jwt.verify(res.text, jwtPrivateKey);
+
       expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('_id');
-      expect(res.body).toHaveProperty('name', user.name);
-      expect(res.body).toHaveProperty('email', user.email);
+      expect(decoded).toHaveProperty('_id');
+      expect(decoded).toHaveProperty('isAdmin', user.isAdmin);
     });
   });
 });
