@@ -6,10 +6,10 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-} from '@material-ui/core';
+} from '@mui/material';
 
 const AuthDialog = (props) => {
-  const [open, setOpen] = useState('');
+  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -51,7 +51,11 @@ const AuthDialog = (props) => {
           <Button color="primary" onClick={handleClose}>
             Cancel
           </Button>
-          <Button color="primary" onClick={handleSubmit}>
+          <Button
+            color="primary"
+            onClick={handleSubmit}
+            disabled={props.submitDisabled}
+          >
             {props.title}
           </Button>
         </DialogActions>

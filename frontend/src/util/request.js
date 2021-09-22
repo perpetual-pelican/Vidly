@@ -11,13 +11,17 @@ axios.interceptors.request.use(async function (config) {
 
 export async function register(body) {
   const res = await axios.post('/api/users', body);
-  sessionStorage.setItem('token', res.headers['x-auth-token']);
+  if (res.headers['x-auth-token']) {
+    sessionStorage.setItem('token', res.headers['x-auth-token']);
+  }
   return res.data;
 }
 
 export async function login(body) {
   const res = await axios.post('/api/login', body);
-  sessionStorage.setItem('token', res.headers['x-auth-token']);
+  if (res.headers['x-auth-token']) {
+    sessionStorage.setItem('token', res.headers['x-auth-token']);
+  }
   return res.data;
 }
 
