@@ -18,8 +18,7 @@ const Home = () => {
           {token && (
             <Button
               color="inherit"
-              onClick={(event) => {
-                event.preventDefault();
+              onClick={() => {
                 sessionStorage.removeItem('token');
                 window.location.reload(false);
               }}
