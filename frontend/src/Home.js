@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -12,6 +12,7 @@ import Login from './Login';
 import Signup from './Signup';
 import Genres from './Genres';
 import Movies from './Movies';
+import { fetchGenres, fetchMovies } from './util/request';
 
 const TabPanel = (props) => {
   const { children, value, index } = props;
@@ -36,7 +37,14 @@ const TabPanel = (props) => {
 
 const Home = () => {
   const token = sessionStorage.getItem('token');
+  const [genres, setGenres] = useState([]);
+  const [movies, setMovies] = useState([]);
   const [currentTab, setCurrentTab] = useState(0);
+
+  useEffect(() => {
+    fetchGenres(setGenres);
+    fetchMovies(setMovies);
+  }, []);
 
   return (
     <Grid container height="97vh">
@@ -88,10 +96,10 @@ const Home = () => {
       </AppBar>
       <Toolbar />
       <TabPanel value={currentTab} index={0}>
-        <Genres />
+        <Genres genres={genres} setGenres={setGenres} />
       </TabPanel>
       <TabPanel value={currentTab} index={1}>
-        <Movies />
+        <Movies movies={movies} setMovies={setMovies} genres={genres} />
       </TabPanel>
     </Grid>
   );

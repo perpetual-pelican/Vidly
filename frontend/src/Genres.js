@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { fetchGenres, postGenre } from './util/request';
+import React, { useState } from 'react';
+import { postGenre } from './util/request';
 
-const Genres = () => {
-  const [genres, setGenres] = useState([]);
+const Genres = (props) => {
+  const { genres, setGenres } = props;
   const [newGenre, setNewGenre] = useState('');
   const token = sessionStorage.getItem('token');
-
-  useEffect(() => {
-    fetchGenres(setGenres);
-  }, []);
 
   const onSubmit = async (event) => {
     event.preventDefault();

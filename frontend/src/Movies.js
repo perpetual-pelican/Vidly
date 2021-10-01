@@ -1,20 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { fetchGenres, fetchMovies, postMovie } from './util/request';
+import React, { useState } from 'react';
+import { postMovie } from './util/request';
 
-const Movies = () => {
-  const [genres, setGenres] = useState([]);
-  const [movies, setMovies] = useState([]);
+const Movies = (props) => {
+  const { movies, setMovies, genres } = props;
   const [newMovie, setNewMovie] = useState({
     title: '',
     dailyRentalRate: 0,
     numberInStock: 0,
   });
   const token = sessionStorage.getItem('token');
-
-  useEffect(() => {
-    fetchGenres(setGenres);
-    fetchMovies(setMovies);
-  }, []);
 
   const onSubmit = async (event) => {
     event.preventDefault();
