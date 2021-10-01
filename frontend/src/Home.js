@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { AppBar, Toolbar, Tabs, Tab, Typography, Button } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  Tabs,
+  Tab,
+  Typography,
+  Button,
+  Grid,
+} from '@mui/material';
 import Login from './Login';
 import Signup from './Signup';
 import Genres from './Genres';
@@ -8,14 +16,21 @@ import Movies from './Movies';
 const TabPanel = (props) => {
   const { children, value, index } = props;
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`tabpanel-${index}`}
-      aria-labelledby={`tab-${index}`}
-    >
-      {value === index && children}
-    </div>
+    <>
+      {value === index && (
+        <Grid
+          container
+          role="tabpanel"
+          hidden={value !== index}
+          id={`tabpanel-${index}`}
+          aria-labelledby={`tab-${index}`}
+          justifyContent="center"
+          height="80%"
+        >
+          {children}
+        </Grid>
+      )}
+    </>
   );
 };
 
@@ -24,7 +39,7 @@ const Home = () => {
   const [currentTab, setCurrentTab] = useState(0);
 
   return (
-    <>
+    <Grid container height="97vh">
       <AppBar>
         <Toolbar>
           <Typography variant="h4">Vidly</Typography>
@@ -78,7 +93,7 @@ const Home = () => {
       <TabPanel value={currentTab} index={1}>
         <Movies />
       </TabPanel>
-    </>
+    </Grid>
   );
 };
 
