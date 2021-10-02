@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Grid, Typography } from '@mui/material';
 import { postGenre } from './util/request';
 
 const Genres = (props) => {
@@ -22,26 +23,32 @@ const Genres = (props) => {
   };
 
   return (
-    <div>
-      <h2>Genres</h2>
+    <>
+      <Grid container justifyContent="center" alignItems="center">
+        <Typography variant="h4">Genres</Typography>
+      </Grid>
       {token && (
-        <form onSubmit={onSubmit}>
-          <label>Add Genre: </label>
-          <input
-            type="text"
-            placeholder="genre name"
-            value={newGenre}
-            onChange={(event) => setNewGenre(event.target.value)}
-          />
-          <input type="submit" value="Add" />
-        </form>
+        <Grid container justifyContent="center" alignItems="center">
+          <form onSubmit={onSubmit}>
+            <label>Add Genre: </label>
+            <input
+              type="text"
+              placeholder="genre name"
+              value={newGenre}
+              onChange={(event) => setNewGenre(event.target.value)}
+            />
+            <input type="submit" value="Add" />
+          </form>
+        </Grid>
       )}
-      <ul>
-        {genres.map((genre) => (
-          <li key={genre._id}>{genre.name}</li>
-        ))}
-      </ul>
-    </div>
+      <Grid container justifyContent="center">
+        <ul>
+          {genres.map((genre) => (
+            <li key={genre._id}>{genre.name}</li>
+          ))}
+        </ul>
+      </Grid>
+    </>
   );
 };
 
