@@ -12,16 +12,16 @@ const Movies = (props) => {
       <Grid container justifyContent="center">
         <Typography variant="h4">Movies</Typography>
       </Grid>
+      <Grid container item md={token ? 6 : 12} justifyContent="center">
+        <MovieList movies={movies} />
+      </Grid>
       {token && (
         <>
-          <Grid container justifyContent="center">
+          <Grid container item md={6} justifyContent="center">
             <MovieForm movies={movies} setMovies={setMovies} genres={genres} />
           </Grid>
         </>
       )}
-      <Grid container justifyContent="center">
-        <MovieList movies={movies} />
-      </Grid>
     </>
   );
 };
