@@ -26,7 +26,7 @@ const TabPanel = (props) => {
           id={`tabpanel-${index}`}
           aria-labelledby={`tab-${index}`}
           justifyContent="center"
-          height="80%"
+          maxWidth="80%"
         >
           {children}
         </Grid>
@@ -94,13 +94,14 @@ const Home = () => {
           )}
         </Toolbar>
       </AppBar>
-      <Toolbar />
-      <TabPanel value={currentTab} index={0}>
-        <Genres genres={genres} setGenres={setGenres} />
-      </TabPanel>
-      <TabPanel value={currentTab} index={1}>
-        <Movies movies={movies} setMovies={setMovies} genres={genres} />
-      </TabPanel>
+      <Grid container justifyContent="center" maxHeight="70%" marginTop="8%">
+        <TabPanel value={currentTab} index={0}>
+          <Genres genres={genres} setGenres={setGenres} />
+        </TabPanel>
+        <TabPanel value={currentTab} index={1}>
+          <Movies movies={movies} setMovies={setMovies} genres={genres} />
+        </TabPanel>
+      </Grid>
     </Grid>
   );
 };
