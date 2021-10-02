@@ -1,44 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Grid, Typography } from '@mui/material';
-import { postGenre } from './util/request';
+import GenreForm from './components/GenreForm';
 
 const Genres = (props) => {
   const { genres, setGenres } = props;
-  const [newGenre, setNewGenre] = useState('');
   const token = sessionStorage.getItem('token');
-
-  const onSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      const data = await postGenre({ name: newGenre });
-      if (typeof data === 'string') {
-        alert(data);
-        return;
-      }
-      setGenres([data, ...genres]);
-      setNewGenre('');
-    } catch (e) {
-      alert(e);
-    }
-  };
 
   return (
     <>
-      <Grid container justifyContent="center" alignItems="center">
+      <Grid container justifyContent="center">
         <Typography variant="h4">Genres</Typography>
       </Grid>
       {token && (
-        <Grid container justifyContent="center" alignItems="center">
-          <form onSubmit={onSubmit}>
-            <label>Add Genre: </label>
-            <input
-              type="text"
-              placeholder="genre name"
-              value={newGenre}
-              onChange={(event) => setNewGenre(event.target.value)}
-            />
-            <input type="submit" value="Add" />
-          </form>
+        <Grid container justifyContent="center">
+          <GenreForm genres={genres} setGenres={setGenres} />
         </Grid>
       )}
       <Grid container justifyContent="center">
