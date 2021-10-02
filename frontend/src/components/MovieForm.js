@@ -1,4 +1,15 @@
 import React, { useState } from 'react';
+import {
+  Grid,
+  Typography,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  OutlinedInput,
+  MenuItem,
+  Button,
+} from '@mui/material';
 import { postMovie } from '../util/request';
 
 const MovieForm = (props) => {
@@ -8,17 +19,11 @@ const MovieForm = (props) => {
     dailyRentalRate: 0,
     numberInStock: 0,
   });
+  const [selectedGenres, setSelectedGenres] = useState([]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    const genreOptions = document.getElementsByTagName('select')[0]?.options;
-    const selectedGenreIds = [];
-    for (const option of genreOptions) {
-      if (option.selected) {
-        const genre = JSON.parse(option.value);
-        selectedGenreIds.push(genre._id);
-      }
-    }
+    const selectedGenreIds = selectedGenres.map((genre) => genre._id);
     try {
       const data = await postMovie({ ...newMovie, genreIds: selectedGenreIds });
       if (typeof data === 'string') {
@@ -30,8 +35,8 @@ const MovieForm = (props) => {
         title: '',
         dailyRentalRate: 0,
         numberInStock: 0,
-        genreIds: [],
       });
+      setSelectedGenres([]);
     } catch (e) {
       alert(e);
     }
@@ -39,56 +44,74 @@ const MovieForm = (props) => {
 
   return (
     <form onSubmit={onSubmit}>
-      <h4>Add Movie: </h4>
-      <div>
-        <label>Title: </label>
-        <input
-          type="text"
-          placeholder="title"
-          value={newMovie.title}
-          onChange={(event) =>
-            setNewMovie({ ...newMovie, title: event.target.value })
-          }
-        />
-      </div>
-      <div>
-        <label>Daily Rental Rate: </label>
-        <input
-          type="number"
-          placeholder="daily rental rate"
-          value={newMovie.dailyRentalRate}
-          onChange={(event) =>
-            setNewMovie({
-              ...newMovie,
-              dailyRentalRate: event.target.value,
-            })
-          }
-        />
-      </div>
-      <div>
-        <label>Number in Stock: </label>
-        <input
-          type="number"
-          placeholder="number in stock"
-          value={newMovie.numberInStock}
-          onChange={(event) =>
-            setNewMovie({ ...newMovie, numberInStock: event.target.value })
-          }
-        />
-      </div>
-      <div>
-        <label>Genres: </label>
-        <select multiple>
-          {genres.map((genre) => (
-            <option
-              key={genre._id}
-              label={genre.name}
-              value={JSON.stringify(genre)}
-            />
-          ))}
-        </select>
-      </div>
-      <input type="submit" value="Add Movie" />
+      <Grid container justifyContent="center">
+        <Grid container justifyContent="center" width="75%">
+          <Typography variant="h4">New Movie: </Typography>
+          <TextField
+            fullWidth
+            margin="normal"
+            type="text"
+            id="title"
+            label="Title"
+            value={newMovie.title}
+            onChange={(event) =>
+              setNewMovie({ ...newMovie, title: event.target.value })
+            }
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            type="number"
+            id="dailyRentalRate"
+            label="Daily Rental Rate"
+            value={newMovie.dailyRentalRate}
+            onChange={(event) =>
+              setNewMovie({
+                ...newMovie,
+                dailyRentalRate: event.target.value,
+              })
+            }
+          />
+          <TextField
+            fullWidth
+            margin="normal"
+            type="number"
+            id="numberInStock"
+            label="Number In Stock"
+            value={newMovie.numberInStock}
+            onChange={(event) =>
+              setNewMovie({
+                ...newMovie,
+                numberInStock: event.target.value,
+              })
+            }
+          />
+          <FormControl fullWidth>
+            <InputLabel id="select-label">Genres</InputLabel>
+            <Select
+              multiple
+              fullWidth
+              labelId="select-label"
+              input={<OutlinedInput label="Genres" />}
+              value={selectedGenres}
+              onChange={(event) => {
+                setSelectedGenres(event.target.value);
+              }}
+            >
+              {genres.map((genre) => (
+                <MenuItem key={genre._id} value={genre}>
+                  {genre.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Grid container justifyContent="center" marginTop={2}>
+            <Button type="submit" variant="contained">
+              Add
+            </Button>
+          </Grid>
+        </Grid>
+      </Grid>
     </form>
   );
 };
