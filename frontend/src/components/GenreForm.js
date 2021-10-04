@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, Typography, TextField, Button } from '@mui/material';
+import { Grid, TextField, Button } from '@mui/material';
 import { postGenre } from '../util/request';
 
 const GenreForm = (props) => {
@@ -23,8 +23,13 @@ const GenreForm = (props) => {
 
   return (
     <form onSubmit={onSubmit}>
-      <Grid container justifyContent="center" alignItems="center">
-        <Typography marginRight={2}>New Genre:</Typography>
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        marginTop={2}
+        marginBottom={2}
+      >
         <TextField
           type="text"
           id="genre"
@@ -32,8 +37,13 @@ const GenreForm = (props) => {
           value={newGenre}
           onChange={(event) => setNewGenre(event.target.value)}
         />
-        <Button type="submit" variant="contained" sx={{ marginLeft: 2 }}>
-          Add
+        <Button
+          type="submit"
+          variant="contained"
+          size="large"
+          sx={{ margin: 2 }}
+        >
+          Add Genre
         </Button>
       </Grid>
     </form>

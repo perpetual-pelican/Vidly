@@ -15,7 +15,7 @@ import Movies from './Movies';
 import { fetchGenres, fetchMovies } from './util/request';
 
 const TabPanel = (props) => {
-  const { children, value, index } = props;
+  const { children, value, index, title } = props;
   return (
     <>
       {value === index && (
@@ -28,6 +28,9 @@ const TabPanel = (props) => {
           justifyContent="center"
           maxWidth="80%"
         >
+          <Grid container justifyContent="center" marginBottom={2}>
+            <Typography variant="h3">{title}</Typography>
+          </Grid>
           {children}
         </Grid>
       )}
@@ -94,14 +97,16 @@ const Home = () => {
           )}
         </Toolbar>
       </AppBar>
-      <Grid container justifyContent="center" maxHeight="70%" marginTop="8%">
-        <TabPanel value={currentTab} index={0}>
+      <Toolbar />
+      <Grid container justifyContent="center" maxHeight="70%">
+        <TabPanel value={currentTab} index={0} title="Genres">
           <Genres genres={genres} setGenres={setGenres} />
         </TabPanel>
-        <TabPanel value={currentTab} index={1}>
+        <TabPanel value={currentTab} index={1} title="Movies">
           <Movies movies={movies} setMovies={setMovies} genres={genres} />
         </TabPanel>
       </Grid>
+      <Grid container />
     </Grid>
   );
 };

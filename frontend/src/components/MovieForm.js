@@ -44,9 +44,9 @@ const MovieForm = (props) => {
 
   return (
     <form onSubmit={onSubmit}>
-      <Grid container justifyContent="center">
+      <Grid container justifyContent="center" marginTop={2} marginBottom={2}>
         <Grid container justifyContent="center" width="75%">
-          <Typography variant="h4">New Movie: </Typography>
+          <Typography variant="h4">New Movie </Typography>
           <TextField
             fullWidth
             margin="normal"
@@ -86,11 +86,10 @@ const MovieForm = (props) => {
               })
             }
           />
-          <FormControl fullWidth>
+          <FormControl fullWidth margin="normal">
             <InputLabel id="select-label">Genres</InputLabel>
             <Select
               multiple
-              fullWidth
               labelId="select-label"
               input={<OutlinedInput label="Genres" />}
               value={selectedGenres}
@@ -105,9 +104,9 @@ const MovieForm = (props) => {
               ))}
             </Select>
           </FormControl>
-          <Grid container justifyContent="center" marginTop={2}>
-            <Button type="submit" variant="contained">
-              Add
+          <Grid container justifyContent="center" margin={2}>
+            <Button type="submit" variant="contained" size="large">
+              Add Movie
             </Button>
           </Grid>
         </Grid>
