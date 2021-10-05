@@ -1,6 +1,7 @@
 import React from 'react';
 import { Grid } from '@mui/material';
 import MovieList from './components/MovieList';
+import MovieTable from './components/MovieTable';
 import MovieForm from './components/MovieForm';
 
 const Movies = (props) => {
@@ -17,7 +18,7 @@ const Movies = (props) => {
         mt={5}
         mb={5}
       >
-        <MovieList movies={movies} />
+        {token ? <MovieTable movies={movies} /> : <MovieList movies={movies} />}
       </Grid>
       {token && (
         <Grid container item lg={4} justifyContent="center" mt={2}>
