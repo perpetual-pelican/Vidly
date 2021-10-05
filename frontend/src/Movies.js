@@ -8,24 +8,23 @@ const Movies = (props) => {
   const token = sessionStorage.getItem('token');
 
   return (
-    <>
+    <Grid container>
       <Grid
         container
         item
-        md={token ? 6 : 12}
+        lg={token ? 8 : 12}
         justifyContent="center"
-        marginTop={5}
+        mt={5}
+        mb={5}
       >
         <MovieList movies={movies} />
       </Grid>
       {token && (
-        <>
-          <Grid container item md={6} justifyContent="center" marginTop={2}>
-            <MovieForm movies={movies} setMovies={setMovies} genres={genres} />
-          </Grid>
-        </>
+        <Grid container item lg={4} justifyContent="center" mt={2}>
+          <MovieForm movies={movies} setMovies={setMovies} genres={genres} />
+        </Grid>
       )}
-    </>
+    </Grid>
   );
 };
 
