@@ -34,9 +34,8 @@ const movieSchema = new mongoose.Schema({
     max: numberInStock.max,
   },
   genres: {
-    type: [genreSchema],
-    default: undefined,
-    unique: true,
+    type: Map,
+    of: genreSchema,
     min: genres.min,
     max: genres.max,
   },

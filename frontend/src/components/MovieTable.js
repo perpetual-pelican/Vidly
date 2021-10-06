@@ -27,7 +27,11 @@ const columns = [
 const MovieTable = (props) => {
   const { movies } = props;
   const rows = movies.map((movie) => {
-    const genres = movie.genres.map((genre) => genre.name).join(', ');
+    let genreNames = [];
+    for (const genreId in movie.genres) {
+      genreNames.push(movie.genres[genreId].name);
+    }
+    const genres = genreNames.join(', ');
     return {
       id: movie._id,
       title: movie.title,

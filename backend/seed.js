@@ -59,20 +59,26 @@ async function seed() {
   try {
     await mongoose.connect(dbString, dbOptions);
 
-    await Movie.deleteMany();
     await Genre.deleteMany();
+    await Movie.deleteMany();
+
+    const promisedGenres = data.map(async (genreData) =>
+      new Genre({
+        _id: genreData._id,
+        name: genreData.name,
+      }).save()
+    );
+    const genres = await Promise.all(promisedGenres);
 
     const movies = [];
-    const genres = data.map((genre) => {
+    for (let i = 0; i < genres.length; i += 1) {
       movies.push(
-        ...genre.movies.map((movie) => ({
+        ...data[i].movies.map((movie) => ({
           ...movie,
-          genres: [{ _id: genre._id, name: genre.name }],
+          genres: new Map([[genres[i]._id, genres[i]]]),
         }))
       );
-      return new Genre({ _id: genre._id, name: genre.name }).save();
-    });
-    await Promise.all(genres);
+    }
     await Movie.insertMany(movies);
 
     await mongoose.disconnect();
