@@ -3,7 +3,7 @@ import { Grid } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 80 },
+  { field: 'id', headerName: 'ID', width: 215 },
   { field: 'title', headerName: 'Title', width: 250 },
   {
     field: 'dailyRentalRate',
@@ -20,7 +20,7 @@ const columns = [
   {
     field: 'genres',
     headerName: 'Genres',
-    width: 250,
+    width: 350,
   },
 ];
 
