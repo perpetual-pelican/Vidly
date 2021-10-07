@@ -100,7 +100,7 @@ const Home = () => {
       <Toolbar />
       <Grid container justifyContent="center" maxHeight="70%">
         <TabPanel value={currentTab} index={0} title="Genres">
-          <Genres genres={genres} setGenres={setGenres} />
+          <Genres genres={genres} setGenres={setGenres} movies={movies} />
         </TabPanel>
         <TabPanel value={currentTab} index={1} title="Movies">
           <Movies movies={movies} setMovies={setMovies} genres={genres} />
