@@ -1,6 +1,6 @@
 import React from 'react';
-import { Grid, List } from '@mui/material';
-import GenreListItem from './GenreListItem';
+import { Grid, List, ListItem } from '@mui/material';
+import GenreChip from './GenreChip';
 
 const GenreList = (props) => {
   const { genres, movies } = props;
@@ -15,7 +15,11 @@ const GenreList = (props) => {
       <Grid container justifyContent="center">
         {genres.map((genre) => (
           <Grid item key={genre._id}>
-            <GenreListItem genre={genre} />
+            <ListItem>
+              <Grid item>
+                <GenreChip genre={genre} />
+              </Grid>
+            </ListItem>
           </Grid>
         ))}
       </Grid>
