@@ -1,5 +1,4 @@
 import React from 'react';
-import { Grid } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 const columns = [
@@ -42,16 +41,14 @@ const MovieTable = (props) => {
   });
 
   return (
-    <Grid container item>
-      <DataGrid
-        autoHeight
-        rows={rows}
-        columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
-        checkboxSelection
-      />
-    </Grid>
+    <DataGrid
+      autoHeight
+      rows={rows}
+      columns={columns}
+      pageSize={5}
+      rowsPerPageOptions={[5]}
+      checkboxSelection
+    />
   );
 };
 
