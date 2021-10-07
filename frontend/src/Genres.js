@@ -32,7 +32,7 @@ const Genres = (props) => {
         {showTable ? (
           <GenreTable genres={genres} movies={movies} />
         ) : (
-          <GenreList genres={genres} />
+          <GenreList genres={genres} movies={movies} />
         )}
       </Grid>
       {token && (
