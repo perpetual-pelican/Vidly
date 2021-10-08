@@ -52,7 +52,7 @@ const Movies = (props) => {
           {showTable ? (
             <MovieTable movies={movies} />
           ) : (
-            <MovieList movies={movies} />
+            <MovieList movies={movies} shift={showForm} />
           )}
         </Grid>
       </Grid>
