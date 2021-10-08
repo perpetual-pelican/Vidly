@@ -6,9 +6,9 @@ import {
   Switch,
   Button,
 } from '@mui/material';
-import MovieList from './components/MovieList';
-import MovieTable from './components/MovieTable';
-import MovieForm from './components/MovieForm';
+import MovieList from './MovieList';
+import MovieTable from './MovieTable';
+import MovieForm from './MovieForm';
 
 const Movies = (props) => {
   const { movies, setMovies, genres } = props;

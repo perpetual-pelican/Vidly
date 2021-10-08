@@ -8,11 +8,11 @@ import {
   Button,
   Grid,
 } from '@mui/material';
-import Login from './Login';
-import Signup from './Signup';
-import Genres from './Genres';
-import Movies from './Movies';
-import { fetchGenres, fetchMovies } from './util/request';
+import Login from './Auth/Login';
+import Signup from './Auth/Signup';
+import Genres from './Genres/Genres';
+import Movies from './Movies/Movies';
+import { fetchGenres, fetchMovies } from '../util/request';
 
 const TabPanel = (props) => {
   const { children, value, index, title } = props;

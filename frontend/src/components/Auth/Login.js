@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextField } from '@mui/material';
-import { login } from './util/request';
-import AuthDialog from './components/AuthDialog';
+import { login } from '../../util/request';
+import AuthDialog from './AuthDialog';
 
 const Login = () => {
   const [email, setEmail] = useState('');

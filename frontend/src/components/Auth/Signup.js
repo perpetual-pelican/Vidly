@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { TextField, Alert } from '@mui/material';
-import { register } from './util/request';
-import AuthDialog from './components/AuthDialog';
+import { register } from '../../util/request';
+import AuthDialog from './AuthDialog';
 const {
   validateName,
   validateEmail,
   validatePassword,
   validatePasswordMatch,
-} = require('./util/userValidators');
+} = require('../../util/userValidators');
 
 const Signup = () => {
   const [fields, setFields] = useState({

@@ -1,7 +1,7 @@
 import React from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { yellow } from '@mui/material/colors';
-import Home from './Home';
+import Home from './components/Home';
 
 const theme = createTheme({
   palette: {

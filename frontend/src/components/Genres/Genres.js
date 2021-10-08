@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Grid, FormGroup, FormControlLabel, Switch } from '@mui/material';
-import GenreList from './components/GenreList';
-import GenreTable from './components/GenreTable';
-import GenreForm from './components/GenreForm';
+import GenreList from './GenreList';
+import GenreTable from './GenreTable';
+import GenreForm from './GenreForm';
 
 const Genres = (props) => {
   const { genres, setGenres, movies } = props;

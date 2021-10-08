@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Grid, TextField, Button } from '@mui/material';
-import { postGenre } from '../util/request';
+import { postGenre } from '../../util/request';
 
 const GenreForm = (props) => {
   const { genres, setGenres } = props;

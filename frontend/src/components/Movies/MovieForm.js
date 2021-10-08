@@ -10,7 +10,7 @@ import {
   MenuItem,
   Button,
 } from '@mui/material';
-import { postMovie } from '../util/request';
+import { postMovie } from '../../util/request';
 
 const MovieForm = (props) => {
   const { movies, setMovies, genres } = props;
