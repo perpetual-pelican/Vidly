@@ -27,7 +27,7 @@ const GenreListItem = ({ genre }) => {
           {genre.movies.length > 0 ? (
             genre.movies.map((movie) => (
               <ListItem key={movie._id}>
-                <Typography>{movie.title}</Typography>
+                <Chip label={movie.title} />
               </ListItem>
             ))
           ) : (
