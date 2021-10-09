@@ -18,37 +18,39 @@ const Movies = (props) => {
   return (
     <>
       <Grid container item lg={token && showForm ? 8 : 12} mb={5}>
-        {token && (
-          <Grid container alignItems="flex-end">
-            <Grid item>
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={showTable}
-                      onChange={() => {
-                        setShowTable((show) => !show);
-                      }}
-                    />
-                  }
-                  label="Show Table"
-                />
-              </FormGroup>
-            </Grid>
-            <Grid item flexGrow={1} />
-            <Grid item>
-              <Button
-                onClick={() => {
-                  setShowForm((show) => !show);
-                }}
-              >
-                {showForm ? 'Hide Form' : 'Add Movie'}
-              </Button>
-            </Grid>
+        <Grid container alignItems="flex-end">
+          <Grid item>
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={showTable}
+                    onChange={() => {
+                      setShowTable((show) => !show);
+                    }}
+                  />
+                }
+                label="Show Table"
+              />
+            </FormGroup>
           </Grid>
-        )}
+          {token && (
+            <>
+              <Grid item flexGrow={1} />
+              <Grid item>
+                <Button
+                  onClick={() => {
+                    setShowForm((show) => !show);
+                  }}
+                >
+                  {showForm ? 'Hide Form' : 'Add Movie'}
+                </Button>
+              </Grid>
+            </>
+          )}
+        </Grid>
         <Grid container>
-          {token && showTable ? (
+          {showTable ? (
             <MovieTable movies={movies} />
           ) : (
             <MovieList movies={movies} shift={token && showForm} />

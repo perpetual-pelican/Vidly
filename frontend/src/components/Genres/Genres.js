@@ -11,23 +11,21 @@ const Genres = (props) => {
   return (
     <>
       <Grid container justifyContent="center">
-        {token && (
-          <Grid container justifyContent="center" alignItems="flex-end">
-            <FormGroup>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={showTable}
-                    onChange={() => {
-                      setShowTable((show) => !show);
-                    }}
-                  />
-                }
-                label="Show Table"
-              />
-            </FormGroup>
-          </Grid>
-        )}
+        <Grid container justifyContent="center" alignItems="flex-end">
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={showTable}
+                  onChange={() => {
+                    setShowTable((show) => !show);
+                  }}
+                />
+              }
+              label="Show Table"
+            />
+          </FormGroup>
+        </Grid>
         {showTable ? (
           <GenreTable genres={genres} movies={movies} />
         ) : (
