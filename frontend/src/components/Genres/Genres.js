@@ -5,9 +5,8 @@ import GenreTable from './GenreTable';
 import GenreForm from './GenreForm';
 
 const Genres = (props) => {
-  const { genres, setGenres, movies } = props;
+  const { genres, setGenres, movies, token } = props;
   const [showTable, setShowTable] = useState(false);
-  const token = sessionStorage.getItem('token');
 
   return (
     <>

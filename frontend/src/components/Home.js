@@ -39,9 +39,9 @@ const TabPanel = (props) => {
 };
 
 const Home = () => {
-  const token = sessionStorage.getItem('token');
   const [genres, setGenres] = useState([]);
   const [movies, setMovies] = useState([]);
+  const [token, setToken] = useState(sessionStorage.getItem('token'));
   const [currentTab, setCurrentTab] = useState(0);
 
   useEffect(() => {
@@ -83,7 +83,7 @@ const Home = () => {
               color="inherit"
               onClick={() => {
                 sessionStorage.removeItem('token');
-                window.location.reload(false);
+                setToken(null);
               }}
             >
               Logout
@@ -91,8 +91,8 @@ const Home = () => {
           )}
           {!token && (
             <>
-              <Login />
-              <Signup />
+              <Login setToken={setToken} />
+              <Signup setToken={setToken} />
             </>
           )}
         </Toolbar>
@@ -100,10 +100,20 @@ const Home = () => {
       <Toolbar />
       <Grid container justifyContent="center" maxHeight="70%">
         <TabPanel value={currentTab} index={0} title="Genres">
-          <Genres genres={genres} setGenres={setGenres} movies={movies} />
+          <Genres
+            genres={genres}
+            setGenres={setGenres}
+            movies={movies}
+            token={token}
+          />
         </TabPanel>
         <TabPanel value={currentTab} index={1} title="Movies">
-          <Movies movies={movies} setMovies={setMovies} genres={genres} />
+          <Movies
+            movies={movies}
+            setMovies={setMovies}
+            genres={genres}
+            token={token}
+          />
         </TabPanel>
       </Grid>
       <Grid container />

@@ -17,15 +17,10 @@ const AuthDialog = (props) => {
 
   const handleClose = () => {
     setOpen(false);
-    props.resetForm();
   };
 
   const handleSubmit = async () => {
-    const success = await props.submit();
-    if (success) {
-      handleClose();
-      window.location.reload(false);
-    }
+    await props.submit();
   };
 
   return (
