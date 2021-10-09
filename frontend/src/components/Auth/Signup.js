@@ -7,7 +7,7 @@ const {
   validateEmail,
   validatePassword,
   validatePasswordMatch,
-} = require('../../util/userValidators');
+} = require('../../util/validators/userValidators');
 
 const Signup = ({ setToken }) => {
   const [fields, setFields] = useState({
