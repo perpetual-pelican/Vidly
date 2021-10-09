@@ -1,28 +1,45 @@
 import React, { useState } from 'react';
-import { Grid, TextField, Button } from '@mui/material';
+import { Grid, TextField, Button, Alert } from '@mui/material';
 import { postGenre } from '../../util/request';
+const { validateName } = require('../../util/validators/genreValidators');
 
 const GenreForm = (props) => {
   const { genres, setGenres } = props;
   const [newGenre, setNewGenre] = useState('');
+  const [formError, setFormError] = useState('');
+  const [isFilled, setIsFilled] = useState(false);
 
-  const onSubmit = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsFilled(true);
+    const isValid = validate(newGenre);
+    if (!isValid) return;
     try {
       const data = await postGenre({ name: newGenre });
       if (typeof data === 'string') {
-        alert(data);
+        setFormError(data);
         return;
       }
       setGenres([data, ...genres]);
       setNewGenre('');
+      setFormError('');
     } catch (e) {
       alert(e);
     }
   };
 
+  const validate = (name) => {
+    const { error } = validateName(name);
+    if (error) {
+      setFormError(error.details[0].message);
+      return false;
+    }
+    setFormError('');
+    return true;
+  };
+
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={handleSubmit}>
       <Grid
         container
         justifyContent="center"
@@ -30,12 +47,23 @@ const GenreForm = (props) => {
         marginTop={2}
         marginBottom={2}
       >
+        <Grid container justifyContent="center">
+          {isFilled && formError && (
+            <Alert severity="warning">{formError}</Alert>
+          )}
+        </Grid>
         <TextField
           type="text"
           id="genre"
           label="Genre Name"
           value={newGenre}
-          onChange={(event) => setNewGenre(event.target.value)}
+          onChange={(event) => {
+            setNewGenre(event.target.value);
+            if (isFilled) validate(event.target.value);
+          }}
+          onBlur={(event) => {
+            if (!event.target.value) setFormError('');
+          }}
         />
         <Button
           type="submit"
