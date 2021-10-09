@@ -3,7 +3,7 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const { genreSchema } = require('./genre');
 
-const title = { min: 3, max: 128 };
+const title = { min: 3, max: 64 };
 const dailyRentalRate = { min: 0, max: 20 };
 const numberInStock = { min: 0, max: 1000 };
 const genres = { min: 1, max: 5 };
