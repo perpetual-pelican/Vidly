@@ -25,13 +25,13 @@ const TabPanel = (props) => {
           hidden={value !== index}
           id={`tabpanel-${index}`}
           aria-labelledby={`tab-${index}`}
-          justifyContent="center"
           maxWidth="90%"
+          flexDirection="column"
         >
           <Grid container justifyContent="center" marginBottom={2}>
             <Typography variant="h3">{title}</Typography>
           </Grid>
-          {children}
+          <Grid container>{children}</Grid>
         </Grid>
       )}
     </>
