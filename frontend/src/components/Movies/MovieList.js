@@ -4,17 +4,13 @@ import { useTheme } from '@mui/material/styles';
 
 const MovieList = ({ movies, shift }) => {
   const theme = useTheme();
-  const isSmUp = useMediaQuery(theme.breakpoints.up('sm'));
-  const isMdUp = useMediaQuery(theme.breakpoints.up('md'));
   const isLgUp = useMediaQuery(theme.breakpoints.up('lg'));
   const isXlUp = useMediaQuery(theme.breakpoints.up('xl'));
 
   const colShift = shift ? -1 : 0;
   let numColumns = 1;
-  if (isXlUp) numColumns = 6 + 2 * colShift;
-  else if (isLgUp) numColumns = 4 + colShift;
-  else if (isMdUp) numColumns = 3;
-  else if (isSmUp) numColumns = 2;
+  if (isXlUp) numColumns = 3 + colShift;
+  else if (isLgUp) numColumns = 2 + colShift;
 
   const colSize = Math.ceil(movies.length / numColumns);
   const cols = [];

@@ -26,7 +26,7 @@ const TabPanel = (props) => {
           id={`tabpanel-${index}`}
           aria-labelledby={`tab-${index}`}
           justifyContent="center"
-          maxWidth="80%"
+          maxWidth="90%"
         >
           <Grid container justifyContent="center" marginBottom={2}>
             <Typography variant="h3">{title}</Typography>
