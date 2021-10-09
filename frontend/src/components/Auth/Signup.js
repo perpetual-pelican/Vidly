@@ -20,7 +20,7 @@ const Signup = ({ setToken }) => {
   const [formIsValid, setFormIsValid] = useState(false);
 
   const submit = async () => {
-    if (!formIsValid) return false;
+    if (!formIsValid) return;
     const body = {
       name: fields.name,
       email: fields.email,
