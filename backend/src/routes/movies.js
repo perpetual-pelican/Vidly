@@ -20,7 +20,9 @@ router.get('/', async (req, res) => {
 router.get('/:id', validateObjectId, find(Movie, 'lean'), send);
 
 router.post('/', auth, validate(validatePost), async (req, res) => {
-  if (req.body.genreIds) {
+  if (!req.body.genreIds) {
+    req.body.genres = [];
+  } else {
     const promisedGenres = req.body.genreIds.map((genreId) => {
       return Genre.findById(genreId).lean();
     });

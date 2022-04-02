@@ -167,7 +167,6 @@ describe('/api/movies', () => {
       const res = await post(req);
 
       expect(res.status).toBe(200);
-      expect(res.body).not.toHaveProperty('genres');
     });
 
     it('should save the movie if request is valid', async () => {
