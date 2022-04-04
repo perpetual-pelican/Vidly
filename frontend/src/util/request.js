@@ -25,6 +25,15 @@ export async function login(body) {
   return res.data;
 }
 
+export async function fetchUser(setUser) {
+  try {
+    const res = await axios.get('/api/users/me');
+    setUser(res.data);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 export async function fetchGenres(setGenres) {
   try {
     const res = await axios.get('/api/genres');
@@ -37,6 +46,15 @@ export async function fetchGenres(setGenres) {
 export async function postGenre(body) {
   const res = await axios.post('/api/genres', body);
   return res.data;
+}
+
+export async function deleteGenre(id) {
+  try {
+    const res = await axios.delete(`/api/genres/${id}`);
+    return res.data;
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 export async function fetchMovies(setMovies) {
