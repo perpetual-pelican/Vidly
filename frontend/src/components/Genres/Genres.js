@@ -5,7 +5,7 @@ import GenreTable from './GenreTable';
 import GenreForm from './GenreForm';
 
 const Genres = (props) => {
-  const { genres, setGenres, movies, token } = props;
+  const { genres, setGenres, movies, user } = props;
   const [showTable, setShowTable] = useState(false);
 
   return (
@@ -32,7 +32,7 @@ const Genres = (props) => {
           <GenreList genres={genres} movies={movies} />
         )}
       </Grid>
-      {token && (
+      {user && (
         <Grid container justifyContent="center">
           <GenreForm genres={genres} setGenres={setGenres} />
         </Grid>
