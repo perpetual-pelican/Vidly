@@ -59,7 +59,7 @@ const Movies = (props) => {
       </Grid>
       {user && showForm && (
         <Grid container item lg={4} justifyContent="center">
-          <MovieForm movies={movies} setMovies={setMovies} genres={genres} />
+          <MovieForm setMovies={setMovies} genres={genres} />
         </Grid>
       )}
     </>

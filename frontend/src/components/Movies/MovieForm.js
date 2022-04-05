@@ -20,7 +20,7 @@ const {
 } = require('../../util/validators/movieValidators');
 
 const MovieForm = (props) => {
-  const { movies, setMovies, genres } = props;
+  const { setMovies, genres } = props;
   const [newMovie, setNewMovie] = useState({
     title: '',
     dailyRentalRate: '',
@@ -45,7 +45,12 @@ const MovieForm = (props) => {
           return currentErrors;
         });
       }
-      setMovies([data, ...movies]);
+      setMovies((movies) =>
+        [data, ...movies].sort(function (movie1, movie2) {
+          const equalityResult = movie1.title === movie2.title ? 0 : 1;
+          return movie1.title < movie2.title ? -1 : equalityResult;
+        })
+      );
       setNewMovie({
         title: '',
         dailyRentalRate: 0,
