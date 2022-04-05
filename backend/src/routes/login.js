@@ -1,7 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const Joi = require('joi');
-const _ = require('lodash');
 const validate = require('../middleware/validate');
 const { User } = require('../models/user');
 
@@ -24,9 +23,8 @@ router.post('/', validate(validateUser), async (req, res) => {
   if (!validPassword) return res.status(400).send('Invalid email or password');
 
   const token = user.generateAuthToken();
-  const payload = _.pick(user, ['_id', 'name', 'email']);
 
-  return res.header('x-auth-token', token).send(payload);
+  return res.send(token);
 });
 
 module.exports = router;

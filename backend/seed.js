@@ -5,7 +5,6 @@ const { Movie } = require('./src/models/movie');
 
 const data = [
   {
-    _id: mongoose.Types.ObjectId(),
     name: 'Action',
     movies: [
       { title: 'Murderbots 2', dailyRentalRate: 0.99, numberInStock: 15 },
@@ -14,7 +13,6 @@ const data = [
     ],
   },
   {
-    _id: mongoose.Types.ObjectId(),
     name: 'Adventure',
     movies: [
       { title: 'Lost Kids', dailyRentalRate: 0.99, numberInStock: 15 },
@@ -23,7 +21,6 @@ const data = [
     ],
   },
   {
-    _id: mongoose.Types.ObjectId(),
     name: 'Comedy',
     movies: [
       { title: 'Cat Commanders', dailyRentalRate: 0.99, numberInStock: 5 },
@@ -32,7 +29,6 @@ const data = [
     ],
   },
   {
-    _id: mongoose.Types.ObjectId(),
     name: 'Fantasy',
     movies: [
       { title: 'Orcs and Goblins', dailyRentalRate: 0.99, numberInStock: 15 },
@@ -45,7 +41,6 @@ const data = [
     ],
   },
   {
-    _id: mongoose.Types.ObjectId(),
     name: 'Horror',
     movies: [
       { title: 'The Spider Queen', dailyRentalRate: 0.99, numberInStock: 15 },
@@ -56,29 +51,24 @@ const data = [
 ];
 
 async function seed() {
-  try {
-    await mongoose.connect(dbString, dbOptions);
+  await mongoose.connect(dbString, dbOptions);
 
-    await Movie.deleteMany();
-    await Genre.deleteMany();
+  await Movie.deleteMany();
+  await Genre.deleteMany();
 
-    const movies = [];
-    const genres = data.map((genre) => {
-      movies.push(
-        ...genre.movies.map((movie) => ({
-          ...movie,
-          genres: [{ _id: genre._id, name: genre.name }],
-        }))
-      );
-      return new Genre({ _id: genre._id, name: genre.name }).save();
-    });
-    await Promise.all(genres);
-    await Movie.insertMany(movies);
+  const movies = [];
+  data.forEach((genre) => {
+    const { _id } = new Genre({ name: genre.name }).save();
+    movies.push(
+      ...genre.movies.map((movie) => ({
+        ...movie,
+        genres: [{ _id, name: genre.name }],
+      }))
+    );
+  });
+  await Movie.insertMany(movies);
 
-    await mongoose.disconnect();
-  } catch (e) {
-    console.error(e);
-  }
+  await mongoose.disconnect();
 }
 
 seed();
