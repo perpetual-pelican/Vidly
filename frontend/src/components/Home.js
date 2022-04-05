@@ -58,7 +58,7 @@ const Home = () => {
           <Typography variant="h4">Vidly</Typography>
           <Tabs
             value={currentTab}
-            onChange={(event, newTab) => {
+            onChange={(_event, newTab) => {
               setCurrentTab(newTab);
             }}
             aria-label="tabs"
