@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
 
-const name = { min: 3, max: 128 };
+const name = { min: 3, max: 64 };
 
 const genreSchema = new mongoose.Schema({
   name: {

@@ -3,10 +3,10 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const { genreSchema } = require('./genre');
 
-const title = { min: 3, max: 128 };
+const title = { min: 3, max: 64 };
 const dailyRentalRate = { min: 0, max: 20 };
 const numberInStock = { min: 0, max: 1000 };
-const genres = { min: 1, max: 10 };
+const genres = { min: 1, max: 5 };
 
 const movieSchemaBase = {
   title: {
@@ -34,9 +34,8 @@ const movieSchema = new mongoose.Schema({
     max: numberInStock.max,
   },
   genres: {
-    type: [genreSchema],
-    default: undefined,
-    unique: true,
+    type: Map,
+    of: genreSchema,
     min: genres.min,
     max: genres.max,
   },
