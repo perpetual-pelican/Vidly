@@ -3,10 +3,24 @@ import { Grid, FormGroup, FormControlLabel, Switch } from '@mui/material';
 import GenreList from './GenreList';
 import GenreTable from './GenreTable';
 import GenreForm from './GenreForm';
+import { deleteGenre } from '../../util/request';
 
 const Genres = (props) => {
-  const { genres, setGenres, movies, user } = props;
+  const { genres, setGenres, movies, setMovies, user } = props;
   const [showTable, setShowTable] = useState(false);
+
+  function handleDelete(genreId) {
+    deleteGenre(genreId);
+    setGenres((prevGenres) =>
+      prevGenres.filter((genre) => genre._id !== genreId)
+    );
+    setMovies((prevMovies) =>
+      prevMovies.map((movie) => {
+        delete movie.genres[genreId];
+        return movie;
+      })
+    );
+  }
 
   return (
     <>
@@ -29,7 +43,12 @@ const Genres = (props) => {
         {showTable ? (
           <GenreTable genres={genres} movies={movies} />
         ) : (
-          <GenreList genres={genres} movies={movies} />
+          <GenreList
+            genres={genres}
+            handleDelete={handleDelete}
+            movies={movies}
+            user={user}
+          />
         )}
       </Grid>
       {user && (
