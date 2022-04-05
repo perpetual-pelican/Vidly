@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { TextField, Alert } from '@mui/material';
-import { register } from './util/request';
-import AuthDialog from './components/AuthDialog';
+import { register } from '../../util/request';
+import AuthDialog from './AuthDialog';
 const {
   validateName,
   validateEmail,
   validatePassword,
   validatePasswordMatch,
-} = require('./util/userValidators');
+} = require('../../util/validators/userValidators');
 
-const Signup = () => {
+const Signup = ({ setToken }) => {
   const [fields, setFields] = useState({
     name: '',
     email: '',
@@ -20,7 +20,7 @@ const Signup = () => {
   const [formIsValid, setFormIsValid] = useState(false);
 
   const submit = async () => {
-    if (!formIsValid) return false;
+    if (!formIsValid) return;
     const body = {
       name: fields.name,
       email: fields.email,
@@ -30,7 +30,7 @@ const Signup = () => {
       const data = await register(body);
       if (typeof data === 'string') {
         setErrors((currentErrors) => ({ ...currentErrors, form: data }));
-        return false;
+        return;
       } else {
         setErrors((currentErrors) => {
           delete currentErrors.form;
@@ -40,13 +40,7 @@ const Signup = () => {
     } catch (e) {
       console.error(e);
     }
-    return true;
-  };
-
-  const resetForm = () => {
-    setFields({ name: '', email: '', password: '', confirmPassword: '' });
-    setErrors({});
-    setFormIsValid(false);
+    setToken(sessionStorage.getItem('token'));
   };
 
   const validateField = (field, validator, value, value2) => {
@@ -86,7 +80,6 @@ const Signup = () => {
       title="Signup"
       text="Enter your name, email address, and password to create an account."
       submit={submit}
-      resetForm={resetForm}
       submitDisabled={!formIsValid}
     >
       {errors.form ? <Alert severity="warning">{errors.form}</Alert> : null}

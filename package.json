@@ -12,6 +12,7 @@
     "format": "prettier --write .",
     "install": "cd backend && npm ci",
     "test": "cd backend && npm test",
+    "db": "cd backend && npm run db",
     "start": "concurrently \"cd backend && npm start\" \" cd frontend && npm start\""
   },
   "devDependencies": {

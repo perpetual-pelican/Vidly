@@ -24,11 +24,12 @@ describe('/api/rentals', () => {
       name: 'Customer Name',
       phone: '12345',
     }).save();
+    const genre = new Genre({ name: 'Genre Name' });
     movieObject = {
       title: 'Movie Title',
       dailyRentalRate: 1,
       numberInStock: 1,
-      genres: [new Genre({ name: 'Genre Name' })],
+      genres: { [genre._id]: genre },
     };
     movie = await new Movie(movieObject).save();
     rentalObject = { customer, movie };
@@ -43,11 +44,12 @@ describe('/api/rentals', () => {
         name: 'Customer Name 2',
         phone: '12345',
       }).save();
+      const genre = new Genre({ name: 'Genre Name 2' });
       movie2 = await new Movie({
         title: 'Movie Title 2',
         dailyRentalRate: 2,
         numberInStock: 2,
-        genres: [new Genre({ name: 'Genre Name 2' })],
+        genres: { [genre._id]: genre },
       }).save();
       await Rental.insertMany([
         rentalObject,

@@ -20,7 +20,7 @@ router.get('/:id', validateObjectId, find(Genre, 'lean'), send);
 
 router.post('/', auth, validate(gVal), async (req, res) => {
   let genre = await Genre.findOne({ name: req.body.name });
-  if (genre) return res.status(400).send('Genre name already exists');
+  if (genre) return res.status(400).send('Genre Name already exists');
 
   genre = new Genre(req.body);
   await genre.save();
@@ -36,7 +36,7 @@ router.put(
   validate(gVal),
   async (req, res) => {
     let genre = await Genre.findOne({ name: req.body.name }).lean();
-    if (genre) return res.status(400).send('Genre name already exists');
+    if (genre) return res.status(400).send('Genre Name already exists');
 
     genre = req.doc;
 

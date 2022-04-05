@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { TextField } from '@mui/material';
-import { login } from './util/request';
-import AuthDialog from './components/AuthDialog';
+import { login } from '../../util/request';
+import AuthDialog from './AuthDialog';
 
-const Login = () => {
+const Login = ({ setToken }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -13,17 +13,12 @@ const Login = () => {
       const data = await login(body);
       if (typeof data === 'string') {
         alert(data);
-        return false;
+        return;
       }
     } catch (e) {
       console.error(e);
     }
-    return true;
-  };
-
-  const resetForm = () => {
-    setEmail('');
-    setPassword('');
+    setToken(sessionStorage.getItem('token'));
   };
 
   return (
@@ -31,7 +26,6 @@ const Login = () => {
       title="Login"
       text="Enter your email address and password to log in."
       submit={submit}
-      resetForm={resetForm}
     >
       <TextField
         autoFocus

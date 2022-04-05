@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const passwordComplexity = require('joi-password-complexity').default;
 const tlds = require('@sideway/address/lib/tlds');
-const { user } = require('./modelConstraints');
+const { user } = require('../modelConstraints');
 
 const nameSchema = Joi.string()
   .max(user.name.max)
