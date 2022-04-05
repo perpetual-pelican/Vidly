@@ -4,7 +4,7 @@ import { postGenre } from '../../util/request';
 const { validateName } = require('../../util/validators/genreValidators');
 
 const GenreForm = (props) => {
-  const { genres, setGenres } = props;
+  const { setGenres } = props;
   const [newGenre, setNewGenre] = useState('');
   const [formError, setFormError] = useState('');
   const [isFilled, setIsFilled] = useState(false);
@@ -20,7 +20,11 @@ const GenreForm = (props) => {
         setFormError(data);
         return;
       }
-      setGenres([data, ...genres]);
+      setGenres((genres) =>
+        [data, ...genres].sort(function (genre1, genre2) {
+          return genre1.name < genre2.name ? -1 : 1;
+        })
+      );
       setNewGenre('');
       setFormError('');
     } catch (e) {
