@@ -53,7 +53,7 @@ const Genres = (props) => {
       </Grid>
       {user && (
         <Grid container justifyContent="center">
-          <GenreForm genres={genres} setGenres={setGenres} />
+          <GenreForm setGenres={setGenres} />
         </Grid>
       )}
     </>
