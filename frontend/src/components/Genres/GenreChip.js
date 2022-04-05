@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { List, ListItem, Chip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
-const GenreListItem = ({ genre, handleDelete, user }) => {
+const GenreChip = ({ genre, handleDelete, user }) => {
   const theme = useTheme();
   const [showMovies, setShowMovies] = useState(false);
 
@@ -48,4 +48,4 @@ const GenreListItem = ({ genre, handleDelete, user }) => {
   );
 };
 
-export default GenreListItem;
+export default GenreChip;
