@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { List, ListItem, Chip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
-const GenreListItem = ({ genre }) => {
+const GenreListItem = ({ genre, handleDelete, user }) => {
   const theme = useTheme();
   const [showMovies, setShowMovies] = useState(false);
 
@@ -14,6 +14,13 @@ const GenreListItem = ({ genre }) => {
         onClick={() => {
           setShowMovies((show) => !show);
         }}
+        onDelete={
+          user?.isAdmin
+            ? () => {
+                handleDelete(genre._id);
+              }
+            : null
+        }
         sx={{ fontSize: 16 }}
       />
       {showMovies && (

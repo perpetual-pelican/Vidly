@@ -107,6 +107,7 @@ const Home = () => {
             genres={genres}
             setGenres={setGenres}
             movies={movies}
+            setMovies={setMovies}
             user={user}
           />
         </TabPanel>
