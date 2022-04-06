@@ -1,0 +1,33 @@
+feature_genre_delete
+
+- add snackbar notification after genre is deleted (and when a new genre is added)
+- move Genre movie list into separate GenreDetails component
+- include note when movie has no genres or genre has no movies
+- check for leading/trailing spaces in frontend validation
+
+feature_update_genre
+
+- implement put operation and validation for genres
+
+feature_delete_movie
+
+- implement delete operation for movies
+
+feature_update_movie
+
+- implement put operation and validation for movies
+
+other routes
+
+- customers, rentals, users
+
+clean up formatting/presentation
+
+- include movie details in MovieList
+- look into using separate pages for each genre/movie, etc...
+- try to make tables more flexible
+- look into implementing all CRUD operations in tables
+
+data management
+
+- look into state management/redux
