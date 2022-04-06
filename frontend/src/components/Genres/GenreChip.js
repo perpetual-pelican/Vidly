@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { List, ListItem, Chip, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import ClearIcon from '@mui/icons-material/Clear';
+import GenreDeleteModal from './GenreDeleteModal';
 
 const GenreChip = ({ genre, handleDelete, user }) => {
   const theme = useTheme();
   const [showMovies, setShowMovies] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const handleModalOpen = () => setModalOpen(true);
+  const handleModalClose = () => setModalOpen(false);
 
   return (
     <>
@@ -17,11 +22,23 @@ const GenreChip = ({ genre, handleDelete, user }) => {
         onDelete={
           user?.isAdmin
             ? () => {
-                handleDelete(genre._id);
+                handleModalOpen();
               }
             : null
         }
-        sx={{ fontSize: 16 }}
+        deleteIcon={<ClearIcon />}
+        sx={{
+          fontSize: 16,
+          '& .MuiChip-deleteIcon': {
+            '&:hover': { color: theme.palette.error.main },
+          },
+        }}
+      />
+      <GenreDeleteModal
+        open={modalOpen}
+        genre={genre}
+        handleClose={handleModalClose}
+        handleDelete={handleDelete}
       />
       {showMovies && (
         <List
