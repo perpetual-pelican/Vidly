@@ -28,7 +28,7 @@ const Signup = ({ setToken }) => {
     };
     try {
       const data = await register(body);
-      if (typeof data === 'string') {
+      if (typeof data === 'string' && data.length > 0) {
         setErrors((currentErrors) => ({ ...currentErrors, form: data }));
         return;
       } else {

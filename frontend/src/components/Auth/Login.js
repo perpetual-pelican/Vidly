@@ -11,7 +11,7 @@ const Login = ({ setToken }) => {
     const body = { email, password };
     try {
       const data = await login(body);
-      if (typeof data === 'string') {
+      if (typeof data === 'string' && data.length > 0) {
         alert(data);
         return;
       }

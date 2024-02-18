@@ -1,6 +1,5 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-const _ = require('lodash');
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const validate = require('../middleware/validate');
@@ -30,9 +29,8 @@ router.post('/', validate(uVal), async (req, res) => {
   await user.save();
 
   const token = user.generateAuthToken();
-  const payload = _.pick(user, ['_id', 'name', 'email']);
 
-  return res.header('x-auth-token', token).send(payload);
+  return res.header('x-auth-token', token).send();
 });
 
 module.exports = router;
