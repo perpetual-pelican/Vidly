@@ -21,6 +21,7 @@ describe('/api/returns', () => {
       title: 'Movie Title',
       numberInStock: 0,
       dailyRentalRate: 2,
+      genres: [],
     }).save();
     rental = await new Rental({
       customer: {

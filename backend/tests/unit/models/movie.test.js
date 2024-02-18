@@ -260,27 +260,14 @@ describe('Movie model', () => {
       expect(error).toBe(undefined);
     });
 
-    it(`should return error if genreIds size is less than ${bounds.genres.min}`, () => {
+    it(`should not return error if genreIds is empty`, () => {
       movie.genreIds = [];
-      for (let i = 0; i < bounds.genres.min - 1; i += 1)
-        movie.genreIds.push(mongoose.Types.ObjectId().toHexString());
-
-      const { error } = validatePost(movie);
-
-      expect(error.message).toMatch(
-        new RegExp(`genreIds.*${bounds.genres.min}`)
-      );
-    });
-
-    it(`should not return error if genreIds size is equal to ${bounds.genres.min}`, () => {
-      movie.genreIds = [];
-      for (let i = 0; i < bounds.genres.min; i += 1)
-        movie.genreIds.push(mongoose.Types.ObjectId().toHexString());
 
       const { error } = validatePost(movie);
 
       expect(error).toBe(undefined);
     });
+
     it(`should return error if genreIds size is greater than ${bounds.genres.max}`, () => {
       movie.genreIds = [];
       for (let i = 0; i < bounds.genres.max + 1; i += 1)
@@ -593,22 +580,8 @@ describe('Movie model', () => {
       expect(error).toBe(undefined);
     });
 
-    it(`should return error if genreIds size is less than ${bounds.genres.min}`, () => {
+    it(`should not return error if genreIds is empty`, () => {
       movie.genreIds = [];
-      for (let i = 0; i < bounds.genres.min - 1; i += 1)
-        movie.genreIds.push(mongoose.Types.ObjectId().toHexString());
-
-      const { error } = validatePut(movie);
-
-      expect(error.message).toMatch(
-        new RegExp(`genreIds.*${bounds.genres.min}`)
-      );
-    });
-
-    it(`should not return error if genreIds size is equal to ${bounds.genres.min}`, () => {
-      movie.genreIds = [];
-      for (let i = 0; i < bounds.genres.min; i += 1)
-        movie.genreIds.push(mongoose.Types.ObjectId().toHexString());
 
       const { error } = validatePut(movie);
 

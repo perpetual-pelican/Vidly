@@ -20,16 +20,17 @@ router.get('/', async (req, res) => {
 router.get('/:id', validateObjectId, find(Movie, 'lean'), send);
 
 router.post('/', auth, validate(validatePost), async (req, res) => {
-  if (req.body.genreIds) {
-    // Begin retrieving all genres matching genreIds
-    const genres = req.body.genreIds.map((genreId) => {
+  if (!req.body.genreIds) {
+    req.body.genres = [];
+  } else {
+    const promisedGenres = req.body.genreIds.map((genreId) => {
       return Genre.findById(genreId).lean();
     });
-    // Await all genres from db
-    req.body.genres = await Promise.all(genres);
-    // Check if any genreId was not found
-    if (req.body.genres.some((genre) => !genre))
+    const genres = await Promise.all(promisedGenres);
+    if (genres.some((genre) => !genre))
       return res.status(400).send('Invalid genre id');
+
+    req.body.genres = new Map(genres.map((genre) => [genre._id, genre]));
   }
 
   const movie = new Movie(req.body);
@@ -48,15 +49,15 @@ router.put(
     const movie = req.doc;
 
     if (req.body.genreIds) {
-      // Begin retrieving all genres matching genreIds
-      const genres = req.body.genreIds.map((genreId) => {
+      const promisedGenres = req.body.genreIds.map((genreId) => {
         return Genre.findById(genreId).lean();
       });
-      // Await all genres from db
-      movie.genres = await Promise.all(genres);
-      // Check if any genreId was not found
-      if (movie.genres.some((genre) => !genre))
+      const genres = await Promise.all(promisedGenres);
+
+      if (genres.some((genre) => !genre))
         return res.status(400).send('Invalid genre id');
+
+      req.body.genres = new Map(genres.map((genre) => [genre._id, genre]));
     }
 
     movie.set(req.body);
