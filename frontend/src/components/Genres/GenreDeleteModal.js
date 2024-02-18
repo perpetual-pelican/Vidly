@@ -48,7 +48,7 @@ const GenreDeleteModal = ({ open, genre, handleClose, handleDelete }) => {
           </Button>
           <Button
             color="error"
-            onClick={() => handleDelete(genre._id)}
+            onClick={() => handleDelete(genre)}
             sx={{
               '&:hover': {
                 backgroundColor: theme.palette.action.focus,
