@@ -1,9 +1,17 @@
+Maintenance
+
+- Fix test issues with mongodb memory server
+- Update Dependencies/package and Fix Vulnerabilities
+- Update frontend .gitignore
+- Add concurrently to dev dependencies
+
 feature_genre_delete
 
 - add snackbar notification after genre is deleted (and when a new genre is added)
 - move Genre movie list into separate GenreDetails component
 - include note when movie has no genres or genre has no movies
 - check for leading/trailing spaces in frontend validation
+- remove UI validation when no genre selected for movie
 
 feature_update_genre
 
