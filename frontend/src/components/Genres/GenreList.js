@@ -3,7 +3,7 @@ import { Grid, List, ListItem } from '@mui/material';
 import GenreChip from './GenreChip';
 
 const GenreList = (props) => {
-  const { genres, movies } = props;
+  const { genres, handleDelete, movies, user } = props;
 
   genres.forEach(
     (genre) =>
@@ -17,7 +17,11 @@ const GenreList = (props) => {
           <Grid item key={genre._id}>
             <ListItem>
               <Grid item>
-                <GenreChip genre={genre} />
+                <GenreChip
+                  genre={genre}
+                  handleDelete={handleDelete}
+                  user={user}
+                />
               </Grid>
             </ListItem>
           </Grid>

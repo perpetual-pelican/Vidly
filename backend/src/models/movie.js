@@ -6,7 +6,7 @@ const { genreSchema } = require('./genre');
 const title = { min: 3, max: 64 };
 const dailyRentalRate = { min: 0, max: 20 };
 const numberInStock = { min: 0, max: 1000 };
-const genres = { min: 1, max: 5 };
+const genres = { min: 0, max: 5 };
 
 const movieSchemaBase = {
   title: {
@@ -36,6 +36,7 @@ const movieSchema = new mongoose.Schema({
   genres: {
     type: Map,
     of: genreSchema,
+    required: true,
     min: genres.min,
     max: genres.max,
   },
