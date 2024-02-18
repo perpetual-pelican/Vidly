@@ -4,6 +4,6 @@
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-npx lint-staged
+npx lint-staged # have some issues when only staging non-lintable files
 npx pretty-quick --staged
 npm test

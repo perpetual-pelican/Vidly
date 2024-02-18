@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
     "format": "prettier --write .",
-    "test": "cd backend && npm test",
+    "ci-backend": "cd backend && npm ci",
+    "ci-frontend": "cd frontend && npm ci",
+    "ci-all": "npm ci && npm run ci-backend && npm run ci-frontend",
+    "test-backend": "cd backend && npm test",
     "db": "cd backend && npm run db",
     "start": "concurrently \"cd backend && npm start\" \" cd frontend && npm start\""
   },
