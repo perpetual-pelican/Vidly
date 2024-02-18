@@ -3,7 +3,7 @@ Node-based video rental processing web app built with Express and MongoDB/Mongoo
  - modified and expanded from code written while following The Complete Node.js Course by Mosh Hamedani
 
 ## Setup
-### Install Node.js
+### Install Node.js (v14)
  - https://nodejs.org/en/download/
 
 ### Install Dependencies
