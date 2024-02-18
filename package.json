@@ -10,16 +10,16 @@
     "lint": "eslint .",
     "lint-fix": "eslint --fix .",
     "format": "prettier --write .",
-    "install": "cd backend && npm ci",
     "test": "cd backend && npm test",
     "db": "cd backend && npm run db",
     "start": "concurrently \"cd backend && npm start\" \" cd frontend && npm start\""
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "eslint": "~7.30.0",
     "eslint-config-airbnb-base": "~14.2.1",
     "eslint-config-prettier": "~6.15.0",
-    "eslint-plugin-import": "~2.22.1",
+    "eslint-plugin-import": "^2.29.1",
     "husky": "^6.0.0",
     "lint-staged": "^11.0.0",
     "prettier": "2.3.1",
